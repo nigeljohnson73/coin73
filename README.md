@@ -9,8 +9,8 @@ The initial drop of Nigels special sauce.
  * `cd ~/git/coin73`
  * In one window start a test server for the API service
  * `php -S localhost:8081 -t api`
- * In the other window, start the test server for the website service
- * `php -S localhost:8081 -t www`
+ * In the other window, start the test server for the web service
+ * `php -S localhost:8080 -t www www/router.php`
 
 ## Interesting URLs:
 
@@ -22,14 +22,14 @@ The initial drop of Nigels special sauce.
 ## Commands:
 
  * Launch local for php72: `dev_appserver.py app.yaml --php_executable_path /usr/bin/php --support_datastore_emulator=true`
- * Runtime server: http://localhost:8080
- * Admin server: http://localhost:8000
+ * Runtime server for web-app: http://localhost:8080
+ * Runtime server for web-api: http://localhost:8081/api/
+ * Admin server (not overly useful any more): http://localhost:8000
  * Data store (localhost - if it worked): http://localhost:8000/datastore
  * Data store on GAE: https://console.cloud.google.com/datastore/entities/query/kind?project=coin73
 
 ##Things I did
 
 Created a [key for the service account][key-svc-acc] on the project. It downloaded a JSON file, wihch I saved as coin73-service.json
-
 
 [key-svc-acc]: https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=coin73&supportedpurview=project "Google console page"
