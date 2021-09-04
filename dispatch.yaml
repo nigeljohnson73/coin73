@@ -1,0 +1,8 @@
+dispatch:
+  # Send all API stuff to the API backend.
+  - url: "*/api/*"
+    service: api
+
+  # Send anything else to the default handlers
+  - url: "*/*"
+    service: default

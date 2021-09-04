@@ -1,2 +1,6 @@
 # Google App Engine generated folder
 appengine-generated/
+/.project
+/.buildpath
+/vendor/
+/service-account.json
