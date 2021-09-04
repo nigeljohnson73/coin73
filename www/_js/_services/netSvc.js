@@ -1,12 +1,12 @@
 /*
-            _   ____
+			_   ____
 ._ __   ___| |_/ ___|_   _____
 | '_ \ / _ \ __\___ \ \ / / __|
 | | | |  __/ |_ ___) \ V / (__
 |_| |_|\___|\__|____/ \_/ \___|
 
 */
-app.service('netSvc', [ function() {
+app.service('netSvc', [function() {
 	netSvc = this;
 	netSvc.state = false;
 	netSvc.stateListener = [];
@@ -16,10 +16,10 @@ app.service('netSvc', [ function() {
 	* Allows a client to be informed when the system detects a network change
 	*/
 	netSvc.addStateListener = function(cb) {
-		logger("netSvc.addStateListener()");
+		logger("netSvc.addStateListener()", "dbg");
 		netSvc.stateListener.push(cb);
 		if (netSvc.hadListener) {
-			logger("netSvc.addStateListener() - already had a change registered");
+			logger("netSvc.addStateListener() - already had a change registered", "dbg");
 			cb(netSvc.state, true); // call back with the current state
 		}
 	};
@@ -30,7 +30,7 @@ app.service('netSvc', [ function() {
 	netSvc._updateOnlineStatus = function(event) {
 		netSvc.state = navigator.onLine;
 
-		logger("netSvc.updateOnlineStatus()");
+		logger("netSvc.updateOnlineStatus(" + netSvc.state + ")");
 		var i;
 		for (i = 0; i < netSvc.stateListener.length; i++) {
 			logger("netSvc.updateOnlineStatus(): calling event listener");
@@ -39,10 +39,10 @@ app.service('netSvc', [ function() {
 		netSvc.hadListener = true;
 	};
 
-	logger("netSvc.initialisingListeners()");
+	logger("netSvc.initialisingListeners()", "dbg");
 	window.addEventListener('online', netSvc._updateOnlineStatus);
 	window.addEventListener('offline', netSvc._updateOnlineStatus);
 	netSvc._updateOnlineStatus();
 
-} ]);
+}]);
 

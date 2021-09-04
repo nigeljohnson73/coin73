@@ -1,3 +1,4 @@
+<?php startPage()?>
 <!doctype html>
 <html data-ng-app="myApp" lang="en">
 <head>
@@ -18,7 +19,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 <script src="/js/app.min.js"></script>
-<title>Hello, world!</title>
+<title><?php echo getAppName() ?></title>
 </head>
 <body>
 	<div id="snackbar"></div>

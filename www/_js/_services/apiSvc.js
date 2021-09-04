@@ -88,7 +88,7 @@ app.service('apiSvc', [ "$http", "$timeout", "$interval", function($http, $timeo
 		// Send it all over to the server
 		$http({
 			method : "POST",
-			url : 'http://localhost:8081/api/' + api,
+			url : '{{API_HOST}}/api/' + api,
 			//url : '/api/' + api,
 			data : $.param(txdata),
 			headers : {

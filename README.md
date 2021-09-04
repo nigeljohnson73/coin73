@@ -2,6 +2,16 @@
 
 The initial drop of Nigels special sauce.
 
+## Things you gotta do
+
+ * Start 2 terminal windows
+ * Goto the main code directory in both terminals
+ * `cd ~/git/coin73`
+ * In one window start a test server for the API service
+ * `php -S localhost:8081 -t api`
+ * In the other window, start the test server for the website service
+ * `php -S localhost:8081 -t www`
+
 ## Interesting URLs:
 
  * [Configuration files](https://cloud.google.com/appengine/docs/standard/php7/configuration-files)
