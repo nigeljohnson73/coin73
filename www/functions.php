@@ -1,5 +1,18 @@
 <?php
 
+function getProjectId() {
+	global $project_id;
+	return $project_id;
+}
+
+$data_namespace = "";
+
+// Overwritten if we are @locahost
+function getDataNamespace() {
+	global $data_namespace;
+	return $data_namespace;
+}
+
 function getAppName() {
 	global $config;
 	return $config->name;
@@ -24,8 +37,6 @@ function getAppVersion() {
 	global $config;
 	return $config->major_version . "." . $config->minor_version . " (" . $config->status . ")";
 }
-
-$api_host = "";
 
 function getApiHost() {
 	global $api_host;
@@ -133,11 +144,85 @@ function newestFile($p = ".") {
 	);
 }
 
+function startJsonResponse() {
+	ob_start ();
+	return new StdClass ();
+}
+
+function endJsonResponse($response, $ret, $success = true, $message = "") {
+	// global $response;
+	$c = ob_get_contents ();
+	ob_end_clean ();
+	
+	$ret->success = $success;
+	$ret->status = $success ? "OK" : "FAIL";
+	$ret->console = explode ( "\n", $c );
+	$ret->message = $message;
+	$response->getBody ()->write ( json_encode ( $ret ) );
+}
+
 function startPage() {
 	ob_start ();
 }
 
 function endPage($compress = false, $strip_comments = true) {
+	echo "<pre>\n";
+	try {
+
+		/*
+		 * GDS\Schema::addString
+		 * GDS\Schema::addInteger
+		 * GDS\Schema::addDatetime
+		 * GDS\Schema::addFloat
+		 * GDS\Schema::addBoolean
+		 * GDS\Schema::addStringList
+		 *
+		 * GDS\Schema::addGeopoint
+		 * $obj_person->location = new GDS\Property\Geopoint(53.4723272, -2.2936314);
+		 * echo $obj_person->location->getLatitude();
+		 * echo $obj_person->location->getLongitude();
+		 *
+		 * Also some DateTime:
+		 * 'published' => new DateTime('-5 years')
+		 *
+		 * $obj_book_store->fetchOne("SELECT * FROM Book WHERE isbn = @isbnNumber", [
+		 * 'isbnNumber' => '1853260304'
+		 * ]);
+		 *
+		 * $obj_book_store->fetchOne("SELECT * FROM Task WHERE date_date < @now", [
+		 * 'now' => new DateTime()
+		 * ]);
+		 */
+
+		// The Store accepts a Schema object or Kind name as its first parameter
+
+		// Create a simple Entity object
+// 		$bookstore = new BookStore ();
+// 		$book = new GDS\Entity ();
+// 		$book->title = 'Romeo and Juliet';
+// 		$book->author = 'William Shakespeare';
+// 		$book->isbn = '1840224339';
+
+// 		$ret = $bookstore->insert ( $book );
+		// Insert into the Datastore
+		// $obj_book_store->upsert ( $obj_book );
+
+		// $arr_books = $obj_book_store->fetchAll ();
+
+		// $obj_schema = (new GDS\Schema('Book'))
+		// ->addString('title')
+		// ->addString('author')
+		// ->addString('isbn');
+
+		// // The Store accepts a Schema object or Kind name as its first parameter
+		// $obj_book_store = new GDS\Store($obj_schema);
+
+		// print_r ( $arr_books );
+	} catch ( Exception $e ) {
+		print_r ( $e );
+	}
+	echo "</pre>\n";
+
 	$odirty = ob_get_contents ();
 	$dirty = $odirty;
 	if ($strip_comments) {
@@ -355,7 +440,6 @@ function timestampAddDays($ts, $day) {
 	return timestampAdd ( $ts, numDays ( $day ) );
 }
 
-// TODO: Put this in a JSON config along with the latest build etc
 $inc = array ();
 $inc [] = dirname ( __FILE__ ) . "/config.php";
 $inc [] = dirname ( __FILE__ ) . "/config_override.php";
@@ -366,18 +450,28 @@ foreach ( $inc as $file ) {
 		include_once ($file);
 	}
 }
+
 if ($_SERVER ["SERVER_NAME"] == "localhost") {
 	global $config;
+	global $localdev_namespace;
+	global $api_CORS_origin;
+	global $api_host;
+	global $data_namespace;
+
+	// If we're on localdev/ update the config before we load it
 	$config = json_decode ( file_get_contents ( __DIR__ . "/../version.json" ) );
-	$config->app_date = newestFile ( __DIR__ . "/" ) [2];
+	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
 	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
 	file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
-}
 
-$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
-
-if ($_SERVER ["SERVER_NAME"] == "localhost") {
 	$config->title .= " (Dev)";
-	$api_host = "http://localhost:8081";
+	$data_namespace = $localdev_namespace;
+	$api_host = "http://localhost:8085/api/";
+	if ($api_CORS_origin != "*") {
+		$api_CORS_origin = "http://localhost:8080";
+	}
+} else {
+	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
 }
+
 ?>

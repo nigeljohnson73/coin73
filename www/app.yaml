@@ -1,2 +1,7 @@
 runtime: php74
 service: default
+
+handlers:
+  - url: .*
+    secure: always
+    script: auto

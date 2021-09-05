@@ -5,7 +5,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "apiSvc", function($scope, $ti
 	 * Get miner summary every 5 seconds via API queue
 	 */
 		var ping = function() {
-			apiSvc.queue("ping", {}, function(data) {
+			apiSvc.queuePublic("ping", {}, function(data) {
 				logger("HomeCtrl::ping()", "dbg");
 				logger(data, "log");
 				if (data.success) {
