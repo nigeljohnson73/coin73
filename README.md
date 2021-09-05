@@ -18,6 +18,7 @@ The initial drop of Nigels special sauce.
  * [Authenticating users](https://cloud.google.com/appengine/docs/standard/php7/authenticating-users)
  * [Custom domain](https://cloud.google.com/appengine/docs/standard/php7/mapping-custom-domains)
  * [CRON stuff](https://cloud.google.com/appengine/docs/standard/php7/scheduling-jobs-with-cron-yaml)
+ * [ReCAPTCHA details](https://www.google.com/recaptcha/admin/site/474517032)
 
 ## Commands:
 

@@ -51,6 +51,7 @@ foreach ( array_keys ( $routes ) as $p ) {
 $images = array ();
 $images ["/gfx/favicon.png"] = "image/png";
 $images ["/gfx/ajax-loader-bar.gif"] = "image/gif";
+$images ["/gfx/ajax-loader-spinner.gif"] = "image/gif";
 $images ["/gfx/logo-400.png"] = "image/png";
 $images ["/gfx/logo-200.png"] = "image/png";
 foreach ( array_keys ( $images ) as $p ) {
@@ -74,6 +75,7 @@ $apis ["/app/book/create"] = __DIR__ . "/_api/book/create.php";
 $apis ["/app/book/{id}"] = __DIR__ . "/_api/book/read.php";
 $apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
 $apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
+$apis ["/app/user/create"] = __DIR__ . "/_api/user/create.php";
 foreach ( array_keys ( $apis ) as $p ) {
 	$app->post ( $p, function (Request $request, Response $response, $args) {
 		global $apis;

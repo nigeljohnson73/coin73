@@ -5,4 +5,6 @@ $api_CORS_origin = "https://coin73.nw.r.appspot.com/"; // automatically overwrit
 //$api_CORS_origin = "*"; // This makes the API interface public
 //$api_host = "http://api.coin73.nw.r.appspot.com/api/";
 $api_host = "https://coin73.nw.r.appspot.com/api/";
+$recaptcha_site_key = "6LddrUgcAAAAAEqZZuTgIZpDUT4KcNbqknFsCLyP";
+$recaptcha_secret_key = "6LddrUgcAAAAADqGmRqc85CRrJPXaPhUrfitAHnx";
 ?>

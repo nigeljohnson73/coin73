@@ -75,22 +75,6 @@ footer.app-footer {
 	color: #fff !important;
 }
 
-textarea.ng-invalid.ng-pristine, input.ng-invalid.ng-pristine {
-	box-shadow: 0px 0px 20px rgba(255, 164, 0, .3);
-	border-color: #ccc;
-}
-
-textarea.ng-invalid.ng-dirty, input.ng-invalid.ng-dirty {
-	box-shadow: 0px 0px 20px rgba(128, 0, 0, .9);
-	border-color: #f00;
-	color: #f00;
-}
-
-textarea.ng-valid.ng-dirty, input.ng-valid.ng-dirty {
-	box-shadow: 0px 0px 20px rgba(0, 203, 0, .3);
-	border-color: #090;
-}
-
 #page-loading {
 	padding-top: 50px;
 	width: 100%;
@@ -194,8 +178,9 @@ nav {
 }
 
 .navbar {
-	padding:0px;
+	padding: 0px;
 }
+
 .navbar-nav {
 	margin: 0px;
 }
@@ -203,16 +188,19 @@ nav {
 .navbar-nav li {
 	margin: 0px;
 	border-left: solid 1px #ddd;
-	border-bottom:solid 1px #eee;
+	border-bottom: solid 1px #eee;
 }
+
 .navbar-nav li:first-child {
 	border-left: 0px;
 }
-.navbar-nav li.nav-item a.nav-link{
-	cursor:pointer;
+
+.navbar-nav li.nav-item a.nav-link {
+	cursor: pointer;
 }
-.navbar-nav li.nav-item.active a.nav-link{
-	color:#3b0084;
+
+.navbar-nav li.nav-item.active a.nav-link {
+	color: #3b0084;
 }
 
 .table-striped tbody>tr:nth-child(even)>td, .table-striped tbody>tr:nth-child(even)>th

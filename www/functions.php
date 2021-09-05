@@ -43,6 +43,15 @@ function getApiHost() {
 	return $api_host;
 }
 
+function getRecaptchaSiteKey() {
+	global $recaptcha_site_key;
+	return $recaptcha_site_key;
+}
+
+function getRecaptchaSecretKey() {
+	global $recaptcha_secret_key;
+	return $recaptcha_secret_key;
+}
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
@@ -57,6 +66,7 @@ function processSendableFile($str) {
 	$str = str_replace ( "{{API_DATE}}", getApiDate (), $str );
 	$str = str_replace ( "{{APP_DATE}}", getAppDate (), $str );
 	$str = str_replace ( "{{APP_VERSION}}", getAppVersion (), $str );
+	$str = str_replace ( "{{RECAPTCHA_SITE_KEY}}", getRecaptchaSiteKey (), $str );
 	// $str = str_replace ( "{{API_VERSION}}", getApiVersion (), $str );
 	return $str;
 }
@@ -153,7 +163,7 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 	// global $response;
 	$c = ob_get_contents ();
 	ob_end_clean ();
-	
+
 	$ret->success = $success;
 	$ret->status = $success ? "OK" : "FAIL";
 	$ret->console = explode ( "\n", $c );
@@ -197,13 +207,13 @@ function endPage($compress = false, $strip_comments = true) {
 		// The Store accepts a Schema object or Kind name as its first parameter
 
 		// Create a simple Entity object
-// 		$bookstore = new BookStore ();
-// 		$book = new GDS\Entity ();
-// 		$book->title = 'Romeo and Juliet';
-// 		$book->author = 'William Shakespeare';
-// 		$book->isbn = '1840224339';
+		// $bookstore = new BookStore ();
+		// $book = new GDS\Entity ();
+		// $book->title = 'Romeo and Juliet';
+		// $book->author = 'William Shakespeare';
+		// $book->isbn = '1840224339';
 
-// 		$ret = $bookstore->insert ( $book );
+		// $ret = $bookstore->insert ( $book );
 		// Insert into the Datastore
 		// $obj_book_store->upsert ( $obj_book );
 
