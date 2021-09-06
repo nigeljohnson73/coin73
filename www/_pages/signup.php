@@ -38,7 +38,8 @@
 	</div>
 	<div data-ng-show="account_created">
 		<div class="jumbotron">
-			<p>An account would have been created, and you would have received an email to complete the sign-up process.</p>
+			<p>An account would have been created, and you would have received an email to complete the sign-up process. During that process, you will be asked to select a keyword. This is the keyword you will need:</p>
+			<p class="signup-challenge">{{signup_challenge}}</p>
 		</div>
 	</div>
 </div>

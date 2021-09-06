@@ -26,6 +26,7 @@ if ($resp->isSuccess()) {
 	// go ahead and do necessary stuff
 		$success = true;
 		$message = "User can be created (but wasn't)\n";
+		$ret->challenge = "WEDNESDAY";
 } else {
 	// collect errors and display it
 	//$errors = $resp->getErrorCodes();

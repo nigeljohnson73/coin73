@@ -209,6 +209,12 @@ nav {
 }
 
 .jumbotron p {
-	font-weight: 600;
-	font-size: 22px;
+	font-weight: 400;
+	font-size: 20px;
+}
+.jumbotron p.signup-challenge {
+	margin-top:2em;
+	margin-bottom:0;
+	font-weight: 1000;
+	font-size: 26px;
 }

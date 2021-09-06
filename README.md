@@ -34,6 +34,7 @@ The initial drop of Nigels special sauce.
  * Created a [key for the service account][key-svc-acc] on the project. It downloaded a JSON file, wihch I saved as service-account.json
  * ~optionally, well done one, install the local datastore emulator with `gcloud components install cloud-datastore-emulator`~
  * ~Start the local data store `gcloud beta emulators datastore start`~
+ * Followed the [RECAPTCHA integration][recaptcha-integration] documentation.
 
 [key-svc-acc]: https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=coin73&supportedpurview=project "Google console page"
-
+[recaptcha-integration]: https://code.tutsplus.com/tutorials/example-of-how-to-add-google-recaptcha-v3-to-a-php-form--cms-33752

@@ -8,8 +8,9 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 	$scope.accept_toc = false;
 	$scope.submittable = false;
 	$scope.password_verify = "";
+	$scope.signup_challenge = "WELCOME";
 
-	var signup_action = "SignupRequest";
+	var signup_action = "signup";
 	$scope.tx = {};
 	$scope.tx.email = "";
 	$scope.tx.password = "";
@@ -30,6 +31,7 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 				logger(data);
 				$scope.account_created = data.success;
 				if (data.success) {
+					$scope.signup_challenge = data.challenge;
 					// Yay for us
 				}
 				if (data.message.length) {
