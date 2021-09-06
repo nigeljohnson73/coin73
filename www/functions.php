@@ -450,6 +450,160 @@ function timestampAddDays($ts, $day) {
 	return timestampAdd ( $ts, numDays ( $day ) );
 }
 
+function graphData($package, $x = 260, $y = 80) {
+	global $DEBUG;
+	
+	$x_min = $package->x_min;
+	$x_max = $package->x_max;
+	$x_major = isset ( $package->x_major ) ? ($package->x_major) : (0);
+	$x_minor = isset ( $package->x_minor ) ? ($package->x_minor) : (0);
+	$x_tgt = isset ( $package->x_tgt ) ? ($package->x_tgt) : (null);
+	$x_swt = isset ( $package->x_swt ) ? ($package->x_swt) : (0);
+	$y_min = $package->y_min;
+	$y_max = $package->y_max;
+	$y_major = isset ( $package->y_major ) ? ($package->y_major) : (0);
+	$y_minor = isset ( $package->y_minor ) ? ($package->y_minor) : (0);
+	$values = $package->values;
+	
+	$img_width = $x;
+	$img_height = $y;
+	$margins = 20;
+	$graph_width = $img_width - $margins * 2;
+	$graph_height = $img_height - $margins * 2;
+	
+	$img = imagecreatetruecolor ( $img_width, $img_height );
+	imageantialias ( $img, true );
+	// $font=imageLoadFont(dirname(__FILE__)."/../fonts/andalemo.ttf");
+	$font = 4;
+	
+	$background_color = imagecolorallocate ( $img, 0x99, 0x99, 0x99 );
+	$border_color = imagecolorallocate ( $img, 0x99, 0x99, 0x99 );
+	$line_color = imagecolorallocate ( $img, 0x00, 0x99, 0x00 );
+	$grid_major_color = imagecolorallocate ( $img, 0x77, 0x77, 0x77 );
+	$grid_minor_color = imagecolorallocate ( $img, 0x90, 0x90, 0x90 );
+	$sweet_color = imagecolorallocate ( $img, 0xaa, 0xaa, 0x99 );
+	
+	imagefilledrectangle ( $img, 1, 1, $img_width - 2, $img_height - 2, $border_color );
+	imagefilledrectangle ( $img, $margins, $margins, $img_width - 1 - $margins, $img_height - 1 - $margins, $background_color );
+	
+	if (count ( $values ) < 2 || abs ( max ( $values ) - min ( $values ) ) < 0.0001) {
+		// if (1) {
+		$txt = "Not enough data points";
+		$xy = calcStringCenter ( $img, $txt, $font );
+		imagestring ( $img, $font, $xy [0], $xy [1], $txt, $line_color );
+	} else {
+		if ($x_tgt !== null && $x_swt > 0) {
+			// echo "xt: $x_tgt, xs: $x_swt<br />\n";
+			$x1 = $margins + (((($x_tgt - $x_swt) - $x_min) / ($x_max - $x_min)) * $graph_width);
+			$x2 = $margins + (((($x_tgt + $x_swt) - $x_min) / ($x_max - $x_min)) * $graph_width);
+			
+			$y1 = $margins;
+			$y2 = $graph_height + $margins;
+			
+			$corners = array (
+					$x1,
+					$y1,
+					$x2,
+					$y1,
+					$x2,
+					$graph_height + $margins,
+					$x1,
+					$graph_height + $margins
+			);
+			
+			imagefilledpolygon ( $img, $corners, 4, $sweet_color );
+		}
+		
+		if ($x_minor > 0) {
+			$pcnt = $x_minor / ($x_max - $x_min);
+			for($i = 1; $i >= 0; $i -= $pcnt) {
+				$x1 = $margins + ($i * $graph_width);
+				$x2 = $x1;
+				$y1 = $margins;
+				$y2 = $graph_height + $margins;
+				
+				// if ($DEBUG)echo "gw: $graph_width, m: $margins, i: $i, x1: $x1<br />\n";
+				if (round ( $x1 ) >= 0) {
+					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_minor_color );
+				}
+			}
+		}
+		
+		if ($x_major > 0) {
+			$pcnt = $x_major / ($x_max - $x_min);
+			for($i = 1; $i >= 0; $i -= $pcnt) {
+				$x1 = $margins + ($i * $graph_width);
+				$x2 = $x1;
+				$y1 = $margins;
+				$y2 = $graph_height + $margins;
+				
+				if (round ( $x1 ) >= 0) {
+					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
+				}
+			}
+		}
+		
+		// Draw 10% lines horizontally
+		if ($y_minor) {
+			$pcnt = $y_minor / $y_max;
+			for($i = 0; $i <= 1; $i += $pcnt) {
+				$y1 = $margins + ($i * $graph_height);
+				$y2 = $y1;
+				$x1 = $margins;
+				$x2 = $graph_width + $margins;
+				
+				if (round ( $y1 ) >= 0) {
+					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_minor_color );
+				}
+			}
+		}
+		if ($y_major) {
+			$pcnt = $y_major / $y_max;
+			for($i = 0; $i <= 1; $i += $pcnt) {
+				$y1 = $margins + ($i * $graph_height);
+				$y2 = $y1;
+				$x1 = $margins;
+				$x2 = $graph_width + $margins;
+				
+				if (round ( $y1 ) >= 0) {
+					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
+				}
+			}
+		}
+		
+		$npoints = count ( $values );
+		
+		// Make headroom so we are not dividing by zero below, and not having to check for it
+		$max_value = $y_max; // max ( $values );
+		$min_value = $y_min; // min ( $values );
+		$min_delta = 0.001;
+		if (abs ( $max_value - $min_value ) < $min_delta) {
+			$min_value -= $min_delta / 2;
+			$max_value += $min_delta / 2;
+		}
+		$ratio_x = ($graph_width) / ($npoints - 1);
+		$ratio_y = ($graph_height) / ($max_value - $min_value);
+		
+		$vals = array_values ( $values );
+		foreach ( $vals as $i => $value ) {
+			if ($i > 0) {
+				$x1 = $margins + ($i - 1) * $ratio_x;
+				$x2 = $margins + ($i) * $ratio_x;
+				$y1 = $margins + $graph_height - intval ( ($vals [$i - 1] - $min_value) * $ratio_y );
+				$y2 = $margins + $graph_height - intval ( ($value - $min_value) * $ratio_y );
+				
+				imageLine ( $img, $x1, $y1, $x2, $y2, $line_color );
+			}
+		}
+	}
+	
+	ob_start ();
+	imagepng ( $img );
+	$image_data = ob_get_contents ();
+	ob_end_clean ();
+	return $image_data;
+}
+
 $inc = array ();
 $inc [] = dirname ( __FILE__ ) . "/config.php";
 $inc [] = dirname ( __FILE__ ) . "/config_override.php";

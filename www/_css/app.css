@@ -141,28 +141,6 @@ strong.indicator {
 	color: #ccc !important;
 }
 
-/************************************/
-/* footer nav.navbar {
-	border: 0;
-	border-top: solid 1px #ccc;
-	border-radius: 0;
-	margin: 0;
-	margin-bottom: 20px;
-}
-
-footer .nav-justified>li>a,footer .nav-justified>li.active>a {
-	border: 0;
-	border-bottom: solid 1px #ddd !important;
-}
-
-footer .nav-justified>li.active>a {
-	background-color: #eee;
-}
-
-footer nav .nav,footer nav .nav li {
-	margin: 0;
-}
- */
 .headliner {
 	border-bottom: solid 1px #ccc;
 }
@@ -206,15 +184,4 @@ nav {
 .table-striped tbody>tr:nth-child(even)>td, .table-striped tbody>tr:nth-child(even)>th
 	{
 	background-color: #f1f1f1;
-}
-
-.jumbotron p {
-	font-weight: 400;
-	font-size: 20px;
-}
-.jumbotron p.signup-challenge {
-	margin-top:2em;
-	margin-bottom:0;
-	font-weight: 1000;
-	font-size: 26px;
 }

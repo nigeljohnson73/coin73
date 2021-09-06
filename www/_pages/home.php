@@ -1,8 +1,7 @@
 <?php include_once(__DIR__."/_header.php")?>
 
 <div id="page-loaded" class="container-fluid text-center" data-ng-controller="HomeCtrl">
-	<h1>COIN73</h1>
-	<p>An explanation will be along shortly.</p>
+	<h1>An explanation will be along shortly</h1>
 </div>
 
 <?php include_once(__DIR__."/_footer.php")?>

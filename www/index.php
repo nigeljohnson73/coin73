@@ -3,12 +3,14 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
+// TODO: get some variables from the $_GET to handle account validaton and password recovery
+
 include_once (__DIR__ . '/functions.php');
 require __DIR__ . '/vendor/autoload.php';
 
 // function logger($str) {
-// 	$logfile = "./tmp.log";
-// 	file_put_contents ( $logfile, trim ( $str ) . "\n", FILE_APPEND );
+// $logfile = "./tmp.log";
+// file_put_contents ( $logfile, trim ( $str ) . "\n", FILE_APPEND );
 // }
 
 // Instantiate App
@@ -49,21 +51,77 @@ foreach ( array_keys ( $routes ) as $p ) {
 }
 
 $images = array ();
-$images ["/gfx/favicon.png"] = "image/png";
-$images ["/gfx/ajax-loader-bar.gif"] = "image/gif";
-$images ["/gfx/ajax-loader-spinner.gif"] = "image/gif";
-$images ["/gfx/logo-400.png"] = "image/png";
-$images ["/gfx/logo-200.png"] = "image/png";
-foreach ( array_keys ( $images ) as $p ) {
+$images ["/gfx/favicon.png"] = array (
+		"/_gfx/favicon.png",
+		"image/png"
+);
+$images ["/gfx/ajax-loader-bar.gif"] = array (
+		"/_gfx/ajax-loader-bar.gif",
+		"image/gif"
+);
+$images ["/gfx/ajax-loader-spinner.gif"] = array (
+		"/_gfx/ajax-loader-spinner.gif",
+		"image/gif"
+);
+$images ["/gfx/logo-400.png"] = array (
+		"/_gfx/logo-400.png",
+		"image/png"
+);
+$images ["/gfx/logo-200.png"] = array (
+		"/_gfx/logo-200.png",
+		"image/png"
+);
+$images ["/gfx/submission_time.png"] = array (
+		"/_gfx/submission_time.php",
+		"image/png",
+		true // Include,
+);
+$images ["/gfx/miner_efficiency.png"] = array (
+		"/_gfx/miner_efficiency.php",
+		"image/png",
+		true // Include,
+);
+foreach ( array_keys($images) as $p ) {
+// 	echo "Stashing: ".$p. "<br />\n";
+// 	$uri = $p;
+// 	$include_file = $images [$uri] [0];
+// 	$content_type = $images [$uri] [1];
+// 	$include = isset ( $images [$uri] [2] );
+	
+// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;uri: ".$uri."<br />\n";
+// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;fn: ".$include_file."<br />\n";
+// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;cr: ".$content_type."<br />\n";
+// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;in: ".($include?("true"):("false"))."<br />\n";
+// 	echo "<br />\n";
+	
 	$app->get ( $p, function ($request, $response) {
 		global $images;
 		$uri = $request->getUri ()->getPath ();
-		$content_type = $images [$uri];
-		$fn = str_replace ( "/gfx/", "/_gfx/", $uri );
-		$image = @file_get_contents ( __DIR__ . $fn );
-		if ($image === false) {
-			$response->write ( "Could not find '" . $uri . "'" );
-			return $response->withStatus ( 404 );
+		$include_file = $images [$uri] [0];
+		$content_type = $images [$uri] [1];
+		$include = isset ( $images [$uri] [2] );
+		
+// 		echo "uri: ".$uri."<br />\n";
+// 		echo "fn: ".$include_file."<br />\n";
+// 		echo "cr: ".$content_type."<br />\n";
+// 		echo "in: ".($content_type?("true"):("false"))."<br />\n";
+		
+// 		ob_start ();
+// 		include (__DIR__ . $include_file);
+// 		$image = ob_get_contents ();
+// 		ob_end_clean ();
+		if ($include) {
+			ob_start ();
+			include (__DIR__ . $include_file);
+			$image = ob_get_contents ();
+			ob_end_clean ();
+		} else {
+			// $fn = str_replace ( "/gfx/", "/_gfx/", $uri );
+			$image = @file_get_contents ( __DIR__ . $include_file );
+			if ($image === false) {
+				$response->write ( "Could not find '" . $uri . "'" );
+				return $response->withStatus ( 404 );
+			}
 		}
 		$response->getBody ()->write ( $image );
 		return $response->withHeader ( 'Content-Type', $content_type );

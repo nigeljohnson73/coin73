@@ -17,12 +17,12 @@
 		</ul>
 	</nav>
 	<div>
-		<p class="float-left">
+		<p class="float-start">
 			&nbsp;&nbsp;<a href="/terms">Terms of service</a>&nbsp;&nbsp;
 		</p>
 
 
-		<p class="float-right">
+		<p class="float-end">
 			&nbsp;&nbsp;<a href="/privacy">Privacy policy</a>&nbsp;&nbsp;
 		</p>
 
