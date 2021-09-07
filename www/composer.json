@@ -6,6 +6,7 @@
 		"google/cloud-datastore" : "^1.12",
 		"tomwalder/php-gds": "^5.1",
 		"google/recaptcha": "^1.2",
-		"mailjet/mailjet-apiv3-php": "^1.5"
+		"mailjet/mailjet-apiv3-php": "^1.5",
+		"simplito/elliptic-php": "^1.0"
 	}
 }

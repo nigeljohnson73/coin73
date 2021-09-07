@@ -81,35 +81,14 @@ $images ["/gfx/miner_efficiency.png"] = array (
 		"image/png",
 		true // Include,
 );
-foreach ( array_keys($images) as $p ) {
-// 	echo "Stashing: ".$p. "<br />\n";
-// 	$uri = $p;
-// 	$include_file = $images [$uri] [0];
-// 	$content_type = $images [$uri] [1];
-// 	$include = isset ( $images [$uri] [2] );
-	
-// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;uri: ".$uri."<br />\n";
-// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;fn: ".$include_file."<br />\n";
-// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;cr: ".$content_type."<br />\n";
-// 	echo "&nbsp;&nbsp;&nbsp;&nbsp;in: ".($include?("true"):("false"))."<br />\n";
-// 	echo "<br />\n";
-	
+foreach ( array_keys ( $images ) as $p ) {
 	$app->get ( $p, function ($request, $response) {
 		global $images;
 		$uri = $request->getUri ()->getPath ();
 		$include_file = $images [$uri] [0];
 		$content_type = $images [$uri] [1];
 		$include = isset ( $images [$uri] [2] );
-		
-// 		echo "uri: ".$uri."<br />\n";
-// 		echo "fn: ".$include_file."<br />\n";
-// 		echo "cr: ".$content_type."<br />\n";
-// 		echo "in: ".($content_type?("true"):("false"))."<br />\n";
-		
-// 		ob_start ();
-// 		include (__DIR__ . $include_file);
-// 		$image = ob_get_contents ();
-// 		ob_end_clean ();
+
 		if ($include) {
 			ob_start ();
 			include (__DIR__ . $include_file);
@@ -129,11 +108,17 @@ foreach ( array_keys($images) as $p ) {
 }
 
 $apis = array ();
+// BookStore testing
 $apis ["/app/book/create"] = __DIR__ . "/_api/book/create.php";
 $apis ["/app/book/{id}"] = __DIR__ . "/_api/book/read.php";
 $apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
 $apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
+// User management
 $apis ["/app/user/create"] = __DIR__ . "/_api/user/create.php";
+// $apis ["/app/user/{{id}}"] = __DIR__ . "/_api/user/read.php";
+// $apis ["/app/user/{{id}}/validate"] = __DIR__ . "/_api/user/validate.php";
+// $apis ["/app/user/{{id}}/authenticate"] = __DIR__ . "/_api/user/authenticate.php";
+// $apis ["/app/user/{{id}}/update"] = __DIR__ . "/_api/user/update.php";
 foreach ( array_keys ( $apis ) as $p ) {
 	$app->post ( $p, function (Request $request, Response $response, $args) {
 		global $apis;

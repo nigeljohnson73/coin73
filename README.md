@@ -2,33 +2,54 @@
 
 The initial drop of Nigels special sauce.
 
-## Things you gotta do
+## Things you gotta do every time
 
  * Start 2 terminal windows
  * Goto the main code directory in both terminals
- * `cd ~/git/coin73`
+ * `cd ~/git/coin73` on Mac
  * In one window start a test server for the API service
  * `php -S localhost:8085 -t api`
  * In the other window, start the test server for the web service
  * `php -S localhost:8080 -t www www/router.php`
+ * ~`/usr/local/opt/php@7.4/bin/php -S localhost:8080 -t www www/router.php`~
+
+## Things you gotta do Once
+
+Install php 7.4 On a Mac:
+
+ * brew install php@7.4
+ * brew link php@7.4
+ * (also does this any way - brew install gmp)
+ 
+Install php 7.4 on Raspian:
+
+ * https://janw.me/raspberry-pi/installing-php74-rapsberry-pi/
+ * Install ext-gmp into PHP somehow
+
+## Project URLs:
+
+ * [COIN73 on github](https://github.com/nigeljohnson73/coin73)
+ * [COIN73 on the web](https://coin73.appspot.com)
+ * [localhost web-app](http://localhost:8080)
+ * [localhost web-api](http://localhost:8085/api/) (not really useful)
+ * [Data store on GAE](https://console.cloud.google.com/datastore/entities/query/kind?project=coin73)
+ * [ReCAPTCHA details](https://www.google.com/recaptcha/admin/site/474517032)
+
+## Blockchain in Javascript:
+
+ * [Part 1 - Create Blockchain](https://www.youtube.com/watch?v=zVqczFZr124)
+ * [Part 2 - Proof of Work](https://www.youtube.com/watch?v=HneatE69814)
+ * [Part 3 - Mining rewards](https://www.youtube.com/watch?v=fRV6cGXVQ4I)
+ * [Part 4 - Signing transactions](https://www.youtube.com/watch?v=kWQ84S13-hw)
 
 ## Interesting URLs:
 
- * [Configuration files](https://cloud.google.com/appengine/docs/standard/php7/configuration-files)
- * [Authenticating users](https://cloud.google.com/appengine/docs/standard/php7/authenticating-users)
- * [Custom domain](https://cloud.google.com/appengine/docs/standard/php7/mapping-custom-domains)
- * [CRON stuff](https://cloud.google.com/appengine/docs/standard/php7/scheduling-jobs-with-cron-yaml)
- * [ReCAPTCHA details](https://www.google.com/recaptcha/admin/site/474517032)
+ * [YAML Configuration files](https://cloud.google.com/appengine/docs/standard/php7/configuration-files)
+ * [Authenticating users on google](https://cloud.google.com/appengine/docs/standard/php7/authenticating-users)
+ * [Custom domain for appspot](https://cloud.google.com/appengine/docs/standard/php7/mapping-custom-domains)
+ * [GAE CRON stuff](https://cloud.google.com/appengine/docs/standard/php7/scheduling-jobs-with-cron-yaml)
  * [Bootstrap 5.1 documentation](https://getbootstrap.com/docs/5.1/getting-started/introduction/)
-
-## Commands:
-
- * ~Launch local for php72: `dev_appserver.py app.yaml --php_executable_path /usr/bin/php --support_datastore_emulator=true`~
- * Runtime server for web-app: http://localhost:8080
- * Runtime server for web-api: http://localhost:8085/api/
- * ~Admin server (not overly useful any more): http://localhost:8000~
- * ~Data store (localhost - if it worked): http://localhost:8000/datastore~
- * Data store on GAE: https://console.cloud.google.com/datastore/entities/query/kind?project=coin73
+ * [Eliptic Curve Cryptography](https://github.com/simplito/elliptic-php)
 
 ##Things I did
 

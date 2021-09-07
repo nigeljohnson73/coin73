@@ -6,8 +6,6 @@ print_r ( $args );
 echo "_POST[]:\n";
 print_r ( $_POST );
 
-$email = $_POST ["email"];
-$password = $_POST ["password"];
 $token = $_POST ['token'];
 $action = $_POST ['action'];
 
@@ -19,6 +17,19 @@ $resp = $recaptcha->setExpectedAction ( $action )->setScoreThreshold ( 0.5 )->ve
 
 // verify the response
 if ($resp->isSuccess ()) {
+	echo "Loading data into user array\n";
+	$user = array ();
+	$store = new UserStore ();
+	$fields = $store->getDataFields ();
+	$fields [] = $store->getKeyField ();
+	foreach ( $fields as $k ) {
+		if (isset ( $_POST [$k] )) {
+			$user [$k] = $_POST [$k];
+		}
+	}
+
+	// Move this into validate account and pass challenge back.
+	echo "Creating word list for poormans MFA\n";
 	$words = array ();
 	$words [] = "Wedensday";
 	$words [] = "Helper";
@@ -61,9 +72,25 @@ if ($resp->isSuccess ()) {
 		$cwords [] = $words [$key];
 	}
 	shuffle ( $cwords );
+	// echo "Chosen '".$challenge."' from:\n";
+	// print_r($cwords);
 
-	$success = true;
-	$message = "User can be created (but wasn't)\n";
+	$validation = new StdClass ();
+	$validation->expect = $challenge;
+	$validation->choices = $cwords;
+	$user ["validation"] = json_encode ( $validation );
+	print_r ( $validation );
+
+	$user = $store->insert ( $user );
+	$success = is_array ( $user );
+	if ($success) {
+		ksort ( $user );
+		echo "Created user: \n";
+		print_r ( $user );
+		$message = "User can be created (but wasn't)\n";
+	} else {
+		$message = "User insert failed\n";
+	}
 	$ret->challenge = $challenge;
 	// $ret->words = $cwords;
 } else {
@@ -71,5 +98,6 @@ if ($resp->isSuccess ()) {
 	print_r ( $resp->getErrorCodes () );
 }
 sleep ( 3 );
+
 endJsonResponse ( $response, $ret, $success, $message );
 ?>

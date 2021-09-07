@@ -6,17 +6,7 @@ print_r ( $args );
 echo "_POST[]:\n";
 print_r ( $_POST );
 
-// $title = $_POST ["title"];
-// $author = $_POST ["author"];
-// $isbn = $_POST ["isbn"];
-// $read_count = $_POST ["read_count"];
-
 $book = array ();
-// $book["title"] = $title;
-// $book["author"] = $author;
-// $book["isbn"] = $isbn;
-// $book["read_count"] = $read_count;
-
 $bookstore = new BookStore ();
 $fields = $bookstore->getDataFields ();
 $fields [] = $bookstore->getKeyField ();
