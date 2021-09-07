@@ -30,6 +30,7 @@ $message = "Book created\n";
 $ret->book = $bookstore->insert ( $book );
 if (! $ret->book) {
 	$message = "Book creation failed";
+	$ret->book = null;
 }
 
 endJsonResponse ( $response, $ret, ($ret->book != null), $message );
