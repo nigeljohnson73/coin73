@@ -11,7 +11,6 @@ The initial drop of Nigels special sauce.
  * `php -S localhost:8085 -t api`
  * In the other window, start the test server for the web service
  * `php -S localhost:8080 -t www www/router.php`
- * ~`/usr/local/opt/php@7.4/bin/php -S localhost:8080 -t www www/router.php`~
 
 ## Things you gotta do Once
 
@@ -53,10 +52,11 @@ Install php 7.4 on Raspian:
 
 ##Things I did
 
+ * Followed the [RECAPTCHA integration][recaptcha-integration] documentation.
  * Created a [key for the service account][key-svc-acc] on the project. It downloaded a JSON file, wihch I saved as service-account.json
+ * ~Launch local for php72: `dev_appserver.py app.yaml --php_executable_path /usr/bin/php --support_datastore_emulator=true`~
  * ~optionally, well done one, install the local datastore emulator with `gcloud components install cloud-datastore-emulator`~
  * ~Start the local data store `gcloud beta emulators datastore start`~
- * Followed the [RECAPTCHA integration][recaptcha-integration] documentation.
 
 [key-svc-acc]: https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=coin73&supportedpurview=project "Google console page"
 [recaptcha-integration]: https://code.tutsplus.com/tutorials/example-of-how-to-add-google-recaptcha-v3-to-a-php-form--cms-33752
