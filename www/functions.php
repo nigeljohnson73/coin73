@@ -168,9 +168,7 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 
 	$c = trim ( $c );
 	if (strlen ( $c )) {
-		if (strpos ( "\n", $c ) !== false) {
-			$c = explode ( "\n", $c );
-		}
+		$c = explode ( PHP_EOL, $c );
 	}
 	$ret->success = $success;
 	$ret->status = $success ? "OK" : "FAIL";

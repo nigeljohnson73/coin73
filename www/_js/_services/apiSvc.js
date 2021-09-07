@@ -131,6 +131,8 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 			if (isJson(data.data)) {
 				// http response object returned, strip out the server response
 				ldata = data.data;
+				//datastr = (ldata.console + "").trim();
+				//ldata.console = (datastr.length) ? (datastr.split(/\r\n|\r|\n/)) : "";
 			} else {
 				logger("apiSvc.call('" + api + "'): malformed response", "wrn");
 				// Any returned text in the console where you would expect some explanation

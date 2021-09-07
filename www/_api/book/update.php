@@ -15,7 +15,7 @@ if (strlen ( $args ["id"] ) == 0) {
 	$bookstore = new BookStore ();
 	$book = array();
 	$book[$bookstore->getKeyField()] = $args ["id"];
-	$fields = $bookstore->getNonKeyFields();
+	$fields = $bookstore->getDataFields();
 	foreach ( $fields as $k ) {
 		if(isset($_POST[$k])) {
 			$book[$k] = $_POST[$k];

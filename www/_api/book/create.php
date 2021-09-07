@@ -18,7 +18,7 @@ $book = array ();
 // $book["read_count"] = $read_count;
 
 $bookstore = new BookStore ();
-$fields = $bookstore->getNonKeyFields ();
+$fields = $bookstore->getDataFields ();
 $fields [] = $bookstore->getKeyField ();
 foreach ( $fields as $k ) {
 	if (isset ( $_POST [$k] )) {
