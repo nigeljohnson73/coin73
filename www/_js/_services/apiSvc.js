@@ -125,50 +125,50 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function(data) {
-			logger("apiSvc.call(): success", "dbg");
+			logger("apiSvc.call('" + api + "'): success", "dbg");
 			// console.log(data);
 			ldata = {};
 			if (isJson(data.data)) {
 				// http response object returned, strip out the server response
 				ldata = data.data;
 			} else {
-				logger("apiSvc.call(): malformed response", "wrn");
-				// Any returned text in the console where you would expect some
-				// explanation
-				ldata.console = data.data.trim().split(/\r\n|\r|\n/);
+				logger("apiSvc.call('" + api + "'): malformed response", "wrn");
+				// Any returned text in the console where you would expect some explanation
+				datastr = (data.data + "").trim();
+				ldata.console = (datastr.length) ? (datastr.split(/\r\n|\r|\n/)) : "";
 				ldata.success = false;
-				ldata.status = "error";
+				ldata.status = "FAIL";
 				ldata.message = "";
 				logger(ldata, "wrn");
 			}
 
 			if (typeof notify == "function") {
-				logger("apiSvc.call(): calling notifier", "dbg");
+				logger("apiSvc.call('" + api + "'): calling notifier", "dbg");
 				notify(ldata);
 			}
 		}, function(data) {
-			// logger("apiSvc.call(): failed", "err");
-			// åconsole.log(data);
+			logger("apiSvc.call('" + api + "'): fail", "dbg");
+			// console.log(data);
 			ldata = {};
 			if (data.status == -1) {
-				logger("apiSvc.call(): Cannot connect to API", "err"); // No internet or CORS!!!!
+				logger("apiSvc.call('" + api + "'): HTTP fail text 'Cannot connect to API'", "wrn"); // No internet or CORS!!!!
 			} else {
-				logger("apiSvc.call(): HTTP failed with status code " + data.status, "err");
-				logger("apiSvc.call(): HTTP failed with status text '" + data.statusText + "'", "err");
+				logger("apiSvc.call('" + api + "'): HTTP fail code " + data.status, "wrn");
+				logger("apiSvc.call('" + api + "'): HTTP fail text '" + data.statusText + "'", "wrn");
 			}
 
-			if (typeof notify == "function") {
-				if (data.data == null) {
-					data.data = "";
-				}
-				datastr = (data.data + "").trim();
-				ldata.console = (datastr.length) ? (datastr.split(/\r\n|\r|\n/)) : ([]);
-				ldata.success = false;
-				ldata.status = "error";
-				ldata.message = "";
-				// logger(ldata, "wrn");
+			if (data.data == null) {
+				data.data = "";
+			}
+			datastr = (data.data + "").trim();
+			ldata.console = (datastr.length) ? (datastr.split(/\r\n|\r|\n/)) : "";
+			ldata.success = false;
+			ldata.status = "FAIL";
+			ldata.message = "";
+			logger(ldata, "wrn");
 
-				logger("apiSvc.call(): calling notifier", "dbg");
+			if (typeof notify == "function") {
+				logger("apiSvc.call('" + api + "'): calling notifier", "dbg");
 				notify(ldata);
 			}
 		});

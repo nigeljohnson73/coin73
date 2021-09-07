@@ -14,43 +14,70 @@ $app->addErrorMiddleware ( true, true, true );
 
 // Add Lazy CORS
 $app->options ( '/{routes:.+}', function ($request, $response, $args) {
+	// Called as a warmup, dont do anything special
 	return $response;
 } );
 
 $app->add ( function ($request, $handler) {
+	// For every page we serve, add the CORS management stuff
 	global $api_CORS_origin;
 	$response = $handler->handle ( $request );
-	$response = $response->withHeader ( 'Access-Control-Allow-Origin', $api_CORS_origin);
-	//$response = $response->withHeader ( 'Access-Control-Allow-Origin', '*' ); // TODO: Secure this!!!
+	$response = $response->withHeader ( 'Access-Control-Allow-Origin', $api_CORS_origin );
 	$response = $response->withHeader ( 'Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization' );
 	$response = $response->withHeader ( 'Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS' );
 	$response = $response->withHeader ( 'Access-Control-Allow-Credentials', 'true' );
 	return $response;
 } );
 
-// Add routes
-$app->get ( '/api/', function (Request $request, Response $response) {
-	$name = $request->getQueryParams () ['name'] ?? 'World';
-	$response->getBody ()->write ( "[API] Hello, $name!, <a href='/api/hello/$name'>Try /api/hello/$name</a>" );
-	return $response;
-} );
+// // Add routes
+// $app->get ( '/api/', function (Request $request, Response $response) {
+// $name = $request->getQueryParams () ['name'] ?? 'World';
+// $response->getBody ()->write ( "[API] Hello, $name!, <a href='/api/hello/$name'>Try /api/hello/$name</a>" );
+// return $response;
+// } );
 
-$app->get ( '/api/hello/{name}', function (Request $request, Response $response, $args) {
-	$name = $args ['name'];
-	$response->getBody ()->write ( "Hello, $name" );
-	return $response;
-} );
+// $app->get ( '/api/hello/{name}', function (Request $request, Response $response, $args) {
+// $name = $args ['name'];
+// $response->getBody ()->write ( "Hello, $name" );
+// return $response;
+// } );
 
-$app->post ( '/api/ping', function (Request $request, Response $response) {
-	$obj = new StdClass ();
-	$obj->success = true;
-	$obj->status = "OK";
-	$obj->console = "";
-	$obj->message = "Called Ping API";
-	$response->getBody ()->write ( json_encode ( $obj ) );
-	return $response; // ->withHeader ( 'Access-Control-Allow-Origin', '*' );
-} );
+$apis = array ();
+$apis ["/ping"] = __DIR__ . "/_api/ping.php";
 
+foreach ( array_keys ( $apis ) as $p ) {
+	$roots = array (
+			"", // for http:// api.domain.com/
+			"/api" // for http[s]://domain.com/api/
+	);
+	foreach ( $roots as $r ) {
+		$uri = $r . $p;
+		$app->post ( $uri, function (Request $request, Response $response, $args) {
+			global $apis;
+			// Get the uri we were called as, and strip off the root
+			$uri = $request->getUri ()->getPath ();
+			$uri = preg_replace ( '/^\/api/', "", $uri );
+			// See if any of the api keys expand into the URI I got passed as
+			foreach ( $apis as $u => $p ) {
+				foreach ( $args as $ak => $av ) {
+					$u = str_replace ( "{" . $ak . "}", $av, $u );
+				}
+				if ($uri == $u) {
+					$include = $p;
+				}
+			}
+			if (strlen ( $include )) {
+				include ($include);
+				return $response->withHeader ( "Content-Type", "application/json;charset=utf-8" );
+			}
+
+			// The file needed is missing... be nice in the error message
+			$ret = startJsonResponse ();
+			endJsonResponse ( $response, $ret, false, "API not supported '" . $uri . "'" );
+			return $response->withStatus ( 404 )->withHeader ( "Content-Type", "application/json;charset=utf-8" );
+		} );
+	}
+}
 $app->map ( [ 
 		'GET',
 		'POST',
@@ -58,7 +85,12 @@ $app->map ( [
 		'DELETE',
 		'PATCH'
 ], '/{routes:.+}', function ($request, $response) {
-	throw new HttpNotFoundException ( $request );
+	// Anything we didn't handle before. Tell the requestor we didn't find it.
+	$uri = $request->getUri ()->getPath ();
+	$ret = startJsonResponse ();
+	endJsonResponse ( $response, $ret, false, "API not found '" . $uri . "'" );
+	return $response->withStatus ( 404 )->withHeader ( "Content-Type", "application/json;charset=utf-8" );
 } );
+
 $app->run ();
 ?>

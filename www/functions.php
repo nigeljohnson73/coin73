@@ -52,6 +52,7 @@ function getRecaptchaSecretKey() {
 	global $recaptcha_secret_key;
 	return $recaptcha_secret_key;
 }
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
@@ -62,6 +63,7 @@ function ob_print_r($what) {
 
 // Transform data sent back in the app.js or app.css packing stuff
 function processSendableFile($str) {
+	$str = str_replace ( "{{APP_NAME}}", getAppName (), $str );
 	$str = str_replace ( "{{API_HOST}}", getApiHost (), $str );
 	$str = str_replace ( "{{API_DATE}}", getApiDate (), $str );
 	$str = str_replace ( "{{APP_DATE}}", getAppDate (), $str );
@@ -164,9 +166,15 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 	$c = ob_get_contents ();
 	ob_end_clean ();
 
+	$c = trim ( $c );
+	if (strlen ( $c )) {
+		if (strpos ( "\n", $c ) !== false) {
+			$c = explode ( "\n", $c );
+		}
+	}
 	$ret->success = $success;
 	$ret->status = $success ? "OK" : "FAIL";
-	$ret->console = explode ( "\n", $c );
+	$ret->console = $c;
 	$ret->message = $message;
 	$response->getBody ()->write ( json_encode ( $ret ) );
 }
@@ -176,63 +184,6 @@ function startPage() {
 }
 
 function endPage($compress = false, $strip_comments = true) {
-	echo "<pre>\n";
-	try {
-
-		/*
-		 * GDS\Schema::addString
-		 * GDS\Schema::addInteger
-		 * GDS\Schema::addDatetime
-		 * GDS\Schema::addFloat
-		 * GDS\Schema::addBoolean
-		 * GDS\Schema::addStringList
-		 *
-		 * GDS\Schema::addGeopoint
-		 * $obj_person->location = new GDS\Property\Geopoint(53.4723272, -2.2936314);
-		 * echo $obj_person->location->getLatitude();
-		 * echo $obj_person->location->getLongitude();
-		 *
-		 * Also some DateTime:
-		 * 'published' => new DateTime('-5 years')
-		 *
-		 * $obj_book_store->fetchOne("SELECT * FROM Book WHERE isbn = @isbnNumber", [
-		 * 'isbnNumber' => '1853260304'
-		 * ]);
-		 *
-		 * $obj_book_store->fetchOne("SELECT * FROM Task WHERE date_date < @now", [
-		 * 'now' => new DateTime()
-		 * ]);
-		 */
-
-		// The Store accepts a Schema object or Kind name as its first parameter
-
-		// Create a simple Entity object
-		// $bookstore = new BookStore ();
-		// $book = new GDS\Entity ();
-		// $book->title = 'Romeo and Juliet';
-		// $book->author = 'William Shakespeare';
-		// $book->isbn = '1840224339';
-
-		// $ret = $bookstore->insert ( $book );
-		// Insert into the Datastore
-		// $obj_book_store->upsert ( $obj_book );
-
-		// $arr_books = $obj_book_store->fetchAll ();
-
-		// $obj_schema = (new GDS\Schema('Book'))
-		// ->addString('title')
-		// ->addString('author')
-		// ->addString('isbn');
-
-		// // The Store accepts a Schema object or Kind name as its first parameter
-		// $obj_book_store = new GDS\Store($obj_schema);
-
-		// print_r ( $arr_books );
-	} catch ( Exception $e ) {
-		print_r ( $e );
-	}
-	echo "</pre>\n";
-
 	$odirty = ob_get_contents ();
 	$dirty = $odirty;
 	if ($strip_comments) {
@@ -452,7 +403,7 @@ function timestampAddDays($ts, $day) {
 
 function graphData($package, $x = 260, $y = 80) {
 	global $DEBUG;
-	
+
 	$x_min = $package->x_min;
 	$x_max = $package->x_max;
 	$x_major = isset ( $package->x_major ) ? ($package->x_major) : (0);
@@ -464,28 +415,28 @@ function graphData($package, $x = 260, $y = 80) {
 	$y_major = isset ( $package->y_major ) ? ($package->y_major) : (0);
 	$y_minor = isset ( $package->y_minor ) ? ($package->y_minor) : (0);
 	$values = $package->values;
-	
+
 	$img_width = $x;
 	$img_height = $y;
 	$margins = 20;
 	$graph_width = $img_width - $margins * 2;
 	$graph_height = $img_height - $margins * 2;
-	
+
 	$img = imagecreatetruecolor ( $img_width, $img_height );
 	imageantialias ( $img, true );
 	// $font=imageLoadFont(dirname(__FILE__)."/../fonts/andalemo.ttf");
 	$font = 4;
-	
+
 	$background_color = imagecolorallocate ( $img, 0x99, 0x99, 0x99 );
 	$border_color = imagecolorallocate ( $img, 0x99, 0x99, 0x99 );
 	$line_color = imagecolorallocate ( $img, 0x00, 0x99, 0x00 );
 	$grid_major_color = imagecolorallocate ( $img, 0x77, 0x77, 0x77 );
 	$grid_minor_color = imagecolorallocate ( $img, 0x90, 0x90, 0x90 );
 	$sweet_color = imagecolorallocate ( $img, 0xaa, 0xaa, 0x99 );
-	
+
 	imagefilledrectangle ( $img, 1, 1, $img_width - 2, $img_height - 2, $border_color );
 	imagefilledrectangle ( $img, $margins, $margins, $img_width - 1 - $margins, $img_height - 1 - $margins, $background_color );
-	
+
 	if (count ( $values ) < 2 || abs ( max ( $values ) - min ( $values ) ) < 0.0001) {
 		// if (1) {
 		$txt = "Not enough data points";
@@ -496,10 +447,10 @@ function graphData($package, $x = 260, $y = 80) {
 			// echo "xt: $x_tgt, xs: $x_swt<br />\n";
 			$x1 = $margins + (((($x_tgt - $x_swt) - $x_min) / ($x_max - $x_min)) * $graph_width);
 			$x2 = $margins + (((($x_tgt + $x_swt) - $x_min) / ($x_max - $x_min)) * $graph_width);
-			
+
 			$y1 = $margins;
 			$y2 = $graph_height + $margins;
-			
+
 			$corners = array (
 					$x1,
 					$y1,
@@ -510,10 +461,10 @@ function graphData($package, $x = 260, $y = 80) {
 					$x1,
 					$graph_height + $margins
 			);
-			
+
 			imagefilledpolygon ( $img, $corners, 4, $sweet_color );
 		}
-		
+
 		if ($x_minor > 0) {
 			$pcnt = $x_minor / ($x_max - $x_min);
 			for($i = 1; $i >= 0; $i -= $pcnt) {
@@ -521,14 +472,14 @@ function graphData($package, $x = 260, $y = 80) {
 				$x2 = $x1;
 				$y1 = $margins;
 				$y2 = $graph_height + $margins;
-				
+
 				// if ($DEBUG)echo "gw: $graph_width, m: $margins, i: $i, x1: $x1<br />\n";
 				if (round ( $x1 ) >= 0) {
 					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_minor_color );
 				}
 			}
 		}
-		
+
 		if ($x_major > 0) {
 			$pcnt = $x_major / ($x_max - $x_min);
 			for($i = 1; $i >= 0; $i -= $pcnt) {
@@ -536,13 +487,13 @@ function graphData($package, $x = 260, $y = 80) {
 				$x2 = $x1;
 				$y1 = $margins;
 				$y2 = $graph_height + $margins;
-				
+
 				if (round ( $x1 ) >= 0) {
 					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
 				}
 			}
 		}
-		
+
 		// Draw 10% lines horizontally
 		if ($y_minor) {
 			$pcnt = $y_minor / $y_max;
@@ -551,7 +502,7 @@ function graphData($package, $x = 260, $y = 80) {
 				$y2 = $y1;
 				$x1 = $margins;
 				$x2 = $graph_width + $margins;
-				
+
 				if (round ( $y1 ) >= 0) {
 					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_minor_color );
 				}
@@ -564,15 +515,15 @@ function graphData($package, $x = 260, $y = 80) {
 				$y2 = $y1;
 				$x1 = $margins;
 				$x2 = $graph_width + $margins;
-				
+
 				if (round ( $y1 ) >= 0) {
 					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
 				}
 			}
 		}
-		
+
 		$npoints = count ( $values );
-		
+
 		// Make headroom so we are not dividing by zero below, and not having to check for it
 		$max_value = $y_max; // max ( $values );
 		$min_value = $y_min; // min ( $values );
@@ -583,7 +534,7 @@ function graphData($package, $x = 260, $y = 80) {
 		}
 		$ratio_x = ($graph_width) / ($npoints - 1);
 		$ratio_y = ($graph_height) / ($max_value - $min_value);
-		
+
 		$vals = array_values ( $values );
 		foreach ( $vals as $i => $value ) {
 			if ($i > 0) {
@@ -591,12 +542,12 @@ function graphData($package, $x = 260, $y = 80) {
 				$x2 = $margins + ($i) * $ratio_x;
 				$y1 = $margins + $graph_height - intval ( ($vals [$i - 1] - $min_value) * $ratio_y );
 				$y2 = $margins + $graph_height - intval ( ($value - $min_value) * $ratio_y );
-				
+
 				imageLine ( $img, $x1, $y1, $x2, $y2, $line_color );
 			}
 		}
 	}
-	
+
 	ob_start ();
 	imagepng ( $img );
 	$image_data = ob_get_contents ();
