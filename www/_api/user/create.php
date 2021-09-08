@@ -28,68 +28,16 @@ if ($resp->isSuccess ()) {
 		}
 	}
 
-	// Move this into validate account and pass challenge back.
-	echo "Creating word list for poormans MFA\n";
-	$words = array ();
-	$words [] = "Wedensday";
-	$words [] = "Helper";
-	$words [] = "Utility";
-	$words [] = "Layout";
-	$words [] = "Floating";
-	$words [] = "Efficient";
-	$words [] = "Miner";
-	$words [] = "Apple";
-	$words [] = "Verify";
-	$words [] = "Brand";
-	$words [] = "Power";
-	$words [] = "Private";
-	$words [] = "About";
-	$words [] = "Document";
-	$words [] = "Manual";
-	$words [] = "Server";
-	$words [] = "Home";
-	$words [] = "Arrow";
-	$words [] = "Keyboard";
-	$words [] = "Words";
-	$words [] = "Change";
-	$words [] = "Number";
-	$words [] = "Letter";
-	$words [] = "Reduce";
-	$words [] = "Website";
-	$words [] = "Printer";
-	$words [] = "Flask";
-	$words [] = "Reverse";
-	$words [] = "Change";
-	$words [] = "Value";
-	$words [] = "Slice";
-	$words [] = "Email";
-	$words [] = "Pencil";
-	$words [] = "Ruler";
-
-	$keys = array_rand ( $words, 3 );
-	$challenge = $words [$keys [0]];
-	foreach ( $keys as $key ) {
-		$cwords [] = $words [$key];
-	}
-	shuffle ( $cwords );
-	// echo "Chosen '".$challenge."' from:\n";
-	// print_r($cwords);
-
-	$validation = new StdClass ();
-	$validation->expect = $challenge;
-	$validation->choices = $cwords;
-	$user ["validation"] = json_encode ( $validation );
-	print_r ( $validation );
-
 	$user = $store->insert ( $user );
 	$success = is_array ( $user );
 	if ($success) {
+		$challenge = $store->revalidateUser ( $user ["email"] );
 		ksort ( $user );
 		echo "Created user: \n";
 		print_r ( $user );
-		$message = "User can be created (but wasn't)\n";
+		$message = "User successfully created\n";
 	} else {
-		$message = "User insert failed\n";
+		$message = "User creation failed\n";
 	}
 	$ret->challenge = $challenge;
 	// $ret->words = $cwords;

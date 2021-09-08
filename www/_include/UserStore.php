@@ -12,39 +12,57 @@ class UserStore extends DataStore {
 		$this->addField ( "email", "String", true, true ); // indexed and key
 		$this->addField ( "private_key", "String" );
 		$this->addField ( "public_key", "String", true ); // indexed for wallet management
-		$this->addField ( "guid", "String" ); // for the password
+		$this->addField ( "guid", "String" ); // for the password mechanism
 		$this->addField ( "password", "String" );
-		$this->addField ( "nonce", "String" );
-		$this->addField ( "created", "String" ); // Use our timestamp Library
-		$this->addField ( "validated", "String" ); // Use our timestamp Library
-		$this->addField ( "validation", "String" );
+		$this->addField ( "nonce", "String" ); // This exists if we are waiting on an email validation
+		$this->addField ( "validation", "String" ); // This is the validation string array
+		$this->addField ( "created", "String", true ); // Use our timestamp Library
+		$this->addField ( "validated", "String", true ); // Use our timestamp Library
 
 		$this->init ();
 	}
 
 	public function insert($arr) {
+		$password = $arr ["password"];
 		echo "UserStore::insert()\n";
 		echo "UserStore::insert() - email address: '" . $arr ["email"] . "'\n";
-		echo "UserStore::insert() - passed password: '" . $arr ["password"] . "'\n";
-
-		$arr ["nonce"] = GUIDv4 ();
-
+		echo "UserStore::insert() - passed password: '" . $password . "'\n";
 		$arr ["guid"] = GUIDv4 ();
-		$arr ["password"] = $arr ["guid"] . "." . $arr ["email"] . "." . $arr ["password"];
-		echo "UserStore::insert() - intermediate password: '" . $arr ["password"] . "'\n";
-		$arr ["password"] = md5 ( $arr ["password"] );
-		echo "UserStore::insert() - final password: '" . $arr ["password"] . "'\n";
+		$arr ["created"] = timestampNow ();
+		$arr ["private_key"] = "";
+		$arr ["public_key"] = "";
+		$arr ["validated"] = "";
+		$arr ["validation"] = "";
+		$arr ["nonce"] = "";
+
+		$arr = parent::insert ( $arr );
+		if (! is_array ( $arr )) {
+			echo "UserStore::insert() - insert of base user failed\n";
+			return false;
+		}
+		echo "UserStore::insert() - base user created\n";
+
+		$arr = $this->setPassword ( $arr ["email"], $password );
+		if (! is_array ( $arr )) {
+			echo "UserStore::insert() - unable to set password\n";
+			$this->delete ( $arr );
+			return false;
+		}
+
+		if (! $this->authenticate ( $arr ["email"], $password )) {
+			echo "UserStore::insert() - unable to authenticate user details\n";
+			$this->delete ( $arr );
+			return false;
+		}
 
 		// Create and initialize EC context
 		// (better do it once and reuse it)
-		$ec = new EC ( 'secp256k1' );
-
 		echo "UserStore::insert() - generating public/private key pair\n";
+
+		$ec = new EC ( 'secp256k1' );
 		$key = $ec->genKeyPair ();
 		$pubKey = $key->getPublic ( 'hex' );
 		$privKey = $key->getPrivate ( 'hex' );
-		$arr ["private_key"] = $privKey;
-		$arr ["public_key"] = $pubKey;
 
 		echo "Public key: '" . $pubKey . "'\n";
 		echo "Private key: '" . $privKey . "'\n";
@@ -62,10 +80,109 @@ class UserStore extends DataStore {
 		echo "SHA1 signature: '" . $derSign . "'\n";
 
 		// Verify signature
-		echo "Signature verification: " . (($key->verify ( $sha1, $derSign ) == TRUE) ? "true" : "false") . "\n";
+		$verified = $key->verify ( $sha1, $derSign );
+		echo "Signature verification: " . ($verified ? "true" : "false") . "\n";
 
-		return $arr;
-		// return parent::insert($arr);
+		if (! $verified) {
+			echo "UserStore::insert() - keypair does not work as expected - abandonning creation\n";
+			$this->delete ( $arr );
+			return false;
+		}
+		$arr ["private_key"] = $privKey;
+		$arr ["public_key"] = $pubKey;
+		echo "UserStore::insert() - public/private created\n";
+
+		// return $arr;
+		$user = $this->replace ( $arr );
+		if (! is_array ( $user )) {
+			echo "UserStore::insert() - final replace failed\n";
+		}
+		echo "UserStore::insert() - User has been created\n";
+		return $user;
+	}
+
+	public function revalidateUser($email) {
+		$user = $this->getItemById ( $email );
+		if (! $user) {
+			return false;
+		}
+		$user ["nonce"] = GUIDv4 ();
+		echo "Creating word list for poormans MFA\n";
+		$words = array ();
+		$words [] = "Wedensday";
+		$words [] = "Helper";
+		$words [] = "Utility";
+		$words [] = "Layout";
+		$words [] = "Floating";
+		$words [] = "Efficient";
+		$words [] = "Miner";
+		$words [] = "Apple";
+		$words [] = "Verify";
+		$words [] = "Brand";
+		$words [] = "Power";
+		$words [] = "Private";
+		$words [] = "About";
+		$words [] = "Document";
+		$words [] = "Manual";
+		$words [] = "Server";
+		$words [] = "Home";
+		$words [] = "Arrow";
+		$words [] = "Keyboard";
+		$words [] = "Words";
+		$words [] = "Change";
+		$words [] = "Number";
+		$words [] = "Letter";
+		$words [] = "Reduce";
+		$words [] = "Website";
+		$words [] = "Printer";
+		$words [] = "Flask";
+		$words [] = "Reverse";
+		$words [] = "Change";
+		$words [] = "Value";
+		$words [] = "Slice";
+		$words [] = "Email";
+		$words [] = "Pencil";
+		$words [] = "Ruler";
+
+		$keys = array_rand ( $words, 3 );
+		$challenge = $words [$keys [0]];
+		foreach ( $keys as $key ) {
+			$cwords [] = $words [$key];
+		}
+		shuffle ( $cwords );
+		// echo "Chosen '".$challenge."' from:\n";
+		// print_r($cwords);
+
+		$validation = new StdClass ();
+		$validation->expect = $challenge;
+		$validation->choices = $cwords;
+		$user ["validation"] = json_encode ( $validation );
+		print_r ( $validation );
+
+		return $challenge;
+	}
+
+	public function setPassword($email, $password) {
+		$user = $this->getItemById ( $email );
+		if (! $user) {
+			return false;
+		}
+		$user ["password"] = $user ["guid"] . "." . $email . "." . $password;
+		echo "UserStore::insert() - intermediate password: '" . $user ["password"] . "'\n";
+		$user ["password"] = md5 ( $user ["password"] );
+		echo "UserStore::insert() - final password: '" . $user ["password"] . "'\n";
+
+		return $this->replace ( $user );
+	}
+
+	public function authenticate($email, $password) {
+		$user = $this->getItemById ( $email );
+		if (! $user) {
+			return false;
+		}
+
+		$password = md5 ( $user ["guid"] . "." . $email . "." . $password );
+		return $password == $user ["password"];
 	}
 }
 ?>

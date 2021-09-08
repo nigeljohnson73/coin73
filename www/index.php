@@ -119,6 +119,7 @@ $apis ["/app/user/create"] = __DIR__ . "/_api/user/create.php";
 // $apis ["/app/user/{{id}}/validate"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}/authenticate"] = __DIR__ . "/_api/user/authenticate.php";
 // $apis ["/app/user/{{id}}/update"] = __DIR__ . "/_api/user/update.php";
+$apis ["/app/test/execute"] = __DIR__ . "/_api/testDataStore/execute.php";
 foreach ( array_keys ( $apis ) as $p ) {
 	$app->post ( $p, function (Request $request, Response $response, $args) {
 		global $apis;
