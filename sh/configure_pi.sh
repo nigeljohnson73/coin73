@@ -94,7 +94,7 @@ EOF
 
 ## Flashy login screen
 bash -c 'cat >> ~/.bashrc' << EOF
-source /webroot/coin73/res/bashrc.$DTYPE
+source /webroot/coin73/res/bashrc
 EOF
 
 ## Loop into rc.local
