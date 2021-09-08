@@ -31,7 +31,7 @@ if ($resp->isSuccess ()) {
 	$user = $store->insert ( $user );
 	$success = is_array ( $user );
 	if ($success) {
-		$challenge = $store->revalidateUser ( $user ["email"] );
+		$ret->challenge = $store->revalidateUser ( $user ["email"] );
 		ksort ( $user );
 		echo "Created user: \n";
 		print_r ( $user );
@@ -39,7 +39,6 @@ if ($resp->isSuccess ()) {
 	} else {
 		$message = "User creation failed\n";
 	}
-	$ret->challenge = $challenge;
 	// $ret->words = $cwords;
 } else {
 	echo "Google says:\n";

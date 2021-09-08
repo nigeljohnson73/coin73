@@ -1,7 +1,7 @@
 <?php include_once '_header.php';?>
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo getRecaptchaSiteKey(); ?>"></script>
 <div id="page-loaded" class="container-fluid text-center" data-ng-controller="SignupCtrl">
-	<form data-ng-show="!account_created" novalidate>
+	<form data-ng-show="!account_created && !account_not_created" novalidate>
 		<h1>Sign up</h1>
 		<p>Thanks for wanting to join the alliance, however we are not accepting requests at this point. The interface below is just for testing purposes, but please check back again soon.</p>
 		<p>Passwords need to be strong: at least 8 charaters long, with at least 1 lower case letter, 1 upper case letter, 1 digit and one special character (!@#$%^&amp;*).</p>
@@ -39,8 +39,13 @@
 	</form>
 	<div data-ng-show="account_created">
 		<div class="alert alert-success" role="alert">
-			<p>An account would have been created, and you would have received an email to complete the sign-up process. During that process, you will be asked to select a keyword. This is the keyword you will need:</p>
+			<p>An account has been created, and you will be receiving an email to complete the sign-up process. During that process, you will be asked to select a keyword. This is the keyword you will need:</p>
 			<h1 class="display-5">{{signup_challenge}}</h1>
+		</div>
+	</div>
+	<div data-ng-show="account_not_created">
+		<div class="alert alert-danger" role="alert">
+			<p>The account creation process failed.</p>
 		</div>
 	</div>
 </div>

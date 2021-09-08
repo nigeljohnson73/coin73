@@ -6,6 +6,7 @@ $api_CORS_origin = "https://coin73.appspot.com/"; // automatically overwritten i
                                                   // $api_CORS_origin = "*"; // This makes the API interface public
 $api_host = "https://coin73.appspot.com/api/"; // This is the public server - it's changed locally if localhost is detected
 
+$mfa_word_count = 5; // How many words in the MFA challenge
 $recaptcha_site_key = "6LddrUgcAAAAAEqZZuTgIZpDUT4KcNbqknFsCLyP";
 $recaptcha_secret_key = "6LddrUgcAAAAADqGmRqc85CRrJPXaPhUrfitAHnx";
 ?>

@@ -2,6 +2,7 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 
 	$scope.submitting = false;
 	$scope.account_created = false;
+	$scope.account_not_created = false;
 	$scope.email_valid = false;
 	$scope.password_valid = false;
 	$scope.password_verify_valid = false;
@@ -30,9 +31,9 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 			apiSvc.callLocal("user/create", $scope.tx, function(data) {
 				logger(data);
 				$scope.account_created = data.success;
+				$scope.account_not_created = !$scope.account_created;
 				if (data.success) {
 					$scope.signup_challenge = data.challenge;
-					// Yay for us
 				}
 				if (data.message.length) {
 					toast(data.message);

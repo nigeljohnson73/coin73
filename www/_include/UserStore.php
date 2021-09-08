@@ -102,56 +102,22 @@ class UserStore extends DataStore {
 	}
 
 	public function revalidateUser($email) {
+		global $mfa_words;
+		global $mfa_word_count;
+
 		$user = $this->getItemById ( $email );
 		if (! $user) {
 			return false;
 		}
 		$user ["nonce"] = GUIDv4 ();
 		echo "Creating word list for poormans MFA\n";
-		$words = array ();
-		$words [] = "Wedensday";
-		$words [] = "Helper";
-		$words [] = "Utility";
-		$words [] = "Layout";
-		$words [] = "Floating";
-		$words [] = "Efficient";
-		$words [] = "Miner";
-		$words [] = "Apple";
-		$words [] = "Verify";
-		$words [] = "Brand";
-		$words [] = "Power";
-		$words [] = "Private";
-		$words [] = "About";
-		$words [] = "Document";
-		$words [] = "Manual";
-		$words [] = "Server";
-		$words [] = "Home";
-		$words [] = "Arrow";
-		$words [] = "Keyboard";
-		$words [] = "Words";
-		$words [] = "Change";
-		$words [] = "Number";
-		$words [] = "Letter";
-		$words [] = "Reduce";
-		$words [] = "Website";
-		$words [] = "Printer";
-		$words [] = "Flask";
-		$words [] = "Reverse";
-		$words [] = "Change";
-		$words [] = "Value";
-		$words [] = "Slice";
-		$words [] = "Email";
-		$words [] = "Pencil";
-		$words [] = "Ruler";
 
-		$keys = array_rand ( $words, 3 );
-		$challenge = $words [$keys [0]];
+		$keys = array_rand ( $mfa_words, $mfa_word_count );
+		$challenge = $mfa_words [$keys [0]];
 		foreach ( $keys as $key ) {
-			$cwords [] = $words [$key];
+			$cwords [] = $mfa_words [$key];
 		}
-		shuffle ( $cwords );
-		// echo "Chosen '".$challenge."' from:\n";
-		// print_r($cwords);
+		sort ( $cwords );
 
 		$validation = new StdClass ();
 		$validation->expect = $challenge;
@@ -159,7 +125,10 @@ class UserStore extends DataStore {
 		$user ["validation"] = json_encode ( $validation );
 		print_r ( $validation );
 
-		return $challenge;
+		if ($this->update ( $user )) {
+			return $challenge;
+		}
+		return false;
 	}
 
 	public function setPassword($email, $password) {

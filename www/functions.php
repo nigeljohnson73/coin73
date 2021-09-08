@@ -1,5 +1,42 @@
 <?php
 
+// Poormans MFA like Microsoft
+$mfa_words = array ();
+$mfa_words [] = "Wedensday";
+$mfa_words [] = "Helper";
+$mfa_words [] = "Utility";
+$mfa_words [] = "Layout";
+$mfa_words [] = "Floating";
+$mfa_words [] = "Efficient";
+$mfa_words [] = "Miner";
+$mfa_words [] = "Apple";
+$mfa_words [] = "Verify";
+$mfa_words [] = "Brand";
+$mfa_words [] = "Power";
+$mfa_words [] = "Private";
+$mfa_words [] = "About";
+$mfa_words [] = "Document";
+$mfa_words [] = "Manual";
+$mfa_words [] = "Server";
+$mfa_words [] = "Home";
+$mfa_words [] = "Arrow";
+$mfa_words [] = "Keyboard";
+$mfa_words [] = "Words";
+$mfa_words [] = "Change";
+$mfa_words [] = "Number";
+$mfa_words [] = "Letter";
+$mfa_words [] = "Reduce";
+$mfa_words [] = "Website";
+$mfa_words [] = "Printer";
+$mfa_words [] = "Flask";
+$mfa_words [] = "Reverse";
+$mfa_words [] = "Change";
+$mfa_words [] = "Value";
+$mfa_words [] = "Slice";
+$mfa_words [] = "Email";
+$mfa_words [] = "Pencil";
+$mfa_words [] = "Ruler";
+
 function getProjectId() {
 	global $project_id;
 	return $project_id;
