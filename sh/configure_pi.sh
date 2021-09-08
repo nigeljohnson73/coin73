@@ -92,9 +92,20 @@ sudo bash -c 'cat > /etc/sysctl.d/disable-ipv6.conf' << EOF
 net.ipv6.conf.all.disable_ipv6 = 1
 EOF
 
+## Flashy login screen
+bash -c 'cat >> ~/.bashrc' << EOF
+source /webroot/coin73/res/bashrc.$DTYPE
+EOF
+
+## Loop into rc.local
+sudo cat /etc/rc.local | grep -v 'exit 0' | sudo tee /etc/rc.local >/dev/null
+sudo bash -c 'cat >> /etc/rc.local' << EOF
+. /webroot/coin73/res/rc.local
+exit 0
+EOF
+
 ## Enable VNC service
 sudo ln -s /lib/systemd/system/vncserver-x11-serviced.service /etc/systemd/system/multi-user.target.wants/vncserver-x11-serviced.service
-## switch it on????
 
 ## Enable VNC server screen resolution in boot.config
 sudo bash -c 'cat > /boot/config.txt' << EOF
