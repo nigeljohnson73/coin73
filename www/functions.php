@@ -631,11 +631,12 @@ foreach ( $inc as $file ) {
 	}
 }
 
-if ($_SERVER ["SERVER_NAME"] == "localhost") {
+if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	global $config;
 	global $localdev_namespace;
 	global $api_CORS_origin;
 	global $api_host;
+	global $www_host;
 	global $data_namespace;
 
 	// If we're on localdev/ update the config before we load it
@@ -647,8 +648,9 @@ if ($_SERVER ["SERVER_NAME"] == "localhost") {
 	$config->title .= " (Dev)";
 	$data_namespace = $localdev_namespace;
 	$api_host = "http://localhost:8085/api/";
+	$www_host = "http://localhost:8080/";
 	if ($api_CORS_origin != "*") {
-		$api_CORS_origin = "http://localhost:8080";
+		$api_CORS_origin = $www_host;
 	}
 } else {
 	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );

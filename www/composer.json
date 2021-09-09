@@ -4,9 +4,9 @@
 		"slim/psr7" : "^1.0",
 		"google/cloud-storage" : "^1.6",
 		"google/cloud-datastore" : "^1.12",
-		"tomwalder/php-gds": "^5.1",
-		"google/recaptcha": "^1.2",
-		"mailjet/mailjet-apiv3-php": "^1.5",
-		"simplito/elliptic-php": "^1.0"
+		"tomwalder/php-gds" : "^5.1",
+		"google/recaptcha" : "^1.2",
+		"simplito/elliptic-php" : "^1.0",
+		"michelf/php-markdown" : "^1.9"
 	}
 }

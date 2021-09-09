@@ -25,6 +25,10 @@ Install php 7.4 on Raspian:
  * https://janw.me/raspberry-pi/installing-php74-rapsberry-pi/
  * Install ext-gmp into PHP somehow
 
+Setup an app passsword for your email account
+
+* https://support.google.com/accounts/answer/185833?p=InvalidSecondFactor&visit_id=637667920918322961-3041154280&rd=1
+
 ## Project URLs:
 
  * [COIN73 on github](https://github.com/nigeljohnson73/coin73)
