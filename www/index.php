@@ -30,6 +30,7 @@ $routes ["/terms"] = __DIR__ . "/_pages/terms.php";
 $routes ["/about"] = __DIR__ . "/_pages/about.php";
 $routes ["/merch"] = __DIR__ . "/_pages/merch.php";
 $routes ["/signup"] = __DIR__ . "/_pages/signup.php";
+$routes ["/validate"] = __DIR__ . "/_pages/validate.php";
 $routes ["/test"] = __DIR__ . "/_pages/test.php";
 
 foreach ( array_keys ( $routes ) as $p ) {

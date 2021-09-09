@@ -98,6 +98,11 @@ function ob_print_r($what) {
 	return $c;
 }
 
+// $replaceable_array = array();
+// function addReplacebleField($key, $value) {
+// 	global $replaceable_array;
+// 	$replaceable_array[$key] = $value;
+// }
 // Transform data sent back in the app.js or app.css packing stuff
 function processSendableFile($str) {
 	$str = str_replace ( "{{APP_NAME}}", getAppName (), $str );
@@ -107,6 +112,11 @@ function processSendableFile($str) {
 	$str = str_replace ( "{{APP_VERSION}}", getAppVersion (), $str );
 	$str = str_replace ( "{{RECAPTCHA_SITE_KEY}}", getRecaptchaSiteKey (), $str );
 	// $str = str_replace ( "{{API_VERSION}}", getApiVersion (), $str );
+
+// 	global $replaceable_array;
+// 	foreach($replaceable_array as $key => $value) {
+// 		$str = str_replace ( "{{".$key."}}", $value, $str );
+// 	}
 	return $str;
 }
 

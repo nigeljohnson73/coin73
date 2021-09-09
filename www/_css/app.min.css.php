@@ -2175,7 +2175,8 @@ class CssMin {
 		$paths = array (
 				dirname ( __FILE__ )
 		);
-		while ( list ( $i, $path ) = each ( $paths ) ) {
+		// TODO: Fix the each() call
+		while ( list ( $i, $path ) = @each ( $paths ) ) {
 			$subDirectorys = glob ( $path . "*", GLOB_MARK | GLOB_ONLYDIR | GLOB_NOSORT );
 			if (is_array ( $subDirectorys )) {
 				foreach ( $subDirectorys as $subDirectory ) {

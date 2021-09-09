@@ -4,6 +4,8 @@ The initial drop of Nigels special sauce.
 
 ## Things you gotta do every time
 
+You shouldn't need to do this on the PI config cuz it's setup in the crontab.
+
  * Start 2 terminal windows
  * Goto the main code directory in both terminals
  * `cd ~/git/coin73` on Mac
@@ -20,14 +22,10 @@ Install php 7.4 On a Mac:
  * brew link php@7.4
  * (also does this any way - brew install gmp)
  
-Install php 7.4 on Raspian:
+Project based things
 
- * https://janw.me/raspberry-pi/installing-php74-rapsberry-pi/
- * Install ext-gmp into PHP somehow
-
-Setup an app passsword for your email account
-
-* https://support.google.com/accounts/answer/185833?p=InvalidSecondFactor&visit_id=637667920918322961-3041154280&rd=1
+ * Setup an [app password][gmail-app-password] for a gmail account.
+ * Followed the [RECAPTCHA integration][recaptcha-integration] documentation.
 
 ## Project URLs:
 
@@ -56,11 +54,11 @@ Setup an app passsword for your email account
 
 ##Things I did
 
- * Followed the [RECAPTCHA integration][recaptcha-integration] documentation.
- * Created a [key for the service account][key-svc-acc] on the project. It downloaded a JSON file, wihch I saved as service-account.json
+ * ~Created a [key for the service account][key-svc-acc] on the project. It downloaded a JSON file, wihch I saved as service-account.json~
  * ~Launch local for php72: `dev_appserver.py app.yaml --php_executable_path /usr/bin/php --support_datastore_emulator=true`~
  * ~optionally, well done one, install the local datastore emulator with `gcloud components install cloud-datastore-emulator`~
  * ~Start the local data store `gcloud beta emulators datastore start`~
 
 [key-svc-acc]: https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=coin73&supportedpurview=project "Google console page"
 [recaptcha-integration]: https://code.tutsplus.com/tutorials/example-of-how-to-add-google-recaptcha-v3-to-a-php-form--cms-33752
+[gmail-app-password]: https://support.google.com/accounts/answer/185833?p=InvalidSecondFactor&visit_id=637667920918322961-3041154280&rd=1
