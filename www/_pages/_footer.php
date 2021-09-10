@@ -42,6 +42,7 @@
 		</div>
 	</div>
 </footer>
+</div> <!-- Started in the header -->
 <script>
 $(document).ready(function() {
 	// Hide protected images

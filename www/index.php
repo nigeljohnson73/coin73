@@ -116,6 +116,8 @@ $apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
 $apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
 // User management
 $apis ["/app/user/create"] = __DIR__ . "/_api/user/create.php";
+$apis ["/app/user/prevalidate/{payload}"] = __DIR__ . "/_api/user/prevalidate.php";
+$apis ["/app/user/validate/{guid}/{challenge}"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}"] = __DIR__ . "/_api/user/read.php";
 // $apis ["/app/user/{{id}}/validate"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}/authenticate"] = __DIR__ . "/_api/user/authenticate.php";

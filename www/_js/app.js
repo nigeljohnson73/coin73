@@ -16,7 +16,7 @@ isJson = function(item) {
 
 decode_base64 = function(s) {
 	var e = {}, i, k, v = [], r = '', w = String.fromCharCode;
-	var n = [ [ 65, 91 ], [ 97, 123 ], [ 48, 58 ], [ 43, 44 ], [ 47, 48 ] ];
+	var n = [[65, 91], [97, 123], [48, 58], [43, 44], [47, 48]];
 
 	for (z in n) {
 		for (i = n[z][0]; i < n[z][1]; i++) {
@@ -119,10 +119,13 @@ function toast(text) {
 		}, 3000);
 	}
 };
-var app = angular.module("myApp", [ "ngCookies" ]);
+var app = angular.module("myApp", ["ngCookies"]);
 $(document).ready(function() {
 	// Switch main page into view
-	$("#page-loading").hide();
-	$("#page-loaded").show();
+	setTimeout(function() {
+		$("#page-loading").hide();
+		$("#page-loaded").removeClass("d-none").show();
+	}, 50);
+
 	//toast("Application has loaded sucessfully!!");
 });

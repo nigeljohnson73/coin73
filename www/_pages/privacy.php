@@ -1,5 +1,5 @@
 <?php include_once(__DIR__."/_header.php")?>
-<div id="page-loaded" class="container-fluid text-left" data-ng-controller="PrivacyCtrl">
+<div class="container-fluid text-left" data-ng-controller="PrivacyCtrl">
 
 	<h1>Privacy Policy</h1>
 	<p>

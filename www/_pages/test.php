@@ -1,6 +1,6 @@
 <?php include_once(__DIR__."/_header.php")?>
 
-<div id="page-loaded" class="container-fluid text-center" data-ng-controller="TestCtrl">
+<div class="container-fluid text-center" data-ng-controller="TestCtrl">
 	<h1>Testing</h1>
 	<p>These tests call the various APIs and output in the debug console for the most part.</p>
 	<button class="btn btn-custom" data-ng-disabled="calling" data-ng-click="callPing()">Call ping</button>

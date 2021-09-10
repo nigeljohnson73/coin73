@@ -1,10 +1,10 @@
 <?php
 // include_once (__DIR__ . "/../www/functions.php");
-include_once (__DIR__ . "/../../www/vendor/autoload.php");
+include_once (__DIR__ . "/../vendor/autoload.php");
 
-include_once (__DIR__ . "/../../vendor/phpmailer/phpmailer/src/PHPMailer.php");
-include_once (__DIR__ . "/../../vendor/phpmailer/phpmailer/src/SMTP.php");
-include_once (__DIR__ . "/../../vendor/phpmailer/phpmailer/src/Exception.php");
+include_once (__DIR__ . "/../vendor/phpmailer/phpmailer/src/PHPMailer.php");
+include_once (__DIR__ . "/../vendor/phpmailer/phpmailer/src/SMTP.php");
+include_once (__DIR__ . "/../vendor/phpmailer/phpmailer/src/Exception.php");
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;

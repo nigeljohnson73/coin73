@@ -6,8 +6,14 @@ $packer = new JavaScriptPacker ( $str );
 $str = $packer->pack ();
 echo trim($str);
 ?></script>
-<div id="page-loaded" class="container-fluid text-center" data-ng-controller="ValidateCtrl">
-	<div data-ng-show="!account_validated && !account_not_validated">
+<div class="container-fluid text-center" data-ng-controller="ValidateCtrl">
+	<div data-ng-show="!payload">
+		<h1>Validate your account</h1>
+		<div class="alert alert-danger" role="alert">
+			<p>Ohhhh, you appear to have done something very naughty. You shouldn't be here.</p>
+		</div>
+	</div>
+	<div data-ng-show="payload && !account_validated && !account_not_validated">
 		<h1>Validate your account</h1>
 		<p>Coming soon.</p>
 		<p>'{{payload}}'</p>

@@ -660,7 +660,7 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$api_host = "http://localhost:8085/api/";
 	$www_host = "http://localhost:8080/";
 	if ($api_CORS_origin != "*") {
-		$api_CORS_origin = $www_host;
+		$api_CORS_origin = "http://localhost:8080";
 	}
 } else {
 	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );

@@ -1,6 +1,6 @@
 <?php include_once '_header.php';?>
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo getRecaptchaSiteKey(); ?>"></script>
-<div id="page-loaded" class="container-fluid text-center" data-ng-controller="SignupCtrl">
+<div class="container-fluid text-center" data-ng-controller="SignupCtrl">
 	<form data-ng-show="!account_created && !account_not_created" novalidate>
 		<h1>Sign up</h1>
 		<p>Thanks for wanting to join the alliance, however we are not accepting requests at this point. The interface below is just for testing purposes, but please check back again soon.</p>
