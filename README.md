@@ -9,7 +9,7 @@ The project is a ground up implementation of a secure centralised block chain, s
  * Secure by design web portal for account management;
  * Periodic proof of life checks to ensure users still exist;
  * Automatic sideways load scaling that grows with the project;
- * Light-weight miner API;
+ * Light-weight miner API and mining process;
  * If it's got a microcontroller on it, it should be able to mine;
  * Dual layer 'value' in the block chain - supporting ledgering blockchain and mining, but then something else as well.
  * Having some real dollar value/liquidity by 2026 (a 5 year plan) - feel free to donate and help keep the lights on.
@@ -18,9 +18,11 @@ I also want to flatten the miner curve. In Bitcoin, Etherium etc, it's a race...
 
 There are no claims of enviornmental friendliness, or favouring lower power devices - everyone can play. If you have a low power device that can process the work, then the rewards may be, relatively speaking, higher. Since there is no real money here, there will never be any 'profit'.
 
+This part of the project deals specifically with the centralised services. Mining will be a separate project coming along once the server stuff is stable.
+
 ## Things harmed in the making of this project
 
-This project is built on the Google App Engine platform. The main idea here is that you pay for what you use, so you're not wasting resource paying for servers that are only 30% loaded. If you do have a spike, google can throw more resource at things for you while you sleep. I appreciate there are huge caveats here. But this is a journey.
+This project is built on the Google App Engine platform. The main idea here is that you pay for what you use, so you're not wasting resource paying for servers that are only 30% loaded. If you do have a spike or grow a lot, Google can throw more resource at things for you while you sleep. I appreciate there are huge caveats here. But this is a journey.
 
 ### General technologies
 
@@ -38,6 +40,10 @@ This project is built on the Google App Engine platform. The main idea here is t
  * [PHP Markdown](https://github.com/michelf/php-markdown)
  * [PHP Google DataStore API](https://github.com/tomwalder/php-gds)
  * [PHP Eliptic Curve Cryptography](https://github.com/phpecc/phpecc)
+
+-------------------------------------------------------------------------------------------
+
+# I haven't go round to rationalising things below here yet
 
 ## Up and running on the DevServer
 
