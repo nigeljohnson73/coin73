@@ -21,13 +21,13 @@
 			<div class="col-md-4">
 				<label for="password_verify" class="form-label">Re-enter password</label> <input type="password" class="form-control" id="password_verify" data-ng-model="password_verify" data-ng-class="password_verify_valid ? 'is-valid' : 'is-invalid'" data-ng-change="passwordVerifyValidate($event)" required>
 				<div class="valid-feedback">Looks good!</div>
-				<div class="invalid-feedback">Must match password</div>
+				<div class="invalid-feedback">Must match valid password</div>
 			</div>
 		</div>
 		<br />
 		<div class="row">
 			<div class="col-12">
-				<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="accept_toc" data-ng-class="accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and conditions</a></label>
+				<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and conditions</a></label>
 				<div class="invalid-feedback">You must agree before you will be given an account.</div>
 			</div>
 		</div>
@@ -46,6 +46,7 @@
 	<div data-ng-show="account_not_created">
 		<div class="alert alert-danger" role="alert">
 			<p>The account creation process failed.</p>
+			<p data-ng-show="reason" data-ng-bind-html="reason"></p>
 		</div>
 	</div>
 </div>

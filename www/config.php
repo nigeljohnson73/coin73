@@ -44,6 +44,10 @@ $token_timeout_hours = 24;
 $recaptcha_site_key = "";
 $recaptcha_secret_key = "";
 
+// Used to validate passwrods for users of the site. This says at least 8 chars long, at least
+// 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
+$valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";
+
 // This is the configuration for GMail SMTP. The username is generally your username and your
 // password is an app password you need to set up. See the README.md file for more info.
 $smtp_server = "smtp.gmail.com";

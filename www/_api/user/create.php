@@ -1,4 +1,6 @@
 <?php
+// This api is called when the the user has requested a user creation providing username/password, toc approval as well as recaptcha details in $_POST
+//
 $ret = startJsonResponse ();
 
 echo "ARGS:\n";
@@ -6,45 +8,72 @@ print_r ( $args );
 echo "_POST[]:\n";
 print_r ( $_POST );
 
-$token = $_POST ['token'];
-$action = $_POST ['action'];
-
 $success = false;
-$message = "User cannot be created\n";
-// use the reCAPTCHA PHP client library for validation
-$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-$resp = $recaptcha->setExpectedAction ( $action )->setScoreThreshold ( 0.5 )->verify ( $token, $_SERVER ['REMOTE_ADDR'] );
+$message = "";
 
-// verify the response
-if ($resp->isSuccess ()) {
-	echo "Loading data into user array\n";
-	$user = array ();
-	$store = new UserStore ();
-	$fields = $store->getDataFields ();
-	$fields [] = $store->getKeyField ();
-	foreach ( $fields as $k ) {
-		if (isset ( $_POST [$k] )) {
-			$user [$k] = $_POST [$k];
+if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["email"] ) && isset ( $_POST ["password"] ) && isset ( $_POST ["accept_toc"] )) {
+	global $valid_password_regex;
+	if (! $_POST ["accept_toc"]) {
+		$message = "User creation failed";
+		$ret->reason = "Not sure how it happened, but you still have to accept the terms of use";
+	} else if (filter_var ( $_POST ["email"], FILTER_VALIDATE_EMAIL ) === false) {
+		$message = "User creation failed";
+		$ret->reason = "Not sure how it happened, but the email address you provided seems to be invalid";
+	} else if (preg_match ( "/".$valid_password_regex."/", $_POST ["password"] ) === false) {
+		$message = "User creation failed";
+		$ret->reason = "Not sure how it happened, but the password you provided seems to be invalid";
+	} else {
+
+		// use the reCAPTCHA PHP client library for validation
+		$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
+		$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
+
+		// verify the response
+		if ($resp->isSuccess ()) {
+			echo "Loading data into user array\n";
+			$user = array ();
+			$store = new UserStore ();
+			$fields = $store->getDataFields ();
+			$fields [] = $store->getKeyField ();
+			foreach ( $fields as $k ) {
+				if (isset ( $_POST [$k] )) {
+					$user [$k] = $_POST [$k];
+				}
+			}
+
+			$user = $store->insert ( $user );
+			if (is_array ( $user )) {
+				$ret->challenge = $store->revalidateUser ( $user ["email"] );
+				ksort ( $user );
+				echo "Created user: \n";
+				print_r ( $user );
+				$success = strlen ( $ret->challenge );
+				if ($success) {
+					$message = "User created successfuly\n";
+				} else {
+					$message = "User creation failed\n";
+					$ret->reason = "The user setup failed - The Multifactor process could not complete";
+				}
+			} else {
+				$message = "User creation failed\n";
+				$ret->reason = "The user setup failed - Looks like a database issue";
+			}
+			// $ret->words = $cwords;
+		} else {
+			echo "Google says no:\n";
+			print_r ( $resp->getErrorCodes () );
+			$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 		}
 	}
-
-	$user = $store->insert ( $user );
-	$success = is_array ( $user );
-	if ($success) {
-		$ret->challenge = $store->revalidateUser ( $user ["email"] );
-		ksort ( $user );
-		echo "Created user: \n";
-		print_r ( $user );
-		$message = "User successfully created\n";
-	} else {
-		$message = "User creation failed\n";
-	}
-	// $ret->words = $cwords;
 } else {
-	echo "Google says:\n";
-	print_r ( $resp->getErrorCodes () );
+	$message = "Request is not complete\n";
+	$ret->reason = "The validation request data was invalid - seek an administrator";
 }
-sleep ( 3 );
+
+if (! $success) {
+	global $api_failure_delay;
+	sleep ( $api_failure_delay );
+}
 
 endJsonResponse ( $response, $ret, $success, $message );
 ?>

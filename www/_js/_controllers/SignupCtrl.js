@@ -1,4 +1,4 @@
-app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
+app.controller('SignupCtrl', ["$scope", "$sce", "apiSvc", function($scope, $sce, apiSvc) {
 
 	$scope.submitting = false;
 	$scope.account_created = false;
@@ -6,7 +6,6 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 	$scope.email_valid = false;
 	$scope.password_valid = false;
 	$scope.password_verify_valid = false;
-	$scope.accept_toc = false;
 	$scope.submittable = false;
 	$scope.password_verify = "";
 	$scope.challenge = "WELCOME"; // The server generated Poor mans MFA key
@@ -15,6 +14,7 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 	$scope.tx = {};
 	$scope.tx.email = "";
 	$scope.tx.password = "";
+	$scope.tx.accept_toc = "";
 	$scope.tx.token = "";
 	$scope.tx.action = recaptcha_action;
 	grecaptcha.ready(function() {
@@ -35,6 +35,8 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 				if (data.success) {
 					$scope.challenge = data.challenge;
 				}
+				$scope.reason = $sce.trustAsHtml(data.reason);
+
 				if (data.message.length) {
 					toast(data.message);
 				}
@@ -46,7 +48,7 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 	};
 
 	$scope.checkValidation = function() {
-		$scope.submittable = $scope.email_valid && $scope.password_valid && $scope.password_verify_valid && $scope.accept_toc;
+		$scope.submittable = $scope.email_valid && $scope.password_valid && $scope.password_verify_valid && $scope.tx.accept_toc;
 		//		console.log("************************************************************");
 		//		console.log("Email valid:", $scope.tx.email, $scope.email_valid);
 		//		console.log("Password valid:", $scope.tx.password, $scope.password_valid);
@@ -59,7 +61,7 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 		$scope.checkValidation();
 	};
 	$scope.passwordValidate = function() {
-		var ok_password = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");;
+		var ok_password = new RegExp("{{VALID_PASSWORD_REGEX}}");
 		$scope.password_valid = $scope.tx.password && ok_password.test($scope.tx.password);
 		$scope.checkValidation();
 	};

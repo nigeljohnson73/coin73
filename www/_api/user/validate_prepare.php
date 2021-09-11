@@ -47,7 +47,7 @@ if (isset ( $_POST ["payload"] )) {
 		}
 	} else {
 		echo "Unable to find nonce\n";
-		$ret->reason = "Validation request is not valid (Maybe you have used it already). Please <a href='/validate'>start the revalidation process</a> again.";
+		$ret->reason = "Validation request is not valid (Maybe you have used the email link already). Please <a href='/validate'>start the revalidation process</a> again.";
 	}
 } else {
 	echo "no payload sent - bad bot!!!\n";

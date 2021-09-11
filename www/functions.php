@@ -111,6 +111,11 @@ function mfaWordCount() {
 	return $mfa_word_count;
 }
 
+function validPasswordRegex() {
+	global $valid_password_regex;
+	return $valid_password_regex;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
@@ -131,6 +136,7 @@ function processSendableFile($str) {
 	$str = str_replace ( "{{TOKEN_TIMEOUT_HOURS}}", tokenTimeoutHours (), $str );
 	$str = str_replace ( "{{REVALIDATION_PERIOD_DAYS}}", revalidationPeriodDays (), $str );
 	$str = str_replace ( "{{MFA_WORD_COUNT}}", mfaWordCount (), $str );
+	$str = str_replace ( "{{VALID_PASSWORD_REGEX}}", validPasswordRegex (), $str );
 	return $str;
 }
 
