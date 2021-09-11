@@ -32,12 +32,14 @@ $routes ["/merch"] = __DIR__ . "/_pages/merch.php";
 $routes ["/signup"] = __DIR__ . "/_pages/signup.php";
 $routes ["/validate"] = __DIR__ . "/_pages/validate.php";
 $routes ["/validate/{payload}"] = __DIR__ . "/_pages/validate.php";
-$routes ["/test"] = __DIR__ . "/_pages/test.php";
+$routes ["/recover"] = __DIR__ . "/_pages/recover.php";
+$routes ["/recover/{payload}"] = __DIR__ . "/_pages/recover.php";
 $routes ["/wiki"] = __DIR__ . "/_pages/wiki.php";
 $routes ["/wiki/{page}"] = __DIR__ . "/_pages/wiki.php";
 $routes ["/wiki/{page}/{sub_page}"] = __DIR__ . "/_pages/wiki.php";
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // Surely this is enough
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}/{sub_sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // No, really, this *is* enough
+//$routes ["/test"] = __DIR__ . "/_pages/test.php";
 
 foreach ( array_keys ( $routes ) as $p ) {
 	$app->get ( $p, function (Request $request, Response $response, $args) {
@@ -133,6 +135,9 @@ $apis ["/app/user/create"] = __DIR__ . "/_api/user/create.php";
 $apis ["/app/user/validate/request"] = __DIR__ . "/_api/user/validate_request.php";
 $apis ["/app/user/validate/prepare"] = __DIR__ . "/_api/user/validate_prepare.php";
 $apis ["/app/user/validate"] = __DIR__ . "/_api/user/validate.php";
+$apis ["/app/user/recover/request"] = __DIR__ . "/_api/user/recover_request.php";
+$apis ["/app/user/recover/prepare"] = __DIR__ . "/_api/user/recover_prepare.php";
+$apis ["/app/user/recover"] = __DIR__ . "/_api/user/recover.php";
 // $apis ["/app/user/prevalidate/{payload}"] = __DIR__ . "/_api/user/prevalidate.php";
 // $apis ["/app/user/validate/{guid}/{challenge}"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}"] = __DIR__ . "/_api/user/read.php";

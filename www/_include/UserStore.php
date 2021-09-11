@@ -24,7 +24,7 @@ class UserStore extends DataStore {
 		$this->addField ( "recovery_nonce", "String", true ); // This exists if are waiting on an email reponse to the recovery request
 		$this->addField ( "recovery_data", "String" ); // This is the validation string array that will hold the choices - lock the account while this is processing
 		$this->addField ( "locked", "Integer", true ); // the timestamp of the locking of this account. X days after this, funds will be re-distributed, cleared on account recovery
-		
+
 		$this->init ();
 	}
 
@@ -38,19 +38,29 @@ class UserStore extends DataStore {
 		return ($data) ? ($data->getData ()) : ($data);
 	}
 	
+	public function findItemByRecoveryNonce($key) {
+		$gql = "SELECT * FROM " . $this->kind . " WHERE recovery_nonce = @key";
+		$data = $this->obj_store->fetchOne ( $gql, [
+				'key' => $key
+		] );
+		// echo "UserStore::findItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
+		// echo " '$gql'\n";
+		return ($data) ? ($data->getData ()) : ($data);
+	}
+	
 	public function findItemByGuid($key) {
 		$gql = "SELECT * FROM " . $this->kind . " WHERE guid = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [
+		$data = $this->obj_store->fetchOne ( $gql, [ 
 				'key' => $key
 		] );
 		// echo "UserStore::findItemByGuid('guid'=>'" . $key . "')\n";
 		// echo " '$gql'\n";
 		return ($data) ? ($data->getData ()) : ($data);
 	}
-	
+
 	public function insert($arr) {
-		$arr["email"] = strtolower($arr["email"]);
-		
+		$arr ["email"] = strtolower ( $arr ["email"] );
+
 		$password = $arr ["password"];
 		$arr ["password"] = "";
 		echo "UserStore::insert()\n";
@@ -169,14 +179,13 @@ class UserStore extends DataStore {
 		$user ["validation_reminded"] = 0;
 		$user ["validation_requested"] = ( int ) timestampNow ();
 		$user ["validation_data"] = json_encode ( $validation );
-		
+
 		$recovery_url = $www_host . "recover";
 		$validation_url = $www_host . "validate";
 		$payload_url = $validation_url . "/"/*"?payload=" */. $user ["validation_nonce"];
 		$subject = "Account validation request";
 		$body = "";
-		$body .= "Your username and password were used to request an account activation or validation. In order to complete this request, you will need the challenge word that was shown on the screen when the request was made.\n\n";
-		$body .= "You will also need to head on over to [the revalidation page](" . $payload_url . ").\n\n";
+		$body .= "This account has requested an account activation or validation. In order to complete this request please head on over to [the revalidation page](" . $payload_url . ").\n\n";
 		$body .= "If you cannot remember the challenge word you were shown, you should probably [validate your account](" . $validation_url . ") again.\n\n";
 		$body .= "If you did not make this request, then you should probably secure your account by [resetting your password](" . $recovery_url . ").";
 
@@ -189,6 +198,41 @@ class UserStore extends DataStore {
 			}
 		} else {
 			echo "UserStore::revalidateUser('$email'): Failed to send email\n";
+		}
+		return false;
+	}
+
+	public function recoverUser($email) {
+		global $www_host;
+
+		$user = $this->getItemById ( $email );
+		if (! $user) {
+			echo "UserStore::recovereUser('$email'): Unable to find user\n";
+			return false;
+		}
+		$validation = $this->generateMfa ();
+		print_r ( $validation );
+		$user ["recovery_nonce"] = GUIDv4 ();
+		$user ["recovery_requested"] = ( int ) timestampNow ();
+		$user ["recovery_data"] = json_encode ( $validation );
+
+		$recovery_url = $www_host . "recover";
+		$payload_url = $recovery_url . "/" . $user ["recovery_nonce"];
+		$subject = "Account recovery request";
+		$body = "";
+		$body .= "This account has requested an account recovery. In order to complete this request please head on over to [the recovery page](" . $payload_url . ").\n\n";
+		$body .= "If you cannot remember the challenge word you were shown, you should probably [validate your account](" . $recovery_url . ") again.\n\n";
+		$body .= "If you did not make this request, then you you can ignore this email, and apologies for interfering with your day.";
+
+		if (sendEmail ( $user ["email"], $subject, $body )) {
+			if ($this->update ( $user )) {
+				echo "UserStore::recovereUser('$email'): Sucessfully requested\n";
+				return $validation->expect;
+			} else {
+				echo "UserStore::recovereUser('$email'): Failed to save challenge\n";
+			}
+		} else {
+			echo "UserStore::recovereUser('$email'): Failed to send email\n";
 		}
 		return false;
 	}

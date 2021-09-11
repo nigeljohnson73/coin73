@@ -63,7 +63,7 @@ echo trim ( $str );
 		</div>
 		<div data-ng-show="validation_failure">
 			<div class="alert alert-danger" role="alert">
-				<p>Failure: coming soon</p>
+				<p>Validation process failed</p>
 				<p data-ng-show="reason" data-ng-bind-html="reason"></p>
 			</div>
 		</div>
