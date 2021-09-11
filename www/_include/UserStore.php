@@ -212,6 +212,7 @@ class UserStore extends DataStore {
 		}
 		$validation = $this->generateMfa ();
 		print_r ( $validation );
+		$user ["locked"] = timestampNow();
 		$user ["recovery_nonce"] = GUIDv4 ();
 		$user ["recovery_requested"] = ( int ) timestampNow ();
 		$user ["recovery_data"] = json_encode ( $validation );

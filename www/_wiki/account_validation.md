@@ -4,7 +4,7 @@ You need a way of securely accessing your account. This is a centralised blockch
 
 ## How does it work
 
-When the process is started, you are presented with a key word on screen that you will need in order to complete the validation. You will be sent an email with a link that you will need to follow to complete the process. The link in this email will only be valid for {{TOKEN_TIMEOUT_HOURS}} hours, and once you click it, it will expire immediately afterwards. The page you will be presented with will have {{MFA_WORD_COUNT}} buttons, one of which will show the key word you were provided with and you should press that button. All being well, that's it, all done.
+When the process is started, you are asked for your email address and password. This is to ensure it really is you. Once the request is setup, you are presented with a key word on screen that you will need in order to complete the validation. You will be sent an email with a link that you will need to follow to complete the process. The link in this email will only be valid for {{TOKEN_TIMEOUT_HOURS}} hours, and once you click it, it will expire immediately afterwards. The page you will be presented with will have {{MFA_WORD_COUNT}} buttons, one of which will show the key word you were provided with and you should press that button. All being well, that's it, all done.
 
 If you follow the link in the email, that link will no longer be valid.
 

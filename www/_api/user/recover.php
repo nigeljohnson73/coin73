@@ -34,9 +34,11 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$success = $_POST ["challenge"] == $expect;
 
 				// $user ["recovered"] = timestampNow ();
+				$user ["locked"] = 0;
 				$user ["recovery_requested"] = 0;
 				$user ["recovery_nonce"] = "";
 				$user ["recovery_data"] = "";
+				
 				$user = $store->replace ( $user );
 
 				if (is_array ( $user )) {
