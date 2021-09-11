@@ -69,9 +69,10 @@ class UserStore extends DataStore {
 		echo "UserStore::insert() - passed password: '" . $password . "'\n";
 		$arr ["guid"] = GUIDv4 ();
 		$arr ["created"] = ( int ) timestampNow ();
-		$arr ["locaked"] = 0;
+		$arr ["locked"] = 0;
 		$arr ["private_key"] = "";
 		$arr ["public_key"] = "";
+		$arr ["balance"] = 0;
 		$arr ["validated"] = 0; // timestamp
 		$arr ["validation_requested"] = 0; // timestamp
 		$arr ["validation_reminded"] = 0; // timestamp
@@ -80,7 +81,7 @@ class UserStore extends DataStore {
 		$arr ["recovery_requested"] = 0; // timestamp
 		$arr ["recovery_nonce"] = "";
 		$arr ["recovery_data"] = "";
-
+		
 		$arr = parent::insert ( $arr );
 		if (! is_array ( $arr )) {
 			echo "UserStore::insert() - insert of base user failed\n";

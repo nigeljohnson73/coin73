@@ -43,7 +43,7 @@ function getProjectId() {
 	return $project_id;
 }
 
-$data_namespace = "";
+$data_namespace = "production";
 
 // Overwritten if we are @locahost
 function getDataNamespace() {

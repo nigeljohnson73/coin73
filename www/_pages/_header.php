@@ -1,4 +1,5 @@
 <?php
+session_id(getDataNamespace());
 session_start ();
 startPage ();
 ?>
