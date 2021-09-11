@@ -14,7 +14,7 @@ $message = "Unable to prepare validation";
 
 $store = new UserStore ();
 if (isset ( $_POST ["payload"] )) {
-	$user = $store->findItemByValidationNonce ( $_POST ["payload"] );
+	$user = $store->getItemByValidationNonce ( $_POST ["payload"] );
 	if ($user) {
 		// Invalidate this request
 		$user ["validation_nonce"] = "";

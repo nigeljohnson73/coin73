@@ -28,7 +28,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 
 		if ($resp->isSuccess ()) {
 			$store = new UserStore ();
-			$user = $store->findItemByGuid ( @$_POST ["guid"] );
+			$user = $store->getItemByGuid ( @$_POST ["guid"] );
 			if (is_array ( $user )) {
 				$expect = json_decode ( $user ["recovery_data"] )->expect;
 				$success = $_POST ["challenge"] == $expect;

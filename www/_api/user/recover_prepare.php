@@ -14,7 +14,7 @@ $message = "Unable to prepare recovery";
 
 $store = new UserStore ();
 if (isset ( $_POST ["payload"] )) {
-	$user = $store->findItemByRecoveryNonce ( $_POST ["payload"] );
+	$user = $store->getItemByRecoveryNonce ( $_POST ["payload"] );
 	if ($user) {
 		// Invalidate this request
 		$user ["recovery_nonce"] = "";

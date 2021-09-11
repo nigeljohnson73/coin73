@@ -28,32 +28,32 @@ class UserStore extends DataStore {
 		$this->init ();
 	}
 
-	public function findItemByValidationNonce($key) {
+	public function getItemByValidationNonce($key) {
 		$gql = "SELECT * FROM " . $this->kind . " WHERE validation_nonce = @key";
 		$data = $this->obj_store->fetchOne ( $gql, [
 				'key' => $key
 		] );
-		// echo "UserStore::findItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
+		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
 		// echo " '$gql'\n";
 		return ($data) ? ($data->getData ()) : ($data);
 	}
 	
-	public function findItemByRecoveryNonce($key) {
+	public function getItemByRecoveryNonce($key) {
 		$gql = "SELECT * FROM " . $this->kind . " WHERE recovery_nonce = @key";
 		$data = $this->obj_store->fetchOne ( $gql, [
 				'key' => $key
 		] );
-		// echo "UserStore::findItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
+		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
 		// echo " '$gql'\n";
 		return ($data) ? ($data->getData ()) : ($data);
 	}
 	
-	public function findItemByGuid($key) {
+	public function getItemByGuid($key) {
 		$gql = "SELECT * FROM " . $this->kind . " WHERE guid = @key";
 		$data = $this->obj_store->fetchOne ( $gql, [ 
 				'key' => $key
 		] );
-		// echo "UserStore::findItemByGuid('guid'=>'" . $key . "')\n";
+		// echo "UserStore::getItemByGuid('guid'=>'" . $key . "')\n";
 		// echo " '$gql'\n";
 		return ($data) ? ($data->getData ()) : ($data);
 	}
