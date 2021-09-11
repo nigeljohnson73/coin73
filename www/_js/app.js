@@ -125,7 +125,7 @@ $(document).ready(function() {
 	setTimeout(function() {
 		$("#page-loading").hide();
 		$("#page-loaded").removeClass("d-none").show();
-	}, 50);
+	}, 500);
 
 	//toast("Application has loaded sucessfully!!");
 });

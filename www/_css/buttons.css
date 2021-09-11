@@ -2,6 +2,7 @@
    hover %: 130, grad %: 160, text: #dddddd
    hilight %: 200, grad %: 160, text: #ffffff
    disabled %: 200, text: #777777 */
+a.btn-custom,
 .btn-custom {
 	color: #ffffff;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
@@ -20,7 +21,8 @@
 	margin:5px;
 }
 
-.btn-custom:active, .btn-custom:focus, .btn-custom:hover {
+a.btn-custom:active, a.btn-custom:focus, a.btn-custom:hover,
+.btn.btn-custom:active, .btn.btn-custom:focus, .btn.btn-custom:hover {
 	color: #dddddd;
 	background-image: -moz-linear-gradient(top, #4d00ac, #7b00ff);
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#4d00ac), to(#7b00ff));
@@ -31,7 +33,8 @@
 	*background-color: #7b00ff;
 }
 
-.btn-custom.highlighted {
+a.btn-custom.highlighted,
+.btn.btn-custom.highlighted {
 	color: #ffffff;
 	background-image: -moz-linear-gradient(top, #7600ff, #bd00ff);
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#7600ff), to(#bd00ff));
@@ -42,7 +45,7 @@
 	*background-color: #bd00ff;
 }
 
-.btn-custom.highlighted:hover {
+a.btn-custom.highlighted:hover {
 	color: #ffffff;
 	background-image: -moz-linear-gradient(top, #bd00ff, #7600ff);
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#bd00ff), to(#7600ff));

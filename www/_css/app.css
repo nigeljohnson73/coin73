@@ -1,5 +1,5 @@
 body {
-	font: 400 15px Lato, sans-serif;
+ 	font: 400 15px 'Montserrat', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
@@ -193,4 +193,9 @@ nav {
 .wiki p.updated {
 	color: #ccc;
 	margin-bottom:0px;
+}
+
+p.user-details {
+ 	font: 400 15px 'Roboto', sans-serif;
+	margin:0px;
 }

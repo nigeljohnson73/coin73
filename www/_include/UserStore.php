@@ -14,6 +14,7 @@ class UserStore extends DataStore {
 		$this->addField ( "password", "String" );
 		$this->addField ( "private_key", "String" );
 		$this->addField ( "public_key", "String", true ); // indexed for wallet management
+		$this->addField ( "balance", "Float"); 
 		$this->addField ( "created", "Integer", true ); // timestamp to denote creation - birthdays etc ??? :D
 		$this->addField ( "validated", "Integer", true ); // Send validation request if this is older than X days and both validation_reminded and validation_requested are 0. Set this when validate suceeds
 		$this->addField ( "validation_reminded", "Integer", true ); // Set by the system when we are approaching the validation window

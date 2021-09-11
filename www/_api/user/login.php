@@ -8,8 +8,8 @@ echo "ARGS:\n";
 print_r ( $args );
 echo "_POST[]:\n";
 print_r ( $_POST );
-echo "_COOKIE[]:\n";
-print_r ( _COOKIE );
+echo "_SESSION[]:\n";
+print_r ( $_SESSION );
 
 $success = false;
 $message = "";
@@ -17,7 +17,7 @@ $message = "";
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["email"] ) && isset ( $_POST ["password"] ) && isset ( $_POST ["accept_toc"] )) {
 	global $valid_password_regex;
 	if (! $_POST ["accept_toc"]) {
-		$message = "User creation failed";
+		$message = "User login failed";
 		$ret->reason = "Not sure how it happened, but you still have to accept the terms of use";
 	} else if (filter_var ( $_POST ["email"], FILTER_VALIDATE_EMAIL ) === false) {
 		$message = "User creation failed";
