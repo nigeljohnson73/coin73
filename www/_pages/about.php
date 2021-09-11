@@ -3,6 +3,7 @@
 <div class="container-fluid text-center" data-ng-controller="AboutCtrl">
 	<h1>About this app</h1>
 	<p>Coming soon.</p>
+	<p>More details and stuff about what's going will probably be on <a href="/wiki">the wiki</a>.</p>
 	<div class="about-data">
 		<div class="row">
 			<div class="col-6 text-end fw-bold">App version:</div>

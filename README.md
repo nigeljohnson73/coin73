@@ -4,21 +4,23 @@ The codename for Nigels new Blockchain. The name will be changing changing but i
 
 ## Overview
 
-The project is a ground up implementation of a secure centralised block chain, supporting a crypto currency and some useful stuff in the chain (to be developed later - maybe NFT, maybe research data, don't know yet). I was originally inspired by [Duino-Coin](https://github.com/revoxhere/duino-coin) and so some of the core concepts are from there as well as trying to build on some of the more mainstream ideas from Bitcoin and other 'regular' Blockchains are incorporated into the thinking here. In summary this is the direction I am hoping to take:
+COIN73 is a ground up implementation of a secure centralised block chain, supporting a crypto currency and some useful stuff in the chain (to be developed later - maybe NFT, maybe research data, don't know yet). I was originally inspired in part by [Duino-Coin](https://github.com/revoxhere/duino-coin), and I have also tried to build on some of the more mainstream ideas from Bitcoin and other 'regular' Blockchains. In summary this is the direction I am hoping to take:
 
  * Secure by design web portal for account management;
  * Periodic proof of life checks to ensure users still exist;
  * Automatic sideways load scaling that grows with the project;
  * Light-weight miner API and mining process;
  * If it's got a microcontroller on it, it should be able to mine;
- * Dual layer 'value' in the block chain - supporting ledgering blockchain and mining, but then something else as well.
- * Having some real dollar value/liquidity by 2026 (a 5 year plan) - feel free to donate and help keep the lights on.
-
-I also want to flatten the miner curve. In Bitcoin, Etherium etc, it's a race... the bigger your rig, the faster you can process stuff, the richer **you** get, the harder it is for everyone else to even get in the door. If you play nicely here, we're all friends and everyone benefits. If you violate the rules or try and scam the system, the centralised overlord will ignore you at best, or drive a karma bus at you: either way you'll be wasting your own energy.
+ * Dual layer 'value' - ledgering blockchain and mining, but then something else as well;
+ * Having some real dollar value/liquidity by 2026 (a 5 year plan).
+ 
+ On that last point, please feel free to donate and help keep the lights on.
+ 
+I also want to flatten the miner curve. In Bitcoin, Etherium etc, it's a race... the bigger your rig, the faster you can process stuff, the richer **you** get, and then the harder it is for everyone else to even get in the door. If you play nicely here, we're all friends and everyone benefits. If you violate the rules or try and scam the system, the centralised overlord will ignore you at best, or drive a karma bus at you: either way you'll be wasting your own energy.
 
 There are no claims of enviornmental friendliness, or favouring lower power devices - everyone can play. If you have a low power device that can process the work, then the rewards may be, relatively speaking, higher. Since there is no real money here, there will never be any 'profit'.
 
-This part of the project deals specifically with the centralised services. Mining will be a separate project coming along once the server stuff is stable.
+This project deals specifically with the centralised services. Mining will be a separate project coming along once the server stuff is stable.
 
 ## Things harmed in the making of this project
 

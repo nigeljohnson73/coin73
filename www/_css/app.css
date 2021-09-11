@@ -58,7 +58,6 @@ a {
 
 a:link, a:visited, a:link:active, a:visited:active {
 	color: #3b0084;
-	cursor: auto;
 	font-weight: 600;
 }
 
@@ -171,10 +170,6 @@ nav {
 
 .navbar-nav li:first-child {
 	border-left: 0px;
-}
-
-.navbar-nav li.nav-item a.nav-link {
-	cursor: pointer;
 }
 
 .navbar-nav li.nav-item.active a.nav-link {

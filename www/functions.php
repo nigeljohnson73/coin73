@@ -1,4 +1,5 @@
 <?php
+include_once (__DIR__ . "/vendor/autoload.php");
 
 // Poormans MFA like Microsoft
 $mfa_words = array ();

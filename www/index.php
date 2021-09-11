@@ -32,22 +32,46 @@ $routes ["/merch"] = __DIR__ . "/_pages/merch.php";
 $routes ["/signup"] = __DIR__ . "/_pages/signup.php";
 $routes ["/validate"] = __DIR__ . "/_pages/validate.php";
 $routes ["/test"] = __DIR__ . "/_pages/test.php";
+$routes ["/wiki"] = __DIR__ . "/_pages/wiki.php";
+$routes ["/wiki/"] = __DIR__ . "/_pages/wiki.php"; // should I really do this?? bad request
+$routes ["/wiki/{page}"] = __DIR__ . "/_pages/wiki.php";
 
 foreach ( array_keys ( $routes ) as $p ) {
-	$app->get ( $p, function (Request $request, Response $response) {
+	$app->get ( $p, function (Request $request, Response $response, $args) {
 		global $routes;
 		$uri = $request->getUri ()->getPath ();
-		if (isset ( $routes [$uri] )) {
-			ob_start ();
-			include ($routes [$uri]);
-			$c = ob_get_contents ();
-			ob_end_clean ();
-			$response->getBody ()->write ( $c );
+		// See if any of the api keys expand into the URI I got passed as
+		foreach ( $routes as $k => $v ) {
+			foreach ( $args as $ak => $av ) {
+				$k = str_replace ( "{" . $ak . "}", $av, $k );
+			}
+			if ($uri == $k) {
+				$include = $v;
+			}
+		}
+		if (strlen ( $include )) {
+			include ($include);
+			return $response;
 		} else {
 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
 			return $response->withStatus ( 404 );
 		}
-		return $response;
+		
+		
+		
+// 		global $routes;
+// 		$uri = $request->getUri ()->getPath ();
+// 		if (isset ( $routes [$uri] )) {
+// 			ob_start ();
+// 			include ($routes [$uri]);
+// 			$c = ob_get_contents ();
+// 			ob_end_clean ();
+// 			$response->getBody ()->write ( $c );
+// 		} else {
+// 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
+// 			return $response->withStatus ( 404 );
+// 		}
+// 		return $response;
 	} );
 }
 
@@ -140,13 +164,27 @@ foreach ( array_keys ( $apis ) as $p ) {
 			include ($include);
 			return $response->withHeader ( "Content-Type", "application/json;charset=utf-8" );
 		} else {
-			logger ( "Could not find '" . $uri . "'" );
+			//logger ( "Could not find '" . $uri . "'" );
 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
 			return $response->withStatus ( 404 );
 		}
 		return $response; // Should never get here
 	} );
 }
+
+$app->map ( [
+		'GET',
+		'POST',
+		'PUT',
+		'DELETE',
+		'PATCH'
+], '/{routes:.+}', function ($request, $response) {
+	// Anything we didn't handle before. Tell the requestor we didn't find it.
+	$uri = $request->getUri ()->getPath ();
+	include(__DIR__ . "/_pages/404.php");
+	//$response->getBody ()->write ( "Could not find '" . $uri . "'" );
+	return $response->withStatus ( 404 );
+} );
 
 $app->run ();
 ?>

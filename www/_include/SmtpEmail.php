@@ -1,7 +1,4 @@
 <?php
-// include_once (__DIR__ . "/../www/functions.php");
-include_once (__DIR__ . "/../vendor/autoload.php");
-
 include_once (__DIR__ . "/../vendor/phpmailer/phpmailer/src/PHPMailer.php");
 include_once (__DIR__ . "/../vendor/phpmailer/phpmailer/src/SMTP.php");
 include_once (__DIR__ . "/../vendor/phpmailer/phpmailer/src/Exception.php");
@@ -10,28 +7,6 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use Michelf\MarkdownExtra;
 
-// $to = "nigel@nigeljohnson.net";
-
-// $subject = "Introduction email";
-
-// $txt = "";
-// $txt .= "# Hello and Welcome\n";
-// $txt .= "\n";
-// $txt .= "So today we embark on a new journey together. Are you as excited as I am? I hope you are.\n";
-// $txt .= "\n";
-// $txt .= "There are a couple of things you need to know:\n";
-// $txt .= "\n";
-// $txt .= " * I am just plain awesome\n";
-// $txt .= " * You are pretty awesome as well\n";
-// $txt .= "\n";
-// $txt .= "If you need to know more, a link will be along shortly.\n";
-
-// $attachments = null;
-// // $attachments = array ();
-// // $attachments ["newyork_streets.jpg"] = file_get_contents ( __DIR__ . "/www/_gfx/DSC_0115.jpg" );
-// // $attachments ["favicon.png"] = file_get_contents ( __DIR__ . "/www/_gfx/favicon.png" );
-
-// sendEmail ( $to, $subject, $txt, $attachments );
 function sendEmail($to, $subject, $txt, $attachments = null) {
 	global $smtp_server;
 	global $smtp_port;
