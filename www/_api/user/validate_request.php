@@ -1,40 +1,52 @@
 <?php
+// Called from the website by the user requesting a revalidation - providing username/password as well as recaptcha details in $_POST
+//
 $ret = startJsonResponse ();
-
-// Called from the website by the user requesting a revalidation - providing username/password as well as recaptcha in $_POST 
 
 echo "ARGS:\n";
 print_r ( $args );
 echo "_POST[]:\n";
-print_r ( $_POST );
-
-$token = $_POST ['token'];
-$action = $_POST ['action'];
+print_r ( @$_POST );
 
 $success = false;
-$message = "User cannot be created\n";
-// use the reCAPTCHA PHP client library for validation
-$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-$resp = $recaptcha->setExpectedAction ( $action )->setScoreThreshold ( 0.5 )->verify ( $token, $_SERVER ['REMOTE_ADDR'] );
+$message = ""; // Used by the toaster pop-up
+$ret->reason = ""; // Used in the page alerts
 
 // verify the response
-if ($resp->isSuccess ()) {
-	echo "Loading data into user array\n";
-	$store = new UserStore ();
-	$user = $store->authenticate ( @$_POST ["email"], @$_POST ["password"] );
-	$success = is_array ( $user );
-	if ($success) {
-		$ret->challenge = $store->revalidateUser ( $user ["email"] );
-		$message = "Validation request setup\n";
+if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["email"] ) && isset ( $_POST ["password"] )) {
+	// use the reCAPTCHA PHP client library for validation
+	$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
+	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
+
+	if ($resp->isSuccess ()) {
+		$store = new UserStore ();
+		$user = $store->authenticate ( @$_POST ["email"], @$_POST ["password"] );
+		if (is_array ( $user )) {
+			$ret->challenge = $store->revalidateUser ( $user ["email"] );
+			$success = strlen ( $ret->challenge );
+			if ($success) {
+				$message = "Validation request setup\n";
+			} else {
+				$message = "Validation request setup failed\n";
+				$ret->reason = "The request setup failed - The Multifactor process could not complete";
+			}
+		} else {
+			$message = "Unable to find user\n";
+			$ret->reason = "The request was invalid - your user details could not be authenticated";
+		}
 	} else {
-		$message = "Unable to find user\n";
+		echo "Google says no:\n";
+		print_r ( $resp->getErrorCodes () );
+		$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 	}
-	// $ret->words = $cwords;
 } else {
-	echo "Google says no:\n";
-	print_r ( $resp->getErrorCodes () );
-	sleep ( 3 );
+	$message = "Request is not complete\n";
+	$ret->reason = "The validation request data was invalid - seek an administrator";
 }
 
+if (! $success) {
+	global $api_failure_delay;
+	sleep ( $api_failure_delay );
+}
 endJsonResponse ( $response, $ret, $success, $message );
 ?>

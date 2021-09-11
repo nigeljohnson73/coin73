@@ -40,6 +40,7 @@ This project is built on the Google App Engine platform. The main idea here is t
  * [Slim Dispatch Handler v4](https://www.slimframework.com/docs/v4/)
  * [PHPMailer](https://github.com/PHPMailer/PHPMailer)
  * [PHP Markdown](https://github.com/michelf/php-markdown)
+ * [PHP Recaptcha](https://github.com/google/recaptcha)
  * [PHP Google DataStore API](https://github.com/tomwalder/php-gds)
  * [PHP Eliptic Curve Cryptography](https://github.com/phpecc/phpecc)
 

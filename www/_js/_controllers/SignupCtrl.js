@@ -9,16 +9,16 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 	$scope.accept_toc = false;
 	$scope.submittable = false;
 	$scope.password_verify = "";
-	$scope.signup_challenge = "WELCOME";
+	$scope.challenge = "WELCOME"; // The server generated Poor mans MFA key
 
-	var signup_action = "signup";
+	var recaptcha_action = "signup";
 	$scope.tx = {};
 	$scope.tx.email = "";
 	$scope.tx.password = "";
 	$scope.tx.token = "";
-	$scope.tx.action = signup_action;
+	$scope.tx.action = recaptcha_action;
 	grecaptcha.ready(function() {
-		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: signup_action }).then(function(token) {
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function(token) {
 			//logger("Got a RECAPTCHA token");
 			//logger(token);
 			$scope.tx.token = token;
@@ -26,14 +26,14 @@ app.controller('SignupCtrl', ["$scope", "apiSvc", function($scope, apiSvc) {
 	});
 	$scope.requestAccount = function() {
 		logger("SignupCtrl::requestAccount()");
-		$scope.submitting = true;
 		if ($scope.submittable) {
+			$scope.submitting = true;
 			apiSvc.callLocal("user/create", $scope.tx, function(data) {
 				logger(data);
 				$scope.account_created = data.success;
 				$scope.account_not_created = !$scope.account_created;
 				if (data.success) {
-					$scope.signup_challenge = data.challenge;
+					$scope.challenge = data.challenge;
 				}
 				if (data.message.length) {
 					toast(data.message);

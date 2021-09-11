@@ -55,7 +55,7 @@ foreach ( array_keys ( $apis ) as $p ) {
 		$app->post ( $uri, function (Request $request, Response $response, $args) {
 			global $apis;
 			// Get the uri we were called as, and strip off the root
-			$uri = $request->getUri ()->getPath ();
+			$uri = rtrim ( $request->getUri ()->getPath (), "/" );
 			$uri = preg_replace ( '/^\/api/', "", $uri );
 			// See if any of the api keys expand into the URI I got passed as
 			foreach ( $apis as $u => $p ) {
@@ -86,7 +86,7 @@ $app->map ( [
 		'PATCH'
 ], '/{routes:.+}', function ($request, $response) {
 	// Anything we didn't handle before. Tell the requestor we didn't find it.
-	$uri = $request->getUri ()->getPath ();
+	$uri = rtrim ( $request->getUri ()->getPath (), "/" );
 	$ret = startJsonResponse ();
 	endJsonResponse ( $response, $ret, false, "API not found '" . $uri . "'" );
 	return $response->withStatus ( 404 )->withHeader ( "Content-Type", "application/json;charset=utf-8" );

@@ -31,15 +31,21 @@ $routes ["/about"] = __DIR__ . "/_pages/about.php";
 $routes ["/merch"] = __DIR__ . "/_pages/merch.php";
 $routes ["/signup"] = __DIR__ . "/_pages/signup.php";
 $routes ["/validate"] = __DIR__ . "/_pages/validate.php";
+$routes ["/validate/{payload}"] = __DIR__ . "/_pages/validate.php";
 $routes ["/test"] = __DIR__ . "/_pages/test.php";
 $routes ["/wiki"] = __DIR__ . "/_pages/wiki.php";
-$routes ["/wiki/"] = __DIR__ . "/_pages/wiki.php"; // should I really do this?? bad request
 $routes ["/wiki/{page}"] = __DIR__ . "/_pages/wiki.php";
+$routes ["/wiki/{page}/{sub_page}"] = __DIR__ . "/_pages/wiki.php";
+$routes ["/wiki/{page}/{sub_page}/{sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // Surely this is enough
+$routes ["/wiki/{page}/{sub_page}/{sub_sub_page}/{sub_sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // No, really, this *is* enough
 
 foreach ( array_keys ( $routes ) as $p ) {
 	$app->get ( $p, function (Request $request, Response $response, $args) {
 		global $routes;
 		$uri = $request->getUri ()->getPath ();
+		if (strlen ( $uri ) > 1) {
+			$uri = rtrim ( $request->getUri ()->getPath (), "/" );
+		}
 		// See if any of the api keys expand into the URI I got passed as
 		foreach ( $routes as $k => $v ) {
 			foreach ( $args as $ak => $av ) {
@@ -56,22 +62,6 @@ foreach ( array_keys ( $routes ) as $p ) {
 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
 			return $response->withStatus ( 404 );
 		}
-		
-		
-		
-// 		global $routes;
-// 		$uri = $request->getUri ()->getPath ();
-// 		if (isset ( $routes [$uri] )) {
-// 			ob_start ();
-// 			include ($routes [$uri]);
-// 			$c = ob_get_contents ();
-// 			ob_end_clean ();
-// 			$response->getBody ()->write ( $c );
-// 		} else {
-// 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
-// 			return $response->withStatus ( 404 );
-// 		}
-// 		return $response;
 	} );
 }
 
@@ -140,8 +130,11 @@ $apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
 $apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
 // User management
 $apis ["/app/user/create"] = __DIR__ . "/_api/user/create.php";
-$apis ["/app/user/prevalidate/{payload}"] = __DIR__ . "/_api/user/prevalidate.php";
-$apis ["/app/user/validate/{guid}/{challenge}"] = __DIR__ . "/_api/user/validate.php";
+$apis ["/app/user/validate/request"] = __DIR__ . "/_api/user/validate_request.php";
+$apis ["/app/user/validate/prepare"] = __DIR__ . "/_api/user/validate_prepare.php";
+$apis ["/app/user/validate"] = __DIR__ . "/_api/user/validate.php";
+// $apis ["/app/user/prevalidate/{payload}"] = __DIR__ . "/_api/user/prevalidate.php";
+// $apis ["/app/user/validate/{guid}/{challenge}"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}"] = __DIR__ . "/_api/user/read.php";
 // $apis ["/app/user/{{id}}/validate"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}/authenticate"] = __DIR__ . "/_api/user/authenticate.php";
@@ -164,7 +157,7 @@ foreach ( array_keys ( $apis ) as $p ) {
 			include ($include);
 			return $response->withHeader ( "Content-Type", "application/json;charset=utf-8" );
 		} else {
-			//logger ( "Could not find '" . $uri . "'" );
+			// logger ( "Could not find '" . $uri . "'" );
 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
 			return $response->withStatus ( 404 );
 		}
@@ -172,7 +165,7 @@ foreach ( array_keys ( $apis ) as $p ) {
 	} );
 }
 
-$app->map ( [
+$app->map ( [ 
 		'GET',
 		'POST',
 		'PUT',
@@ -181,8 +174,8 @@ $app->map ( [
 ], '/{routes:.+}', function ($request, $response) {
 	// Anything we didn't handle before. Tell the requestor we didn't find it.
 	$uri = $request->getUri ()->getPath ();
-	include(__DIR__ . "/_pages/404.php");
-	//$response->getBody ()->write ( "Could not find '" . $uri . "'" );
+	include (__DIR__ . "/_pages/404.php");
+	// $response->getBody ()->write ( "Could not find '" . $uri . "'" );
 	return $response->withStatus ( 404 );
 } );
 

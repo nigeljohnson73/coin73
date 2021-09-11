@@ -40,7 +40,7 @@
 	<div data-ng-show="account_created">
 		<div class="alert alert-success" role="alert">
 			<p>An account has been created, and you will be receiving an email to complete the sign-up process. During that process, you will be asked to select a keyword. This is the keyword you will need:</p>
-			<h1 class="display-5">{{signup_challenge}}</h1>
+			<h1 class="display-5">{{challenge}}</h1>
 		</div>
 	</div>
 	<div data-ng-show="account_not_created">

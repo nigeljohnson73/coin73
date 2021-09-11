@@ -141,8 +141,11 @@ class DataStore {
 			}
 		}
 
+		//echo "DataStore::update() - Entity about to be upserted:\n";
+		//print_r($obj->getData ());
 		if ($this->obj_store->upsert ( $obj )) {
 			echo "DataStore::update() - Upsert failed\n";
+			// TODO: Should put the old object back
 			// true === failure. This seems to be the case. It returns `$arr_auto_id_required` in the RESTv1 Gateway? assume that's ok, and the positive test should be if that's false.
 		}
 		//echo "DataStore::update() - Entity updated\n";
@@ -176,8 +179,11 @@ class DataStore {
 			}
 		}
 
+		//echo "DataStore::replace() - Entity about to be upserted:\n";
+		//print_r($obj->getData ());
 		if ($this->obj_store->upsert ( $obj )) {
 			echo "DataStore::replace() - Upsert failed??\n";
+			// TODO: Should put the old object back
 			// true === failure. This seems to be the case. It returns `$arr_auto_id_required` in the RESTv1 Gateway? assume that's ok, and the positive test should be if that's false.
 		}
 		//echo "DataStore::replace() - Entity replaced\n";

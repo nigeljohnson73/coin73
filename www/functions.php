@@ -91,6 +91,26 @@ function getRecaptchaSecretKey() {
 	return $recaptcha_secret_key;
 }
 
+function actionGraceDays() {
+	global $action_grace_days;
+	return $action_grace_days;
+}
+
+function revalidationPeriodDays() {
+	global $revalidation_period_days;
+	return $revalidation_period_days;
+}
+
+function tokenTimeoutHours() {
+	global $token_timeout_hours;
+	return $token_timeout_hours;
+}
+
+function mfaWordCount() {
+	global $mfa_word_count;
+	return $mfa_word_count;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
@@ -99,12 +119,7 @@ function ob_print_r($what) {
 	return $c;
 }
 
-// $replaceable_array = array();
-// function addReplacebleField($key, $value) {
-// 	global $replaceable_array;
-// 	$replaceable_array[$key] = $value;
-// }
-// Transform data sent back in the app.js or app.css packing stuff
+// Transform data sent back in the app.js and app.css packing stuff or the wiki pages
 function processSendableFile($str) {
 	$str = str_replace ( "{{APP_NAME}}", getAppName (), $str );
 	$str = str_replace ( "{{API_HOST}}", getApiHost (), $str );
@@ -112,12 +127,10 @@ function processSendableFile($str) {
 	$str = str_replace ( "{{APP_DATE}}", getAppDate (), $str );
 	$str = str_replace ( "{{APP_VERSION}}", getAppVersion (), $str );
 	$str = str_replace ( "{{RECAPTCHA_SITE_KEY}}", getRecaptchaSiteKey (), $str );
-	// $str = str_replace ( "{{API_VERSION}}", getApiVersion (), $str );
-
-// 	global $replaceable_array;
-// 	foreach($replaceable_array as $key => $value) {
-// 		$str = str_replace ( "{{".$key."}}", $value, $str );
-// 	}
+	$str = str_replace ( "{{ACTION_GRACE_DAYS}}", actionGraceDays (), $str );
+	$str = str_replace ( "{{TOKEN_TIMEOUT_HOURS}}", tokenTimeoutHours (), $str );
+	$str = str_replace ( "{{REVALIDATION_PERIOD_DAYS}}", revalidationPeriodDays (), $str );
+	$str = str_replace ( "{{MFA_WORD_COUNT}}", mfaWordCount (), $str );
 	return $str;
 }
 
