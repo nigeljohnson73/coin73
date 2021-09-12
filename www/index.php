@@ -39,7 +39,8 @@ $routes ["/wiki/{page}"] = __DIR__ . "/_pages/wiki.php";
 $routes ["/wiki/{page}/{sub_page}"] = __DIR__ . "/_pages/wiki.php";
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // Surely this is enough
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}/{sub_sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // No, really, this *is* enough
-//$routes ["/test"] = __DIR__ . "/_pages/test.php";
+
+$routes ["/svg.php"] = __DIR__ . "/svg.php"; // Testing purposes for now
 
 foreach ( array_keys ( $routes ) as $p ) {
 	$app->get ( $p, function (Request $request, Response $response, $args) {

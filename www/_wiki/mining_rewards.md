@@ -6,7 +6,7 @@ In summary though, if you mine with the maximum number of miners ({{MINER_MAX_CO
 
 #### {{ACCOUNT_MINED_COINS_PER_DAY}}/day
 
-The rest of the page is dedicate to explaining how that works. While this may seem like a low number, please remember that this is an arbitary amount of a not-real currency that is designed for learning and social benefit, **NOT** for getting rich.
+While this may seem like a low number, please remember that this is an arbitary amount of a not-real currency that is designed for learning and social benefit, **NOT** for getting rich.
 
 ## Targets and limits
 
