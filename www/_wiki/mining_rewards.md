@@ -14,6 +14,8 @@ In order to attempt to ensure fairness for all, there is a targeted submission t
 
 You are also limited on the number of miners you can attach to your account. Each subsequent miner added is less efficient than the last one.
 
+Finally, the system is designed to target a mining rate of {{MINER_REWARD_TARGET_DAY}} coind per day.
+
 ## Submission time
 
 We will be referring to this graph which shows the submission time in seconds along the bottom, and the reward share along the side.
@@ -37,3 +39,15 @@ The maximum number of miners on an account is **{{MINER_MAX_COUNT}}**.
 Your first miner will be 100% efficient. Your second miner will be {{MINER_DEGREDATION_PERCENT}} less efficient that the first one. Your third miner will be {{MINER_DEGREDATION_PERCENT}} less efficient that the second one, all the way up to the maximum allowed.
 
 Having the maximum number of physical miners will be the same as having **{{MINER_PERCEIVED_MAX}}** actual miners.
+
+## Bringing it all together
+
+In order to get to the number of coins you will get, you need to factor in all of the above points. Lets take a look the maths.
+
+`total = mining_rate_per_day x average_submission_time x miner_efficency`
+
+Doing the substitution and you get:
+
+`total = {{MINER_REWARD_TARGET_DAY}} x {{MINER_SUBMIT_TARGET_REWARD_PERCENT}} x {{MINER_PERCEIVED_MAX}}`
+
+This gives you the {{ACCOUNT_MINED_COINS_PER_DAY}} coins per day shown at the top of the page. Bear in mind though, that your milage **WILL** vary due to the number of miners submitting on your account at any one time, as well as the submission times you actaully get, and the fact that to calcluate the rate per job you need to work out a fraction of that for the time you took.
