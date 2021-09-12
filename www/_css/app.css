@@ -1,12 +1,24 @@
 body {
- 	font: 400 15px 'Montserrat', sans-serif;
+	font: 400 15px 'Montserrat', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
+
 strong {
- 	font: 700 15px 'Montserrat', sans-serif;
+	font: 700 15px 'Montserrat', sans-serif;
 	line-height: 1.6em;
 	color: #666;
+}
+
+pre, code {
+	/* font: 400 15px 'Roboto', sans-serif; */
+	font: 400 15px 'Space Mono', monospace;
+}
+
+pre {
+	background-color: #ddd;
+	padding: 10px;
+	border-radius: 5px;
 }
 /*
 body {
@@ -123,7 +135,6 @@ strong.indicator {
 	color: #f00;
 }
 */
-
 .cookie-alert-holder {
 	position: relative;
 	z-index: 1000;
@@ -197,14 +208,15 @@ nav {
 
 .wiki p.updated {
 	color: #ccc;
-	margin-bottom:0px;
+	margin-bottom: 0px;
 }
 
 span.icon-popover {
-	cursor:pointer;
+	cursor: pointer;
 }
+
 p.user-details {
- 	/* font: 400 15px 'Roboto', sans-serif; */
+	/* font: 400 15px 'Roboto', sans-serif; */
 	font: 400 15px 'Space Mono', monospace;
-	margin:0px;
+	margin: 0px;
 }

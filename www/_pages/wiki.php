@@ -8,10 +8,10 @@ if (isset ( $args ["sub_page"] )) {
 	$fn .= "_" . strtolower ( $args ["sub_page"] );
 }
 if (isset ( $args ["sub_sub_page"] )) {
-	$fn .= "_" . strtolower ( $args ["sub_page"] );
+	$fn .= "_" . strtolower ( $args ["sub_sub_page"] );
 }
 if (isset ( $args ["sub_sub_sub_page"] )) {
-	$fn .= "_" . strtolower ( $args ["sub_page"] );
+	$fn .= "_" . strtolower ( $args ["sub_sub_sub_page"] );
 }
 $fn .= ".md";
 
@@ -24,7 +24,14 @@ if (! file_exists ( $fn )) {
 
 $md = processSendableFile ( file_get_contents ( $fn ) );
 $html = MarkdownExtra::defaultTransform ( $md );
+$is_api_doc = strpos(basename($fn), "api_") === 0;
+if($is_api_doc) {
+	echo "<div class='text-start'>";
+}
 echo $html;
+if($is_api_doc) {
+	echo "</div>";
+}
 
 $mt = 0;
 

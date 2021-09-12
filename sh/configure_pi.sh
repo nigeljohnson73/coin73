@@ -236,8 +236,8 @@ composer install
 ## Install crontab -entries to start the services
 echo "## Installing service startup in crontab"
 crontab -l | { cat; sudo bash -c 'cat' << EOF
-@reboot sleep 30 && screen -S api -L -Logfile /tmp/api.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8085 -t api"
-@reboot sleep 30 && screen -S www -L -Logfile /tmp/www.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8080 -t www www/router.php"
+@reboot sleep 30 && screen -S api -L -Logfile /tmp/api.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8085 -t api api/index.php"
+@reboot sleep 30 && screen -S www -L -Logfile /tmp/www.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8080 -t www www/index.php"
 EOF
 } | crontab -
 

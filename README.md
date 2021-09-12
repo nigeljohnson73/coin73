@@ -57,9 +57,9 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
  * Goto the main code directory in both terminals
  * `cd ~/git/coin73` 
  * In one window start a test server for the API service
- * `php -S localhost:8085 -t api`
+ * `php -S localhost:8085 -t api api/index.php`
  * In the other window, start the test server for the web service
- * `php -S localhost:8080 -t www www/router.php`
+ * `php -S localhost:8080 -t www www/index.php`
 
 ## Project URLs:
 

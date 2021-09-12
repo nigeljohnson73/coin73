@@ -116,34 +116,43 @@ function validPasswordRegex() {
 	return $valid_password_regex;
 }
 
-function minerRewardTargetPerDay() {
+// Allow for capitalism tiers
+function minerRewardTargetPerDay($wallet_id = null) {
 	global $miner_reward_target_day;
 	return $miner_reward_target_day;
 }
 
-function minerSubmitTargetSeconds() {
+// Allow for capitalism tiers
+function minerSubmitTargetSeconds($wallet_id = null) {
 	global $miner_submit_target_sec;
 	return $miner_submit_target_sec;
 }
 
-function minerSubmitMinSeconds() {
-	global $miner_submit_target_sec;
-	return $miner_submit_target_sec / 2;
+// Allow for capitalism tiers
+function minerSubmitMinSeconds($wallet_id = null) {
+	return minerSubmitTargetSeconds ( $wallet_id ) / 2;
 }
 
-function minerSubmitMaxSeconds() {
-	global $miner_submit_target_sec;
-	return 2 * $miner_submit_target_sec;
+// Allow for capitalism tiers
+function minerSubmitMaxSeconds($wallet_id = null) {
+	return minerSubmitTargetSeconds ( $wallet_id ) * 2;
 }
 
-function minerEfficiencyDegradation() {
+// Allow for capitalism tiers
+function minerEfficiencyDegradation($wallet_id = null) {
 	global $miner_efficiency_degrade;
 	return $miner_efficiency_degrade;
 }
 
-function minerMaxCount() {
+// Allow for capitalism tiers
+function minerMaxCount($wallet_id = null) {
 	global $miner_max_count;
 	return $miner_max_count;
+}
+
+function minerDifficulty() {
+	global $miner_difficulty;
+	return $miner_difficulty;
 }
 
 function ob_print_r($what) {
@@ -313,7 +322,13 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 	$ret->status = $success ? "OK" : "FAIL";
 	$ret->console = $c;
 	$ret->message = $message;
-	$response->getBody ()->write ( json_encode ( $ret ) );
+
+	$resp = json_encode ( $ret );
+	if ($response) {
+		$response->getBody ()->write ( $resp );
+	} else {
+		echo $resp;
+	}
 }
 
 function startPage() {
