@@ -36,4 +36,4 @@ The maximum number of miners on an account is **{{MINER_MAX_COUNT}}**.
 
 Your first miner will be 100% efficient. Your second miner will be {{MINER_DEGREDATION_PERCENT}} less efficient that the first one. Your third miner will be {{MINER_DEGREDATION_PERCENT}} less efficient that the second one, all the way up to the maximum allowed.
 
-Having the maximum allowed miners will be the same as having **{{MINER_PERCEIVED_MAX}}** miners.
+Having the maximum number of physical miners will be the same as having **{{MINER_PERCEIVED_MAX}}** actual miners.
