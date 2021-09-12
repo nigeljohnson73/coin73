@@ -6,11 +6,11 @@ In summary though, if you mine with the maximum number of miners ({{MINER_MAX_CO
 
 #### {{ACCOUNT_MINED_COINS_PER_DAY}}/day
 
-The rest of the page is dedicate to explaining how that works.
+The rest of the page is dedicate to explaining how that works. While this may seem like a low number, please remember that this is an arbitary amount of a not-real currency that is designed for learning and social benefit, **NOT** for getting rich.
 
 ## Targets and limits
 
-In order to attempt to ensure fairness for all, there is a targeted submission time for jobs. This is kind of like Bitcoin where a new block is targeted to be mined in 10 minutes. In this implementation though, it is purely time based, no difficulty to fluctuate and scam/race/beat. The rewards per share are also targeted to mine a certain number of coins per day (assuming 100% efficiency - this is adjusted below). If you submit too early you don't get the best deal, and if you are way early, your work is just rejected. If you are a little late, then you are rewarded more for not breaking the servers, but if you are very late, your work is also rejected. This is discussed further below.
+In order to attempt to ensure fairness for all, there is a targeted submission time for jobs. This is kind of like Bitcoin where a new block is targeted to be mined in 10 minutes. In this implementation though, it is purely time based, no difficulty to fluctuate and scam/race/beat. The rewards per share are also targeted to mine a certain number of coins per day and adjusted based on factors discussed below. If you submit too early you don't get the best deal, and if you are way early, your work is just rejected. If you are a little late, then you are rewarded more for not breaking the servers, but if you are very late, your work is also rejected. This is discussed further below.
 
 You are also limited on the number of miners you can attach to your account. Each subsequent miner added is less efficient than the last one.
 
@@ -24,7 +24,7 @@ The target submission time is **{{MINER_SUBMIT_TARGET_SEC}}** seconds.
 
 If you submit a job in under half this time your job will be rejected. If you submit a job after twice this, your job will be rejected.
 
-As you can see, even submitting a job bang on time will not get the highest reward. In fact, the reward is only {{MINER_SUBMIT_TARGET_REWARD_PERCENT}}. This means that if you want to run on a very under powered device, then you can still get a reasonable reward, up to a point.
+As you can see, even submitting a job bang on time will not get the highest reward. In fact, the reward is only {{MINER_SUBMIT_TARGET_REWARD_PERCENT}}. This means that if you want to run on a very under powered and slow device, then you can still get a reasonable reward, up to a point.
 
 ## Miner efficiency
 
