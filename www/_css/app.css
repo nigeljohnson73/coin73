@@ -3,6 +3,11 @@ body {
 	line-height: 1.6em;
 	color: #666;
 }
+strong {
+ 	font: 700 15px 'Montserrat', sans-serif;
+	line-height: 1.6em;
+	color: #666;
+}
 /*
 body {
 	font: 400 15px Lato, sans-serif;
@@ -195,7 +200,11 @@ nav {
 	margin-bottom:0px;
 }
 
+span.icon-popover {
+	cursor:pointer;
+}
 p.user-details {
- 	font: 400 15px 'Roboto', sans-serif;
+ 	/* font: 400 15px 'Roboto', sans-serif; */
+	font: 400 15px 'Space Mono', monospace;
 	margin:0px;
 }

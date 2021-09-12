@@ -9,7 +9,9 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="alert alert-secondary" role="alert">
-						<p>Your Wallet ID will be used in any miners you set up</p>
+						<p>
+							Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span>
+						</p>
 						<p class="user-details wallet-id">{{user.public_key}}</p>
 					</div>
 				</div>
@@ -63,9 +65,7 @@
 				<img src="/gfx/ajax-loader-spinner.gif" alt="submitting" data-ng-show="submitting" />
 			</div>
 			<div class="col-12">
-				<br />
-				<a class="btn btn-custom" href="/signup">Signup</a>
-				<a class="btn btn-custom" href="/recover">Recover account</a>
+				<br /> <a class="btn btn-custom" href="/signup">Signup</a> <a class="btn btn-custom" href="/recover">Recover account</a>
 			</div>
 		</form>
 	</div>

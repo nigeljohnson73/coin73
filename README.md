@@ -29,6 +29,7 @@ This project is built on the Google App Engine platform. The main idea here is t
 ### General technologies
 
  * [Bootstrap v5.1](https://getbootstrap.com/docs/5.1)
+ * [Boostrap Icons 1.5](https://icons.getbootstrap.com/)
  * [AngularJS v1.8](https://code.angularjs.org/1.8.2/docs/tutorial)
  * [Google App Engine for PHP 7](https://cloud.google.com/appengine/docs/standard/php7/tutorials)
  * [Google DataStore](https://cloud.google.com/datastore)
