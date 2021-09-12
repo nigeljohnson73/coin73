@@ -26,7 +26,7 @@ $www_host = $api_CORS_origin."/";
 // you are offred several options. This defines how many options.
 $mfa_word_count = 5;
 
-// If an API fails, then we sohlud delay a bit so it cannot be flooded. This setting defines the
+// If an API fails, then we should delay a bit so it cannot be flooded. This setting defines the
 // waiting period in seconds
 $api_failure_delay = 3;
 
@@ -39,6 +39,18 @@ $action_grace_days = 7;
 
 // Any token created by the system will valid for this long.
 $token_timeout_hours = 24;
+
+// How many coins should be mined by a perfectly tailored single miner
+$miner_reward_target_day = 5;
+
+// The target submission time for each job
+$miner_submit_target_sec = 5;
+
+// how much should every subsequet miner degrade (0-1 as a percent);
+$miner_efficiency_degrade = 0.2;
+
+// how many miners are allowed on a generic account
+$miner_max_count = 5;
 
 // This is storage for the RECAPTCHA keys that are set up to the live domain, as well as localhost.
 $recaptcha_site_key = "";

@@ -116,6 +116,36 @@ function validPasswordRegex() {
 	return $valid_password_regex;
 }
 
+function minerRewardTargetPerDay() {
+	global $miner_reward_target_day;
+	return $miner_reward_target_day;
+}
+
+function minerSubmitTargetSeconds() {
+	global $miner_submit_target_sec;
+	return $miner_submit_target_sec;
+}
+
+function minerSubmitMinSeconds() {
+	global $miner_submit_target_sec;
+	return $miner_submit_target_sec / 2;
+}
+
+function minerSubmitMaxSeconds() {
+	global $miner_submit_target_sec;
+	return 2 * $miner_submit_target_sec;
+}
+
+function minerEfficiencyDegradation() {
+	global $miner_efficiency_degrade;
+	return $miner_efficiency_degrade;
+}
+
+function minerMaxCount() {
+	global $miner_max_count;
+	return $miner_max_count;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
@@ -137,7 +167,46 @@ function processSendableFile($str) {
 	$str = str_replace ( "{{REVALIDATION_PERIOD_DAYS}}", revalidationPeriodDays (), $str );
 	$str = str_replace ( "{{MFA_WORD_COUNT}}", mfaWordCount (), $str );
 	$str = str_replace ( "{{VALID_PASSWORD_REGEX}}", validPasswordRegex (), $str );
+	$str = str_replace ( "{{MINER_REWARD_TARGET_DAY}}", minerRewardTargetPerDay (), $str );
+	$str = str_replace ( "{{MINER_SUBMIT_TARGET_SEC}}", minerSubmitTargetSeconds (), $str );
+	$str = str_replace ( "{{MINER_MAX_COUNT}}", minerMaxCount (), $str );
+	$str = str_replace ( "{{MINER_SUBMIT_TARGET_REWARD_PERCENT}}", rtrim ( rtrim ( number_format ( (submissionReward ( minerSubmitTargetSeconds () )) * 100, 1 ), "0" ), "." ) . "%", $str );
+	$str = str_replace ( "{{MINER_DEGREDATION_PERCENT}}", rtrim ( rtrim ( number_format ( (minerEfficiencyDegradation ()) * 100, 1 ), "0" ), "." ) . "%", $str );
+	$str = str_replace ( "{{MINER_PERCEIVED_MAX}}", rtrim ( rtrim ( number_Format ( totalMinerEfficiency (), 2 ), "0" ), "." ), $str );
+	$str = str_replace ( "{{ACCOUNT_MINED_COINS_PER_DAY}}", rtrim ( rtrim ( number_Format ( totalMinedCoinsPerDay (), 2 ), "0" ), "." ), $str );
+
 	return $str;
+}
+
+// The target reward calcuation
+function submissionReward($s) {
+	$t = minerSubmitTargetSeconds ();
+	return 1 / (1 + exp ( - ($t - 2) * ($s - ($t - 1)) ));
+}
+
+// If you had $n miners, what is the effective actual mining amount
+function degradedMinerEfficiency($n) {
+	$delt = minerEfficiencyDegradation ();
+	if ($n == 1) {
+		return 1;
+	}
+	return degradedMinerEfficiency ( $n - 1 ) * (1 - $delt);
+}
+
+function totalMinerEfficiency() {
+	$tot = 0;
+	for($xx = 1; $xx <= minerMaxCount (); $xx ++) {
+		$tot += degradedMinerEfficiency ( $xx );
+	}
+	return $tot;
+}
+
+function totalMinedCoinsPerDay() {
+	$sub_reward = submissionReward ( minerSubmitTargetSeconds () );
+	$tot_efficiency = totalMinerEfficiency ();
+	$tot_coin = minerRewardTargetPerDay ();
+
+	return $tot_coin * $sub_reward * $tot_efficiency;
 }
 
 function directoryListing($dirname, $extensoes = null) {
@@ -152,7 +221,7 @@ function directoryListing($dirname, $extensoes = null) {
 	$files = array ();
 	$dir = @ opendir ( $dirname );
 	while ( $dir && false !== ($file = readdir ( $dir )) ) {
-		$matches = array ();
+		// $matches = array ();
 		if ($file != "." && $file != ".." && $file != ".svn") {
 			for($i = 0; $i < count ( $extensoes ); $i ++) {
 				if ($extensoes [$i] [0] == "*") {
@@ -469,6 +538,18 @@ function timestampAddDays($ts, $day) {
 	return timestampAdd ( $ts, numDays ( $day ) );
 }
 
+function imageCenteredString(&$img, $font, $xMin, $xMax, $y, $str, $col) {
+	$textWidth = imagefontwidth ( $font ) * strlen ( $str );
+	$xLoc = ($xMax - $xMin - $textWidth) / 2 + $xMin + $font;
+	imagestring ( $img, $font, $xLoc, $y, $str, $col );
+}
+
+function imageRightString(&$img, $font, $xMin, $xMax, $y, $str, $col) {
+	$textWidth = imagefontwidth ( $font ) * strlen ( $str );
+	$xLoc = ($xMax - $xMin - $textWidth) / 2 + $xMin + $font;
+	imagestring ( $img, $font, $xLoc, $y, $str, $col );
+}
+
 function graphData($package, $x = 260, $y = 80) {
 	global $DEBUG;
 
@@ -476,13 +557,54 @@ function graphData($package, $x = 260, $y = 80) {
 	$x_max = $package->x_max;
 	$x_major = isset ( $package->x_major ) ? ($package->x_major) : (0);
 	$x_minor = isset ( $package->x_minor ) ? ($package->x_minor) : (0);
+	$x_major_scaler = isset ( $package->x_major_scaler ) ? ($package->x_major_scaler) : (null);
+	$x_major_label = isset ( $package->x_major_label ) ? ($package->x_major_label) : ("");
 	$x_tgt = isset ( $package->x_tgt ) ? ($package->x_tgt) : (null);
 	$x_swt = isset ( $package->x_swt ) ? ($package->x_swt) : (0);
 	$y_min = $package->y_min;
 	$y_max = $package->y_max;
 	$y_major = isset ( $package->y_major ) ? ($package->y_major) : (0);
 	$y_minor = isset ( $package->y_minor ) ? ($package->y_minor) : (0);
+	$y_major_scaler = isset ( $package->y_major_scaler ) ? ($package->y_major_scaler) : (null);
+	$y_major_label = isset ( $package->y_major_label ) ? ($package->y_major_label) : ("");
 	$values = $package->values;
+
+	$background_color = (isset ( $package->background_color ) && is_array ( $package->background_color ) && (count ( $package->background_color ) == 3)) ? ($package->background_color) : ([ 
+			0x99,
+			0x99,
+			0x99
+	]);
+
+	$border_color = (isset ( $package->border_color ) && is_array ( $package->border_color ) && (count ( $package->border_color ) == 3)) ? ($package->border_color) : ([ 
+			0x99,
+			0x99,
+			0x99
+	]);
+	$line_color = (isset ( $package->line_color ) && is_array ( $package->line_color ) && (count ( $package->line_color ) == 3)) ? ($package->line_color) : ([ 
+			0x00,
+			0x99,
+			0x00
+	]);
+	$grid_major_color = (isset ( $package->grid_major_color ) && is_array ( $package->grid_major_color ) && (count ( $package->grid_major_color ) == 3)) ? ($package->grid_major_color) : ([ 
+			0x77,
+			0x77,
+			0x77
+	]);
+	$grid_minor_color = (isset ( $package->grid_minor_color ) && is_array ( $package->grid_minor_color ) && (count ( $package->grid_minor_color ) == 3)) ? ($package->grid_minor_color) : ([ 
+			0x88,
+			0x88,
+			0x88
+	]);
+	$sweet_color = (isset ( $package->sweet_color ) && is_array ( $package->sweet_color ) && (count ( $package->sweet_color ) == 3)) ? ($package->sweet_color) : ([ 
+			0xaa,
+			0xaa,
+			0x99
+	]);
+	$label_color = (isset ( $package->label_color ) && is_array ( $package->label_color ) && (count ( $package->label_color ) == 3)) ? ($package->label_color) : ([ 
+			0x33,
+			0x33,
+			0x33
+	]);
 
 	$img_width = $x;
 	$img_height = $y;
@@ -495,12 +617,13 @@ function graphData($package, $x = 260, $y = 80) {
 	// $font=imageLoadFont(dirname(__FILE__)."/../fonts/andalemo.ttf");
 	$font = 4;
 
-	$background_color = imagecolorallocate ( $img, 0x99, 0x99, 0x99 );
-	$border_color = imagecolorallocate ( $img, 0x99, 0x99, 0x99 );
-	$line_color = imagecolorallocate ( $img, 0x00, 0x99, 0x00 );
-	$grid_major_color = imagecolorallocate ( $img, 0x77, 0x77, 0x77 );
-	$grid_minor_color = imagecolorallocate ( $img, 0x90, 0x90, 0x90 );
-	$sweet_color = imagecolorallocate ( $img, 0xaa, 0xaa, 0x99 );
+	$background_color = imagecolorallocate ( $img, $background_color [0], $background_color [1], $background_color [2] );
+	$border_color = imagecolorallocate ( $img, $border_color [0], $border_color [1], $border_color [2] );
+	$line_color = imagecolorallocate ( $img, $line_color [0], $line_color [1], $line_color [2] );
+	$grid_major_color = imagecolorallocate ( $img, $grid_major_color [0], $grid_major_color [1], $grid_major_color [2] );
+	$grid_minor_color = imagecolorallocate ( $img, $grid_minor_color [0], $grid_minor_color [1], $grid_minor_color [2] );
+	$sweet_color = imagecolorallocate ( $img, $sweet_color [0], $sweet_color [1], $sweet_color [2] );
+	$label_color = imagecolorallocate ( $img, $label_color [0], $label_color [1], $label_color [2] );
 
 	imagefilledrectangle ( $img, 1, 1, $img_width - 2, $img_height - 2, $border_color );
 	imagefilledrectangle ( $img, $margins, $margins, $img_width - 1 - $margins, $img_height - 1 - $margins, $background_color );
@@ -555,9 +678,16 @@ function graphData($package, $x = 260, $y = 80) {
 				$x2 = $x1;
 				$y1 = $margins;
 				$y2 = $graph_height + $margins;
+				$font = 2;
 
 				if (round ( $x1 ) >= 0) {
 					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
+				}
+
+				if ($x_major_scaler) {
+					$label = (($i * (($x_max - $x_min))) + $x_min) . $x_major_label;
+
+					imageCenteredString ( $img, $font, $x1, $x1, $y2 + 3, $label, $label_color );
 				}
 			}
 		}
@@ -586,6 +716,16 @@ function graphData($package, $x = 260, $y = 80) {
 
 				if (round ( $y1 ) >= 0) {
 					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
+				}
+
+				if ($y_major_scaler) {
+					$val_r = round ( ($y_major_scaler * ($y_max - ($i * (($y_max - $y_min))) + $y_min)), 2 );
+					$val = number_format ( $val_r );
+					$label = $val . $y_major_label;
+
+					if ($i < (1 - $pcnt)) {
+						imageRightString ( $img, $font, $x1, $x1, $y2 + 1, $label, $label_color );
+					}
 				}
 			}
 		}
