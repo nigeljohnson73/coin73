@@ -179,6 +179,7 @@ function processSendableFile($str) {
 	$str = str_replace ( "{{MINER_REWARD_TARGET_DAY}}", minerRewardTargetPerDay (), $str );
 	$str = str_replace ( "{{MINER_SUBMIT_TARGET_SEC}}", minerSubmitTargetSeconds (), $str );
 	$str = str_replace ( "{{MINER_MAX_COUNT}}", minerMaxCount (), $str );
+	$str = str_replace ( "{{MINER_DIFFICULTY}}", minerDifficulty (), $str );
 	$str = str_replace ( "{{MINER_SUBMIT_TARGET_REWARD_PERCENT}}", rtrim ( rtrim ( number_format ( (submissionReward ( minerSubmitTargetSeconds () )) * 100, 1 ), "0" ), "." ) . "%", $str );
 	$str = str_replace ( "{{MINER_DEGREDATION_PERCENT}}", rtrim ( rtrim ( number_format ( (minerEfficiencyDegradation ()) * 100, 1 ), "0" ), "." ) . "%", $str );
 	$str = str_replace ( "{{MINER_PERCEIVED_MAX}}", rtrim ( rtrim ( number_Format ( totalMinerEfficiency (), 2 ), "0" ), "." ), $str );
@@ -188,9 +189,17 @@ function processSendableFile($str) {
 }
 
 // The target reward calcuation
-function submissionReward($s) {
-	$t = minerSubmitTargetSeconds ();
-	return 1 / (1 + exp ( - ($t - 2) * ($s - ($t - 1)) ));
+function submissionReward($s, $wallet_id = null) {
+	$t = minerSubmitTargetSeconds ( $wallet_id );
+	// Tweak by going here: http://localhost:8080/gfx/submission_time.png
+	// $sc = 14; // t=15: 14, t=10: 8.5, t=5: 2; // Provides for some scaling of the S curve along the x-axis.
+	// $xd = 2.22; // t=15: 2.22, t=10: 1.5, t=5: 1; // Provides an x-shift
+	$sc = 1.140099116 * $t - 3.1;
+	$xd = 0.1644 * $t - 0.1;
+	
+	// 15, 1.140099116
+	// 2, 
+	return 1 / (1 + exp ( - ($t - $sc) * ($s - ($t - $xd)) ));
 }
 
 // If you had $n miners, what is the effective actual mining amount
@@ -984,14 +993,14 @@ function jsonApi($url, $post = null, $timeout = null) {
 		$ret->error = $error_message;
 	}
 	$ret->data = json_decode ( $data );
-	
-// 	echo "****************************************\n";
-// 	echo "GOT DATA:\n";
-// 	echo $data . "\n";
-// 	echo "****************************************\n";
-// 	echo ob_print_r($ret->data);
-// 	echo "****************************************\n";
-	
+
+	// echo "****************************************\n";
+	// echo "GOT DATA:\n";
+	// echo $data . "\n";
+	// echo "****************************************\n";
+	// echo ob_print_r($ret->data);
+	// echo "****************************************\n";
+
 	// close the connection, release resources used
 	curl_close ( $ch );
 

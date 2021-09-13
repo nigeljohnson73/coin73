@@ -18,7 +18,7 @@ You will receive a JSON encoded object on success and failure
 
 ### Success
 
-```
+```json
 {
   "data": {
     "job_id": "654a136f-b382-4666-ad42-de4c85b444ef",
@@ -47,7 +47,7 @@ The `target_seconds` value indicates the target submission time in seconds.
 
 ### Failure
 
-```
+```json
 {
   "data": {},
   "success": false,

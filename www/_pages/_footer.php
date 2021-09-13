@@ -1,4 +1,5 @@
-</div> <!-- Started in the header -->
+</div>
+<!-- Started in the header -->
 <!--
   _____           _
  |  ___|__   ___ | |_ ___ _ __
@@ -9,10 +10,10 @@
 -->
 <footer class="text-center" data-ng-controller="FooterCtrl">
 	<nav class="navbar navbar-expand nav-fill navbar-light bg-light">
-<!-- 		<ul class="navbar-nav mr-auto"> -->
+		<!-- 		<ul class="navbar-nav mr-auto"> -->
 		<ul class="navbar-nav w-100 nav-justified">
 			<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-<!-- 			<li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li> -->
+			<!-- 			<li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li> -->
 			<li class="nav-item"><a class="nav-link" href="/merch">Support us</a></li>
 			<li class="nav-item"><a class="nav-link" href="/about">About us</a></li>
 		</ul>
@@ -39,14 +40,19 @@
  -->
 
 		<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
-			<span class="size-indicator d-block d-sm-none">XS</span> <span class="size-indicator d-none d-sm-block d-md-none">SM</span> <span class="size-indicator d-none d-md-block d-lg-none">MD</span> <span class="size-indicator d-none d-lg-block d-xl-none">LG</span>
-			<span class="size-indicator d-none d-xxl-none d-xl-block">XL</span> <span class="size-indicator d-none d-xxl-block">XXL</span>
+			<span class="size-indicator d-block d-sm-none">XS</span> <span class="size-indicator d-none d-sm-block d-md-none">SM</span> <span class="size-indicator d-none d-md-block d-lg-none">MD</span> <span class="size-indicator d-none d-lg-block d-xl-none">LG</span> <span class="size-indicator d-none d-xxl-none d-xl-block">XL</span>
+			<span class="size-indicator d-none d-xxl-block">XXL</span>
 		</div>
 	</div>
 </footer>
-</div> <!-- Started in the header -->
+</div>
+<!-- Started in the header -->
 <script>
 $(document).ready(function() {
+	// Perform syntax highlighting
+	// https://highlightjs.org/
+	hljs.highlightAll();
+
 	// Hide protected images
 	$('.covered').each(function() {
 
@@ -67,7 +73,6 @@ $(document).ready(function() {
 			}
 		});
 	});
-
 
 	// get current URL path and assign 'active' class
 	var pathname = window.location.pathname;

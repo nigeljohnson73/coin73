@@ -26,7 +26,7 @@ This will be the nonce you calculated.
 
 ### Success
 
-```
+```json
 {
   "data": {},
   "success": true,
@@ -42,7 +42,7 @@ The `data` object will not be populated.
 
 ### Failure
 
-```
+```json
 {
   "data": {},
   "success": false,

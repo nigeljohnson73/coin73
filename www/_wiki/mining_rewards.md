@@ -14,7 +14,7 @@ In order to attempt to ensure fairness for all, there is a targeted submission t
 
 You are also limited on the number of miners you can attach to your account. Each subsequent miner added is less efficient than the last one.
 
-Finally, the system is designed to target a mining rate of {{MINER_REWARD_TARGET_DAY}} coind per day.
+Finally, the system is designed to target a mining rate of {{MINER_REWARD_TARGET_DAY}} coins per day.
 
 ## Submission time
 
@@ -44,7 +44,7 @@ Having the maximum number of physical miners will be the same as having **{{MINE
 
 In order to get to the number of coins you will get, you need to factor in all of the above points. Lets take a look the maths.
 
-`total = mining_rate_per_day x average_submission_time x miner_efficency`
+`total = mining_rate_per_day x average_submission_reward x total_miner_efficency`
 
 Doing the substitution and you get:
 

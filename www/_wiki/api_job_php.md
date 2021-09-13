@@ -28,7 +28,7 @@ This call handles the API call to `$url` as a `POST` call, and passing `$vars` a
 
 The return variable needs to be an object that has a `data` attribute set to the decoded JSON object the server sent you.
 
-```
+```php
 function jsonApi($url, $post_object) {
 	// Fake a server response
 	$data = new StdClass ();
@@ -46,7 +46,7 @@ function jsonApi($url, $post_object) {
 
 A simple option is provided that just prints everything, but you can modify it to handle levels etc.
 
-```
+```php
 define ( "LL_SYS", 0 );
 define ( "LL_ERR", 1 );
 define ( "LL_WRN", 2 );
@@ -63,7 +63,7 @@ function logger($ll, $str) {
 
 This is a wrapped version of the PHP inbuilt `print_r` call, but it does it and captures the output, returning it as a string.
 
-```
+```php
 function ob_print_r($thing) {
 	ob_start ();
 	print_r ( $thing );
@@ -77,7 +77,7 @@ function ob_print_r($thing) {
 
 Here is a script that will give you a starting point, and allow you to define the tweaks above.
 
-```
+```php
 <?php
 if (! function_exists ( "logger" )) {
 	define ( "LL_SYS", 0 );
@@ -216,7 +216,7 @@ if ($data->success) {
 
 Once you have filled in the blanks, you should get some output like this:
 
-```
+```bash
 bash-3.2$ php test.php 
 09:32:21 ; SYS ; Starting miner test
 09:32:21 ; INF ; Requesting job
