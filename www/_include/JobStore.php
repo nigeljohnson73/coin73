@@ -12,7 +12,7 @@ class JobStore extends DataStore {
 		$this->addField ( "wallet_id", "String", true ); // indexed
 		$this->addField ( "rig_id", "String" );
 		$this->addField ( "hash", "String" );
-		$this->addField ( "created", "Integer", true ); // timestamp, indexed so we can clean it up later
+		$this->addField ( "created", "Float", true ); // msTime()*1000, indexed so we can clean it up later
 		$this->addField ( "difficulty", "Integer" ); // number of zeros
 		$this->addField ( "shares", "Integer" ); // how many miners are now active to split this share with
 		
@@ -48,7 +48,7 @@ class JobStore extends DataStore {
 		$oarr = $arr; // Save it in case the insert fails!!
 
 		$arr [$this->getKeyField ()] = GUIDv4 ();
-		$arr ["created"] = timestampNow ();
+		$arr ["created"] = msTime();
 		$arr = parent::insert ( $arr );
 
 		if ($arr == false) {

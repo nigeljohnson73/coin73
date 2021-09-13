@@ -44,7 +44,7 @@ $token_timeout_hours = 24;
 $miner_reward_target_day = 5;
 
 // The target submission time for each job
-$miner_submit_target_sec = 5;
+$miner_submit_target_sec = 10;
 
 // how much should every subsequet miner degrade (0-1 as a percent);
 $miner_efficiency_degrade = 0.2;
@@ -55,7 +55,7 @@ $miner_max_count = 5;
 // the number of zeros at the beginning of the output from hash("sha1", $sig.$nonce) - defined by 
 // the lowest powered device taking between 
 // $miner_submit_target_sec and ($miner_submit_target_sec - 1) seconds
-$miner_difficulty = 2;
+$miner_difficulty = 3;
 
 // This is storage for the RECAPTCHA keys that are set up to the live domain, as well as localhost.
 $recaptcha_site_key = "";

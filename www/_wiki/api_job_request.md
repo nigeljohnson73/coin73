@@ -2,6 +2,8 @@
 
 There are 2 API entry points for requesting a job. If your device can handle and process JSON then this option is preferable. Both require you to send a post request, and they both require your `wallet_id` and `rig_id` in the `x-www-form-urlencoded` body.
 
+If you want to see this in action in PHP, check out [Performing work in PHP](/wiki/api/job/php).
+
 ### wallet_id
 
 This is your Wallet ID as defined on your miner dashboard.

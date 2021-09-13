@@ -44,9 +44,10 @@ $app->add ( function ($request, $handler) {
 
 $apis = array ();
 $apis ["/ping"] = __DIR__ . "/_api/ping.php";
-$apis ["/job/request/text"] = __DIR__ . "/_api/job/request_text.php";
 $apis ["/job/request/json"] = __DIR__ . "/_api/job/request_json.php";
-$apis ["/job/submit/{job_id}/{nonce}"] = __DIR__ . "/_api/job/submit.php";
+$apis ["/job/request/text"] = __DIR__ . "/_api/job/request_text.php";
+$apis ["/job/submit/json/{job_id}/{nonce}"] = __DIR__ . "/_api/job/submit_json.php";
+$apis ["/job/submit/text/{job_id}/{nonce}"] = __DIR__ . "/_api/job/submit_text.php";
 
 foreach ( array_keys ( $apis ) as $p ) {
 	$roots = array (
