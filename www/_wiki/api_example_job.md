@@ -28,7 +28,7 @@ This call handles the API call to `$url` as a `POST` call, and passing `$vars` a
 
 The return variable needs to be an object that has a `data` attribute set to the decoded JSON object the server sent you.
 
-```php
+```language-php
 function jsonApi($url, $post_object) {
 	// Fake a server response
 	$data = new StdClass ();
@@ -46,7 +46,7 @@ function jsonApi($url, $post_object) {
 
 A simple option is provided that just prints everything, but you can modify it to handle levels etc.
 
-```php
+```language-php
 define ( "LL_SYS", 0 );
 define ( "LL_ERR", 1 );
 define ( "LL_WRN", 2 );
@@ -63,7 +63,7 @@ function logger($ll, $str) {
 
 This is a wrapped version of the PHP inbuilt `print_r` call, but it does it and captures the output, returning it as a string.
 
-```php
+```language-php
 function ob_print_r($thing) {
 	ob_start ();
 	print_r ( $thing );
@@ -77,50 +77,9 @@ function ob_print_r($thing) {
 
 Here is a script that will give you a starting point, and allow you to define the tweaks above.
 
-```php
+```language-php
 <?php
-if (! function_exists ( "logger" )) {
-	define ( "LL_SYS", 0 );
-	define ( "LL_ERR", 1 );
-	define ( "LL_WRN", 2 );
-	define ( "LL_INF", 3 );
-	define ( "LL_DBG", 4 );
-
-	// You can write some stuff to prettify the output and check the log level
-	function logger($ll, $str) {
-		echo trim ( $str ) . "\n";
-	}
-}
-
-if (! function_exists ( "jsonApi" )) {
-
-	// write a function that calls the URL with the post variables.
-	// It should return an object about the call, with a varable called 'data'
-	// which is the decoded response from the server
-	function jsonApi($url, $post_object) {
-		// Fake a server response
-		$data = new StdClass ();
-		$data->success = false;
-		$data->reason = "jsonApi(): Call not implemented";
-
-		// Wrap it up in the API call wrapper
-		$ret = new StdClass ();
-		$ret->data = $data;
-		return $ret;
-	}
-}
-
-if (! function_exists ( "ob_print_r" )) {
-
-	// Prints anything (like objects) and returns the string
-	function ob_print_r($thing) {
-		ob_start ();
-		print_r ( $thing );
-		$c = ob_get_contents ();
-		ob_end_clean ();
-		return $c;
-	}
-}
+include_once ('functions.php');
 
 logger ( LL_SYS, "Starting miner test" );
 // Prepare the post details
@@ -216,7 +175,7 @@ if ($data->success) {
 
 Once you have filled in the blanks, you should get some output like this:
 
-```bash
+```language-console
 bash-3.2$ php test.php 
 09:32:21 ; SYS ; Starting miner test
 09:32:21 ; INF ; Requesting job

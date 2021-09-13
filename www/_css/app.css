@@ -19,12 +19,14 @@ pre, code {
 	background-color: #ddd;
 	border-radius: 3px;
 	padding-left: 7px;
-	padding-right: 9px;
+	padding-right: 7px;
 }
+
 pre {
 	padding: 10px;
 	border-radius: 5px;
 }
+
 pre code {
 	padding: 0px;
 	border-radius: 0px;
@@ -138,12 +140,10 @@ cover {
 	display: none;
 }
 
-/*
 strong.indicator {
-	font-weight: 600;
 	color: #f00;
 }
-*/
+
 .cookie-alert-holder {
 	position: relative;
 	z-index: 1000;
@@ -210,11 +210,11 @@ nav {
 	color: #3b0084;
 }
 
-.table-striped tbody>tr:nth-child(even)>td, .table-striped tbody>tr:nth-child(even)>th
+/* .table-striped tbody>tr:nth-child(even)>td, .table-striped tbody>tr:nth-child(even)>th
 	{
 	background-color: #f1f1f1;
 }
-
+ */
 .wiki p.updated {
 	color: #ccc;
 	margin-bottom: 0px;
@@ -225,7 +225,6 @@ span.icon-popover {
 }
 
 p.user-details {
-	/* font: 400 15px 'Roboto', sans-serif; */
 	font: 400 15px 'Space Mono', monospace;
 	margin: 0px;
 }

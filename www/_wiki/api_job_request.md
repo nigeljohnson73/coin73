@@ -2,7 +2,7 @@
 
 There are 2 API entry points for requesting a job. If your device can handle and process JSON then this option is preferable. Both require you to send a post request, and they both require your `wallet_id` and `rig_id` in the `x-www-form-urlencoded` body.
 
-If you want to see this in action in PHP, check out [Performing work in PHP](/wiki/api/job/php).
+If you want to see this in action in PHP, check out [Performing work in PHP](/wiki/api/example/job).
 
 ### wallet_id
 
@@ -18,7 +18,7 @@ You will receive a JSON encoded object on success and failure
 
 ### Success
 
-```json
+```language-json
 {
   "data": {
     "job_id": "654a136f-b382-4666-ad42-de4c85b444ef",
@@ -47,7 +47,7 @@ The `target_seconds` value indicates the target submission time in seconds.
 
 ### Failure
 
-```json
+```language-json
 {
   "data": {},
   "success": false,

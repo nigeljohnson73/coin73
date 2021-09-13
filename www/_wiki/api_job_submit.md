@@ -2,7 +2,7 @@
 
 There are 2 API entry points for submitting a job. If your device can handle and process JSON then this option is preferable. Both require you to send a post request, and they both optionally allow you to submit a `hashrate` and `chiptype` in the `x-www-form-urlencoded` body to help with debugging.
 
-If you want to see this in action in PHP, check out [Performing work in PHP](/wiki/api/job/php).
+If you want to see this in action in PHP, check out [Performing work in PHP](/wiki/api/example/job).
 
 ### hashrate (optional)
 
@@ -26,7 +26,7 @@ This will be the nonce you calculated.
 
 ### Success
 
-```json
+```language-json
 {
   "data": {},
   "success": true,
@@ -42,7 +42,7 @@ The `data` object will not be populated.
 
 ### Failure
 
-```json
+```language-json
 {
   "data": {},
   "success": false,
