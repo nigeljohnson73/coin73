@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( @$_POST );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = ""; // Used by the toaster pop-up
@@ -45,27 +45,27 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 					$user = $store->setPassword ( $user ["email"], $_POST ["password"] );
 					if (is_array ( $user )) {
 						if ($success) {
-							$message = "Recovery complete\n";
+							$message = "Recovery complete";
 						} else {
-							$message = "Recovery failed\n";
+							$message = "Recovery failed";
 							$ret->reason = "The recovery failed - that was not the correct challenge. You will need to <a href='/recover'>start again</a>.";
 						}
 					} else {
-						$message = "Update user details failed\n";
+						$message = "Update user details failed";
 						$ret->reason = "The recovery failed - unable to save password";
 					}
 				} else {
-					$message = "Update user details failed\n";
+					$message = "Update user details failed";
 					$ret->reason = "The recovery failed - unable to save user update";
 				}
 			} else {
-				$message = "Unable to find user\n";
+				$message = "Unable to find user";
 				$ret->reason = "The request was invalid - your user details could not be authenticated";
 			}
 		} else {
-			echo "Google says no:\n";
-			print_r ( $resp->getErrorCodes () );
-			$message = "Request is not invalid\n";
+			logger ( LL_DBG, "Google says no:" );
+			logger ( LL_DBG, ob_print_r ( $resp->getErrorCodes () ) );
+			$message = "Request is not valid";
 			$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 		}
 	}

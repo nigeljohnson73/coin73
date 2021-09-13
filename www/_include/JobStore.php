@@ -4,7 +4,7 @@ include_once (__DIR__ . "/DataStore.php");
 class JobStore extends DataStore {
 
 	public function __construct() {
-		echo "JobStore::JobStore()\n";
+		logger(LL_INF, "JobStore::JobStore()");
 
 		parent::__construct ( "Job" );
 
@@ -31,11 +31,11 @@ class JobStore extends DataStore {
 			if (is_array ( $arr )) {
 				// Assume an array of GDS objects;
 				foreach ( $arr as $item ) {
-					echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "') - Got (arr) 'job_id' => '" . ($item->getData () ["job_id"]) . "'\n";
+					logger(LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (arr) 'job_id' => '" . ($item->getData () ["job_id"]) . "'");
 					$ret [] = $item->getData ();
 				}
 			} else {
-				echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "') - Got (obj) 'job_id' => '" . ($arr->getData () ["job_id"]) . "'\n";
+				logger(LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (obj) 'job_id' => '" . ($arr->getData () ["job_id"]) . "'");
 				// Assume a single GDS object;
 				$ret [] = $arr->getData ();
 			}
@@ -52,14 +52,14 @@ class JobStore extends DataStore {
 		$arr = parent::insert ( $arr );
 
 		if ($arr == false) {
-			echo "JobStore::insert() - failed - regenerating key\n";
+			logger(LL_ERR, "JobStore::insert() - failed - regenerating key");
 			// Assume the key was broken and retry
 			$arr = $oarr;
 			$arr [$this->getKeyField ()] = GUIDv4 ();
 			$arr ["created"] = timestampNow ();
 			$arr = parent::insert ( $arr );
 			if ($arr == false) {
-				echo "JobStore::insert() - failed again - You got bigger problems\n";
+				logger(LL_ERR, "JobStore::insert() - failed again - You got bigger problems");
 			}
 			// if it's still bust... well we all screwed
 		}

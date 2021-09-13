@@ -58,7 +58,7 @@ if (! function_exists ( "mkpath" )) {
 class Logger {
 
 	function __construct($path = "/tmp/logs", $app_name = "") {
-		$this->setLevel ( LL_INFO );
+		$this->setLevel ( LL_ERR );
 		$this->strings = array ();
 		$this->strings [LL_SYS] = "SYS";
 		$this->strings [LL_ERROR] = "ERR";
@@ -179,6 +179,7 @@ if (strlen ( @$log_dir ) == 0) {
 }
 $log_dir = null;
 $logger = new Logger ( $log_dir, @ $app_name );
+$logger->setLevel($log_level);
 
 // $logger->setLevel ( @ $log_level );
 function logger($level, $str) {

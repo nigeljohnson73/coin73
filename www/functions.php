@@ -212,8 +212,17 @@ function degradedMinerEfficiency($n) {
 }
 
 function totalMinerEfficiency() {
+	return effectiveMinerEfficiency( minerMaxCount ());
+// 	$tot = 0;
+// 	for($xx = 1; $xx <= minerMaxCount (); $xx ++) {
+// 		$tot += degradedMinerEfficiency ( $xx );
+// 	}
+// 	return $tot;
+}
+
+function effectiveMinerEfficiency($n) {
 	$tot = 0;
-	for($xx = 1; $xx <= minerMaxCount (); $xx ++) {
+	for($xx = 1; $xx <= $n; $xx ++) {
 		$tot += degradedMinerEfficiency ( $xx );
 	}
 	return $tot;

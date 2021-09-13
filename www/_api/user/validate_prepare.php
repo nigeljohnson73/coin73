@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( $_POST );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $ret->reason = "";
 $success = false;
@@ -24,33 +24,33 @@ if (isset ( $_POST ["payload"] )) {
 			global $token_timeout_hours;
 
 			$requested = $user ["validation_requested"];
-			$validation_expiry_seconds = $token_timeout_hours * 60 * 60; // 24 hours;
+			$expiry_seconds = $token_timeout_hours * 60 * 60; // 24 hours;
 
-			if ((timestamp2Time ( timestampNow () ) - timestamp2Time ( $requested )) < $validation_expiry_seconds) {
+			if ((timestamp2Time ( timestampNow () ) - timestamp2Time ( $requested )) < $expiry_seconds) {
 				$ret->choices = json_decode ( $user ["validation_data"] )->choices;
 				$ret->guid = $user ["guid"];
 				$success = true;
 				$message = "";
 			} else {
-				echo "Token has expired\n";
-				echo "    Token timeout hours: " . $token_timeout_hours . "\n";
-				echo "    Time created: " . timestampFormat ( $requested, "Y/m/d H:i:s" ) . " (" . timestamp2Time ( $requested ) . ")\n";
-				echo "    Time now: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) . " (" . timestamp2Time ( timestampNow () ) . ")\n";
-				echo "    Creation Delta: " . (timestamp2Time ( timestampNow () ) - timestamp2Time ( $requested )) . " seconds\m";
-				echo "    Token timeout: " . $validation_expiry_seconds . " seconds\n";
-				$ret->reason = "Validation request has expired. Please <a href='/validate'>start the revalidation process</a> again.";
+				logger ( LL_DBG, "Token has expired" );
+				logger ( LL_DBG, "    Token timeout hours: " . $token_timeout_hours );
+				logger ( LL_DBG, "    Time created: " . timestampFormat ( $requested, "Y/m/d H:i:s" ) . " (" . timestamp2Time ( $requested ) . ")" );
+				logger ( LL_DBG, "    Time now: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) . " (" . timestamp2Time ( timestampNow () ) . ")" );
+				logger ( LL_DBG, "    Creation Delta: " . (timestamp2Time ( timestampNow () ) - timestamp2Time ( $requested )) . " seconds" );
+				logger ( LL_DBG, "    Token timeout: " . $expiry_seconds . " seconds" );
+				$ret->reason = "Validation request has expired. Please <a href='/validate'>start the rerecovery process</a> again.";
 			}
 			print_r ( $user );
 		} else {
-			echo "Unable to update user details\n";
+			logger ( LL_DBG, "Unable to update user details" );
 			$ret->reason = "Validation preparation failed - Unable to update user details.";
 		}
 	} else {
-		echo "Unable to find nonce\n";
-		$ret->reason = "Validation request is not valid (Maybe you have used the email link already). Please <a href='/validate'>start the revalidation process</a> again.";
+		logger ( LL_DBG, "Unable to find nonce" );
+		$ret->reason = "Validation request is not valid (Maybe you have used the email link already). Please <a href='/validate'>start the recovery process</a> again.";
 	}
 } else {
-	echo "no payload sent - bad bot!!!\n";
+	logger ( LL_DBG, "no payload sent - bad bot!!!" );
 	$ret->reason = "Validation data cannot be identified.";
 }
 

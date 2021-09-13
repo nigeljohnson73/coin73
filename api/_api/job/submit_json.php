@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( $_POST );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = "";
@@ -29,6 +29,32 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 				$hash = hash ( "sha1", $arr ["hash"] . $args ["nonce"] );
 				$starts = str_pad ( "", 2, "0" );
 				if (strpos ( $hash, $starts ) === 0) {
+					$expected_seconds = minerSubmitTargetSeconds ( $arr ["wallet_id"] );
+					$seconds_per_day = 60 * 60 * 24;
+					$slots_per_day = $seconds_per_day / $expected_seconds;
+
+					$coin_per_day = minerRewardTargetPerDay ( $arr ["wallet_id"] );
+					$coin_per_slot = $coin_per_day / $slots_per_day;
+					logger ( LL_DBG, "--------" );
+					logger ( LL_DBG, "Seconds per day: " . number_format ( $seconds_per_day, 2 ) );
+					logger ( LL_DBG, "Slots per day: " . number_format ( $slots_per_day, 2 ) );
+					logger ( LL_DBG, "Coins per day: " . number_format ( $coin_per_day, 2 ) );
+					logger ( LL_DBG, "Coins per slot: " . number_format ( $coin_per_slot, 6 ) );
+					logger ( LL_DBG, "--------" );
+
+					$effective_miners = effectiveMinerEfficiency ( $arr ["shares"] );
+					$miner_efficiency = $effective_miners / $arr ["shares"];
+					logger ( LL_DBG, "Physical miners: " . number_format ( $arr ["shares"], 2 ) );
+					logger ( LL_DBG, "Effective miners: " . number_format ( $effective_miners, 2 ) );
+					logger ( LL_DBG, "Mining efficiency: " . number_format ( 100 * $miner_efficiency, 2 ) );
+					logger ( LL_DBG, "--------" );
+
+					$sub_time_pcnt = submissionReward ( $delta, $arr ["wallet_id"] );
+					logger ( LL_DBG, "Submission time: " . number_format ( 100 * $sub_time_pcnt, 2 ) . "%" );
+					logger ( LL_DBG, "--------" );
+					$coin = $coin_per_slot * $sub_time_pcnt * $miner_efficiency;
+					logger ( LL_DBG, "Transaction amount: " . number_format ( $coin, 6 ) );
+					logger ( LL_DBG, "--------" );
 					// look up any block with that hash,
 					// set it up with the details.
 					// Calculate the share

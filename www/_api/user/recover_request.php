@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( @$_POST );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = ""; // Used by the toaster pop-up
@@ -20,28 +20,29 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 
 	if ($resp->isSuccess ()) {
 		$store = new UserStore ();
-		$user = $store->getItemById ( @$_POST ["email"]);
+		$user = $store->getItemById ( @$_POST ["email"] );
 		if (is_array ( $user )) {
 			$ret->challenge = $store->recoverUser ( $user ["email"] );
 			$success = strlen ( $ret->challenge );
 			if ($success) {
-				$message = "Recovery request setup\n";
+				$message = "Recovery request setup";
 			} else {
-				$message = "Recovery request setup failed\n";
+				$message = "Recovery request setup failed";
 				$ret->reason = "The request setup failed - The Multifactor process could not complete";
 			}
 		} else {
-			//$success = true;
-			$message = "Unable to find user\n";
+			// $success = true;
+			$message = "Unable to find user";
 			$ret->reason = "The request was invalid - your user details could not be found";
 		}
 	} else {
-		echo "Google says no:\n";
-		print_r ( $resp->getErrorCodes () );
+		logger ( LL_DBG, "Google says no:" );
+		logger ( LL_DBG, ob_print_r ( $resp->getErrorCodes () ) );
+		$message = "Request is not valid";
 		$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 	}
 } else {
-	$message = "Request is not complete\n";
+	$message = "Request is not complete";
 	$ret->reason = "The recovery request data was invalid - seek an administrator";
 }
 

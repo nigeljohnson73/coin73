@@ -3,7 +3,7 @@
 class DataStore {
 
 	public function __construct($kind) {
-		echo "DataStore::DataStore(" . getProjectId () . ", " . getDataNamespace () . ")\n";
+		logger ( LL_DBG, "DataStore::DataStore(" . getProjectId () . ", " . getDataNamespace () . ")" );
 
 		$this->kind = $kind;
 		$this->non_key_fields = array ();
@@ -39,24 +39,24 @@ class DataStore {
 		$data = $this->obj_store->fetchOne ( $gql, [ 
 				'key' => $key
 		] );
-		//echo "DataStore::getItemById('" . $this->key_field . "'=>'" . $key . "')\n";
-		//echo "    '$gql'\n";
+		// echo "DataStore::getItemById('" . $this->key_field . "'=>'" . $key . "')\n";
+		// echo " '$gql'\n";
 		return ($data) ? ($data->getData ()) : ($data);
 	}
 
 	public function insert($arr) {
-		//echo "DataStore::insert()\n";
+		// echo "DataStore::insert()\n";
 		// echo "DataStore::insert() - passed aarray\n";
 		// print_r ( $arr );
 		if (! isset ( $arr [$this->getKeyField ()] )) {
-			echo "DataStore::insert() - No key field set in new entity\n";
+			logger ( LL_ERR, "DataStore::insert() - No key field set in new entity" );
 			return false;
 		}
 		// echo "Key field is set in new data entity\n";
 		$key = $this->getKeyField ();
 		// echo "DataStore::insert() - '" . $key . "' => '" . $arr [$key] . "'\n";
 		if ($this->getItemById ( $arr [$key] ) != null) {
-			echo "DataStore::insert() - Entity key already exists\n";
+			logger ( LL_ERR, "DataStore::insert() - Entity key already exists" );
 			return false;
 		}
 		// echo "Entity doesn't exist\n";
@@ -76,7 +76,7 @@ class DataStore {
 		// echo "DataStore::insert() - source object pre-insert\n";
 		// print_r ( $arr );
 		$this->obj_store->upsert ( $obj );
-		//echo "DataStore::insert() - Entity added\n";
+		// echo "DataStore::insert() - Entity added\n";
 		// echo "DataStore::insert() - '" . $key . "' => '" . $arr [$key] . "'\n";
 		// echo "DataStore::insert() - destination object post-insert\n";
 		// print_r ( $obj->getData () );
@@ -84,10 +84,10 @@ class DataStore {
 	}
 
 	public function delete($arr) {
-		//echo "DataStore::delete()\n";
+		// echo "DataStore::delete()\n";
 		$key = $this->getKeyField ();
 		if (! isset ( $arr [$key] )) {
-			echo "DataStore::delete() - No key field set in new entity\n";
+			logger ( LL_ERR, "DataStore::delete() - No key field set in new entity" );
 			return false;
 		}
 		// echo "Key field is set in new data entity\n";
@@ -98,35 +98,35 @@ class DataStore {
 		] );
 
 		if ($data == null) {
-			echo "DataStore::delete() - Entity doesn't exist\n";
+			logger ( LL_ERR, "DataStore::delete() - Entity doesn't exist" );
 			return false;
 		}
 		// echo "Entity exists\n";
 		$odata = $data->getData ();
 		// usleep(10000);
 		if ($this->obj_store->delete ( $data )) {
-			//echo "DataStore::delete() - Entity deleted\n";
+			// echo "DataStore::delete() - Entity deleted\n";
 			return $odata;
 		}
-		echo "DataStore::delete() - Delete failed\n";
+		logger ( LL_ERR, "DataStore::delete() - Delete failed" );
 		return false;
 	}
 
 	public function update($arr) {
-		//echo "DataStore::update()\n";
+		// echo "DataStore::update()\n";
 		$key = $this->getKeyField ();
 		if (! isset ( $arr [$key] )) {
-			echo "DataStore::update() - No key field set in new entity\n";
+			logger ( LL_ERR, "DataStore::update() - No key field set in new entity" );
 			return false;
 		}
 		// echo "DataStore::replace() - Key field is set in new data entity\n";
 
 		$odata = $this->delete ( $arr );
 		if ($odata == false) {
-			echo "DataStore::update() - Delete failed\n";
+			logger ( LL_ERR, "DataStore::update() - Delete failed" );
 			return false;
 		}
-		//echo "DataStore::update() - Entity Deleted\n";
+		// echo "DataStore::update() - Entity Deleted\n";
 
 		$fields = $this->getDataFields ();
 		$obj = new GDS\Entity ();
@@ -141,32 +141,32 @@ class DataStore {
 			}
 		}
 
-		//echo "DataStore::update() - Entity about to be upserted:\n";
-		//print_r($obj->getData ());
+		// echo "DataStore::update() - Entity about to be upserted:\n";
+		// print_r($obj->getData ());
 		if ($this->obj_store->upsert ( $obj )) {
-			echo "DataStore::update() - Upsert failed\n";
+			logger ( LL_ERR, "DataStore::update() - Upsert failed" );
 			// TODO: Should put the old object back
 			// true === failure. This seems to be the case. It returns `$arr_auto_id_required` in the RESTv1 Gateway? assume that's ok, and the positive test should be if that's false.
 		}
-		//echo "DataStore::update() - Entity updated\n";
+		// echo "DataStore::update() - Entity updated\n";
 		return $obj->getData ();
 	}
 
 	public function replace($arr) {
-		//echo "DataStore::replace()\n";
+		// echo "DataStore::replace()\n";
 		$key = $this->getKeyField ();
 		if (! isset ( $arr [$key] )) {
-			echo "DataStore::replace() - No key field set in new entity\n";
+			logger ( LL_ERR, "DataStore::replace() - No key field set in new entity" );
 			return false;
 		}
 		// echo "DataStore::replace() - Key field is set in new data entity\n";
 
 		$odata = $this->delete ( $arr );
 		if ($odata == false) {
-			echo "DataStore::replace() - Delete failed??\n";
+			logger ( LL_ERR, "DataStore::replace() - Delete failed??" );
 			return false;
 		}
-		//echo "DataStore::replace() - Entity Deleted\n";
+		// echo "DataStore::replace() - Entity Deleted\n";
 
 		$fields = $this->getDataFields ();
 		$obj = new GDS\Entity ();
@@ -179,14 +179,14 @@ class DataStore {
 			}
 		}
 
-		//echo "DataStore::replace() - Entity about to be upserted:\n";
-		//print_r($obj->getData ());
+		// echo "DataStore::replace() - Entity about to be upserted:\n";
+		// print_r($obj->getData ());
 		if ($this->obj_store->upsert ( $obj )) {
-			echo "DataStore::replace() - Upsert failed??\n";
+			logger ( LL_ERR, "DataStore::replace() - Upsert failed??" );
 			// TODO: Should put the old object back
 			// true === failure. This seems to be the case. It returns `$arr_auto_id_required` in the RESTv1 Gateway? assume that's ok, and the positive test should be if that's false.
 		}
-		//echo "DataStore::replace() - Entity replaced\n";
+		// echo "DataStore::replace() - Entity replaced\n";
 		return $obj->getData ();
 	}
 }

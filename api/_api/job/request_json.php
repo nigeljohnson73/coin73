@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( $_POST );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = "";

@@ -5,12 +5,12 @@ session_id(getDataNamespace());
 session_start ();
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( $_POST );
-echo "_SESSION[]:\n";
-print_r ( $_SESSION );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
+logger ( LL_DBG, "_SESSION[]:" );
+logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 
 $success = false;
 $message = "";

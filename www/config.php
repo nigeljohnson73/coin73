@@ -2,7 +2,7 @@
 // Override this in config_override.php for a competely blank DataStore area of your own.
 $localdev_namespace = "localdev";
 
-// The project id is the google application project short code. Change this and the world is a 
+// The project id is the google application project short code. Change this and the world is a
 // different place as this is where all the management and identity stuff happend operationally.
 $project_id = "coin73";
 
@@ -15,13 +15,13 @@ $api_CORS_origin = "https://coin73.appspot.com";
 // Local API calls are managed through the local application, but remote ones are run through
 // a separate service to allow for sideways scaling.
 // It is overwritten for localhost to support local testing.
-$api_host = $api_CORS_origin."/api/";
+$api_host = $api_CORS_origin . "/api/";
 
 // This is the main host used in the application. It is used in emails and texts etc. It is
 // Overwritten in we are on localhost dev server
-$www_host = $api_CORS_origin."/";
+$www_host = $api_CORS_origin . "/";
 
-// When re/validating user accounts a Multifactor authentication mechanism is used, a bit like the 
+// When re/validating user accounts a Multifactor authentication mechanism is used, a bit like the
 // Microsoft one. When you perfrom the action you are told a word, and in the authentication stage
 // you are offred several options. This defines how many options.
 $mfa_word_count = 5;
@@ -52,8 +52,8 @@ $miner_efficiency_degrade = 0.2;
 // how many miners are allowed on a generic account
 $miner_max_count = 5;
 
-// the number of zeros at the beginning of the output from hash("sha1", $sig.$nonce) - defined by 
-// the lowest powered device taking between 
+// the number of zeros at the beginning of the output from hash("sha1", $sig.$nonce) - defined by
+// the lowest powered device taking between
 // $miner_submit_target_sec and ($miner_submit_target_sec - 1) seconds
 $miner_difficulty = 2;
 
@@ -75,5 +75,23 @@ $smtp_from_name = "Coin Admin";
 $smtp_from_email = "";
 $smtp_username = "";
 $smtp_password = "";
+
+// Fundamentally disable logging in the system - overriden in config_override;
+define ( "LL_NONE", 0 );
+define ( "LL_SYSTEM", 0 );
+define ( "LL_SYS", 0 );
+define ( "LL_ERROR", 1 );
+define ( "LL_ERR", 1 );
+define ( "LL_WRN", 2 );
+define ( "LL_WARN", 2 );
+define ( "LL_WARNING", 2 );
+define ( "LL_INF", 3 );
+define ( "LL_INFO", 3 );
+define ( "LL_DBG", 4 );
+define ( "LL_DEBUG", 4 );
+define ( "LL_EDEBUG", 5 );
+define ( "LL_XDEBUG", 6 );
+
+$log_level = LL_SYS;
 
 ?>

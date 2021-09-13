@@ -110,10 +110,10 @@ function sendEmail($to, $subject, $txt, $attachments = null) {
 
 	// send the message, check for errors
 	if (! $mail->send ()) {
-		echo "Mailer Error: " . $mail->ErrorInfo . "\n";
+		logger ( LL_ERR, "Mailer Error: " . $mail->ErrorInfo );
 		return false;
 	}
-	echo "Message sent!\n";
+	logger ( LL_INF, "Message sent!" );
 	return true;
 }
 ?>

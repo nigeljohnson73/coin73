@@ -1,16 +1,16 @@
 <?php
 // This api is called when the the user has requested a user creation providing username/password, toc approval as well as recaptcha details in $_POST
 //
-session_id(getDataNamespace());
+session_id ( getDataNamespace () );
 session_start ();
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( $_POST );
-echo "_SESSION[]:\n";
-print_r ( $_SESSION );
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
+logger ( LL_DBG, "_SESSION[]:" );
+logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 
 $success = false;
 $message = "";
@@ -44,8 +44,8 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$ret->reason = "The request was invalid - your user details could not be authenticated";
 			}
 		} else {
-			echo "Google says no:\n";
-			print_r ( $resp->getErrorCodes () );
+			logger ( LL_DBG, "Google says no:" );
+			logger ( LL_DBG, ob_print_r ( $resp->getErrorCodes () ) );
 			$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 		}
 	}

@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-echo "ARGS:\n";
-print_r ( $args );
-echo "_POST[]:\n";
-print_r ( $_POST );
+logger(LL_DBG, "ARGS:");
+logger(LL_DBG, ob_print_r ( $args ));
+logger(LL_DBG, "_POST[]:");
+logger(LL_DBG, ob_print_r ( $_POST ));
 
 $success = false;
 $message = "";
@@ -30,7 +30,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 
 		// verify the response
 		if ($resp->isSuccess ()) {
-			echo "Loading data into user array\n";
+			logger(LL_DBG, "Loading data into user array");
 			$user = array ();
 			$store = new UserStore ();
 			$fields = $store->getDataFields ();

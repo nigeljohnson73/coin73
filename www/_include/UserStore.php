@@ -5,7 +5,7 @@ use Elliptic\EC;
 class UserStore extends DataStore {
 
 	public function __construct() {
-		echo "UserStore::UserStore()\n";
+		logger(LL_DBG, "UserStore::UserStore()");
 
 		parent::__construct ( "User" );
 
@@ -64,9 +64,9 @@ class UserStore extends DataStore {
 
 		$password = $arr ["password"];
 		$arr ["password"] = "";
-		echo "UserStore::insert()\n";
-		echo "UserStore::insert() - email address: '" . $arr ["email"] . "'\n";
-		echo "UserStore::insert() - passed password: '" . $password . "'\n";
+		logger(LL_DBG, "UserStore::insert()");
+		logger(LL_DBG, "UserStore::insert() - email address: '" . $arr ["email"] . "'");
+		logger(LL_DBG, "UserStore::insert() - passed password: '" . $password . "'");
 		$arr ["guid"] = GUIDv4 ();
 		$arr ["created"] = ( int ) timestampNow ();
 		$arr ["locked"] = 0;
@@ -84,67 +84,67 @@ class UserStore extends DataStore {
 		
 		$arr = parent::insert ( $arr );
 		if (! is_array ( $arr )) {
-			echo "UserStore::insert() - insert of base user failed\n";
+			logger(LL_ERR, "UserStore::insert() - insert of base user failed");
 			return false;
 		}
 		echo "UserStore::insert() - base user created\n";
 
 		$arr = $this->setPassword ( $arr ["email"], $password );
 		if (! is_array ( $arr )) {
-			echo "UserStore::insert() - unable to set password\n";
+			logger(LL_ERR, "UserStore::insert() - unable to set password");
 			$this->delete ( $arr );
 			return false;
 		}
 
 		if (! is_array ( $this->authenticate ( $arr ["email"], $password ) )) {
-			echo "UserStore::insert() - unable to authenticate user details\n";
+			logger(LL_ERR, "UserStore::insert() - unable to authenticate user details");
 			$this->delete ( $arr );
 			return false;
 		}
 
 		// Create and initialize EC context
 		// (better do it once and reuse it)
-		echo "UserStore::insert() - generating public/private key pair\n";
+		logger(LL_DBG, "UserStore::insert() - generating public/private key pair");
 
 		$ec = new EC ( 'secp256k1' );
 		$key = $ec->genKeyPair ();
 		$pubKey = $key->getPublic ( 'hex' );
 		$privKey = $key->getPrivate ( 'hex' );
 
-		echo "Public key: '" . $pubKey . "'\n";
-		echo "Private key: '" . $privKey . "'\n";
+		logger(LL_DBG, "Public key: '" . $pubKey . "'");
+		logger(LL_DBG, "Private key: '" . $privKey . "'");
 
 		// Sign message (can be hex sequence or array)
 		$msg = 'Secret Data in here';
-		echo "Data: '" . $msg . "'\n";
+		logger(LL_DBG, "Data: '" . $msg . "'");
 		$sha1 = sha1 ( $msg );
-		echo "SHA1: '" . $sha1 . "'\n";
+		logger(LL_DBG, "SHA1: '" . $sha1 . "'");
 
 		$signature = $key->sign ( $sha1 );
 
 		// Export DER encoded signature to hex string
 		$derSign = $signature->toDER ( 'hex' );
-		echo "SHA1 signature: '" . $derSign . "'\n";
+		logger(LL_DBG, "SHA1 signature: '" . $derSign . "'");
 
 		// Verify signature
 		$verified = $key->verify ( $sha1, $derSign );
-		echo "Signature verification: " . ($verified ? "true" : "false") . "\n";
+		logger(LL_DBG, "Signature verification: " . ($verified ? "true" : "false"));
 
 		if (! $verified) {
-			echo "UserStore::insert() - keypair does not work as expected - abandonning creation\n";
+			logger(LL_ERR, "UserStore::insert() - keypair does not work as expected - abandonning creation");
 			$this->delete ( $arr );
 			return false;
 		}
 		$arr ["private_key"] = $privKey;
 		$arr ["public_key"] = $pubKey;
-		echo "UserStore::insert() - public/private created\n";
+		logger(LL_DBG, "UserStore::insert() - public/private created");
 
 		// return $arr;
 		$user = $this->replace ( $arr );
 		if (! is_array ( $user )) {
-			echo "UserStore::insert() - final replace failed\n";
+			logger(LL_ERR, "UserStore::insert() - final replace failed");
 		} else {
-			echo "UserStore::insert() - User has been created\n";
+			logger(LL_DBG, "UserStore::insert() - User has been created");
 		}
 		return $user;
 	}
@@ -172,7 +172,7 @@ class UserStore extends DataStore {
 
 		$user = $this->getItemById ( $email );
 		if (! $user) {
-			echo "UserStore::revalidateUser('$email'): Unable to find user\n";
+			logger(LL_ERR, "UserStore::revalidateUser('$email'): Unable to find user");
 			return false;
 		}
 		$validation = $this->generateMfa ();
@@ -193,13 +193,13 @@ class UserStore extends DataStore {
 
 		if (sendEmail ( $user ["email"], $subject, $body )) {
 			if ($this->update ( $user )) {
-				echo "UserStore::revalidateUser('$email'): Sucessfully requested\n";
+				logger(LL_DBG, "UserStore::revalidateUser('$email'): Sucessfully requested");
 				return $validation->expect;
 			} else {
-				echo "UserStore::revalidateUser('$email'): Failed to save challenge\n";
+				logger(LL_ERR, "UserStore::revalidateUser('$email'): Failed to save challenge");
 			}
 		} else {
-			echo "UserStore::revalidateUser('$email'): Failed to send email\n";
+			logger(LL_ERR, "UserStore::revalidateUser('$email'): Failed to send email");
 		}
 		return false;
 	}
@@ -209,7 +209,7 @@ class UserStore extends DataStore {
 
 		$user = $this->getItemById ( $email );
 		if (! $user) {
-			echo "UserStore::recovereUser('$email'): Unable to find user\n";
+			logger(LL_ERR, "UserStore::recovereUser('$email'): Unable to find user");
 			return false;
 		}
 		$validation = $this->generateMfa ();
@@ -229,13 +229,13 @@ class UserStore extends DataStore {
 
 		if (sendEmail ( $user ["email"], $subject, $body )) {
 			if ($this->update ( $user )) {
-				echo "UserStore::recovereUser('$email'): Sucessfully requested\n";
+				logger(LL_DBG, "UserStore::recovereUser('$email'): Sucessfully requested");
 				return $validation->expect;
 			} else {
-				echo "UserStore::recovereUser('$email'): Failed to save challenge\n";
+				logger(LL_ERR, "UserStore::recovereUser('$email'): Failed to save challenge");
 			}
 		} else {
-			echo "UserStore::recovereUser('$email'): Failed to send email\n";
+			logger(LL_ERR, "UserStore::recovereUser('$email'): Failed to send email");
 		}
 		return false;
 	}
@@ -246,9 +246,9 @@ class UserStore extends DataStore {
 			return false;
 		}
 		$user ["password"] = $user ["guid"] . "." . $email . "." . $password;
-		echo "UserStore::setPassword() - intermediate password: '" . $user ["password"] . "'\n";
+		logger(LL_DBG, "UserStore::setPassword() - intermediate password: '" . $user ["password"] . "'");
 		$user ["password"] = md5 ( $user ["password"] );
-		echo "UserStore::setPassword() - final password: '" . $user ["password"] . "'\n";
+		logger(LL_DBG, "UserStore::setPassword() - final password: '" . $user ["password"] . "'");
 
 		return $this->replace ( $user );
 	}
@@ -256,16 +256,16 @@ class UserStore extends DataStore {
 	public function authenticate($email, $password) {
 		$user = $this->getItemById ( $email );
 		if (! $user) {
-			echo "UserStore::authenticate('$email'): User authentication failed: Unable to find user\n";
+			logger(LL_DBG, "UserStore::authenticate('$email'): User authentication failed: Unable to find user");
 			return false;
 		}
 
 		$password = md5 ( $user ["guid"] . "." . $email . "." . $password );
 		if ($password == $user ["password"]) {
-			echo "UserStore::authenticate('$email'): User authenticated\n";
+			logger(LL_DBG, "UserStore::authenticate('$email'): User authenticated");
 			return $user;
 		}
-		echo "UserStore::authenticate('$email'): User authentication failed: Password does not match\n";
+		logger(LL_DBG, "UserStore::authenticate('$email'): User authentication failed: Password does not match");
 		return false;
 	}
 }
