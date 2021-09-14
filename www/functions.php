@@ -1055,11 +1055,6 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
 	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
 	
-	$local_monika = " (Dev)";
-	$config->title .= $local_monika;
-	$smtp_from_name .= $local_monika;
-	$data_namespace = $localdev_namespace;
-
 	$api_host = "http://localhost:8085/api/";
 	$www_host = "http://localhost:8080/";
 	if ($api_CORS_origin != "*") {
@@ -1067,6 +1062,11 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	}
 
 	file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
+
+	$local_monika = " (Dev)";
+	$config->title .= $local_monika;
+	$smtp_from_name .= $local_monika;
+	$data_namespace = $localdev_namespace;
 } else {
 	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
 }
