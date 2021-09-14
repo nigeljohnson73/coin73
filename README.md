@@ -44,6 +44,7 @@ This project is built on the Google App Engine platform. The main idea here is t
  * [PHP Markdown](https://github.com/michelf/php-markdown)
  * [PHP Recaptcha](https://github.com/google/recaptcha)
  * [PHP Google DataStore API](https://github.com/tomwalder/php-gds)
+ * [PHP Cloud Store API](https://github.com/googleapis/google-cloud-php-storage)
  * [PHP Eliptic Curve Cryptography](https://github.com/phpecc/phpecc)
 
 -------------------------------------------------------------------------------------------
