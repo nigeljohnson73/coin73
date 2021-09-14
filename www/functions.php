@@ -1021,12 +1021,24 @@ function sanitiseUser($user) {
 	$ret = new StdClass ();
 	logger ( LL_DBG, "Sanitise user" );
 	logger ( LL_DBG, ob_print_r ( $user ) );
-	
+
 	$ret->public_key = @$user ["public_key"];
 	$ret->balance = @$user ["balance"];
-	
+
 	logger ( LL_DBG, ob_print_r ( $ret ) );
 	return $ret;
+}
+
+function is_cli() {
+	if (defined ( 'STDIN' )) {
+		return true;
+	}
+
+	if (empty ( $_SERVER ['REMOTE_ADDR'] ) and ! isset ( $_SERVER ['HTTP_USER_AGENT'] ) and count ( $_SERVER ['argv'] ) > 0) {
+		return true;
+	}
+
+	return false;
 }
 
 $inc = array ();
@@ -1041,7 +1053,7 @@ foreach ( $inc as $file ) {
 	}
 }
 
-if (@$_SERVER ["SERVER_NAME"] == "localhost") {
+if (@$_SERVER ["SERVER_NAME"] == "localhost" || is_cli()) {
 	global $config;
 	global $api_CORS_origin;
 	global $api_host;
@@ -1054,7 +1066,7 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$config = json_decode ( file_get_contents ( __DIR__ . "/../version.json" ) );
 	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
 	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
-	
+
 	$api_host = "http://localhost:8085/api/";
 	$www_host = "http://localhost:8080/";
 	if ($api_CORS_origin != "*") {

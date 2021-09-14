@@ -1,0 +1,8 @@
+cron:
+- description: "System tick, kicked every minute"
+  url: /cron/tick
+  schedule: every 1 minutes
+
+- description: "Tidy tick, kicked every minute"
+  url: /cron/tidy
+  schedule: every 1 minutes

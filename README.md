@@ -90,6 +90,7 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
 
  * Setup an [app password][gmail-app-password] for the gmail account.
  * Follow the [RECAPTCHA integration][recaptcha-integration] documentation.
+ * The service account needs to be made an owner in it's role under IAM.
  * ~Created a [key for the service account](https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=coin73&supportedpurview=project) on the project. It downloaded a JSON file, wihch I saved as service-account.json~
  * ~Launch local for php72: `dev_appserver.py app.yaml --php_executable_path /usr/bin/php --support_datastore_emulator=true`~
  * ~optionally, well done one, install the local datastore emulator with `gcloud components install cloud-datastore-emulator`~
