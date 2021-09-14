@@ -1030,11 +1030,8 @@ function sanitiseUser($user) {
 }
 
 function is_cli() {
-	if (defined ( 'STDIN' )) {
-		return true;
-	}
-
-	if (empty ( $_SERVER ['REMOTE_ADDR'] ) and ! isset ( $_SERVER ['HTTP_USER_AGENT'] ) and count ( $_SERVER ['argv'] ) > 0) {
+	if (defined ( 'STDIN' ) || (empty ( $_SERVER ['REMOTE_ADDR'] ) && ! isset ( $_SERVER ['HTTP_USER_AGENT'] ) && count ( $_SERVER ['argv'] ) > 0)) {
+		logger ( LL_SYS, "<< COMMAND LINE MODE >>" );
 		return true;
 	}
 
@@ -1053,7 +1050,7 @@ foreach ( $inc as $file ) {
 	}
 }
 
-if (@$_SERVER ["SERVER_NAME"] == "localhost" || is_cli()) {
+if (@$_SERVER ["SERVER_NAME"] == "localhost" || is_cli ()) {
 	global $config;
 	global $api_CORS_origin;
 	global $api_host;
