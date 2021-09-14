@@ -28,7 +28,7 @@ You will receive a JSON encoded object on success and failure
   },
   "success": true,
   "status": "OK",
-  "console": [],
+  "console": "",
   "message": ""
 }
 ```
@@ -52,7 +52,7 @@ The `target_seconds` value indicates the target submission time in seconds.
   "data": {},
   "success": false,
   "status": "FAIL",
-  "console": [],
+  "console": "",
   "message": "",
   "reason": "Miner limit reached"
 }

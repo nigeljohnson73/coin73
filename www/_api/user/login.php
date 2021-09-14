@@ -36,9 +36,10 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 			$store = new UserStore ();
 			$user = $store->authenticate ( @$_POST ["email"], @$_POST ["password"] );
 			if (is_array ( $user )) {
+				$success = true;
 				$message = "User authenticated\n";
 				$_SESSION ["AUTHTOK"] = $user ["guid"];
-				$ret->user = $user;
+				$ret->user = sanitiseUser ( $user );
 			} else {
 				$message = "Unable to find user\n";
 				$ret->reason = "The request was invalid - your user details could not be authenticated";

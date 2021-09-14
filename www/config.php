@@ -1,5 +1,5 @@
 <?php
-// Override this in config_override.php for a competely blank DataStore area of your own.
+// Override this in config_[hostname].php for a competely blank DataStore area of your own.
 $localdev_namespace = "localdev";
 
 // The project id is the google application project short code. Change this and the world is a
@@ -53,20 +53,22 @@ $miner_efficiency_degrade = 0.2;
 $miner_max_count = 5;
 
 // the number of zeros at the beginning of the output from hash("sha1", $sig.$nonce) - defined by
-// the lowest powered device taking between
-// $miner_submit_target_sec and ($miner_submit_target_sec - 1) seconds
+// the lowest powered device taking between $miner_submit_target_sec and 
+// ($miner_submit_target_sec - 1) seconds to execute
 $miner_difficulty = 2;
-
-// This is storage for the RECAPTCHA keys that are set up to the live domain, as well as localhost.
-$recaptcha_site_key = "";
-$recaptcha_secret_key = "";
 
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
 // 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
 $valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";
 
+// This is storage for the RECAPTCHA keys that are set up to the live domain, as well as localhost.
+// Expected to be in config_override.php
+$recaptcha_site_key = "";
+$recaptcha_secret_key = "";
+
 // This is the configuration for GMail SMTP. The username is generally your username and your
-// password is an app password you need to set up. See the README.md file for more info.
+// password is an app password you need to set up. See the README.md file for more info on that.
+// Expected to be in config_override.php
 $smtp_server = "smtp.gmail.com";
 $smtp_port = "465";
 $smtp_auth = true;
@@ -76,7 +78,7 @@ $smtp_from_email = "";
 $smtp_username = "";
 $smtp_password = "";
 
-// Fundamentally disable logging in the system - overriden in config_override;
+// Configure the logging variables
 define ( "LL_NONE", 0 );
 define ( "LL_SYSTEM", 0 );
 define ( "LL_SYS", 0 );
@@ -92,6 +94,7 @@ define ( "LL_DEBUG", 4 );
 define ( "LL_EDEBUG", 5 );
 define ( "LL_XDEBUG", 6 );
 
+// Fundamentally disable logging in the system - can be overriden in config_[hostname].php;
 $log_level = LL_SYS;
 
 ?>

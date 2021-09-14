@@ -222,9 +222,11 @@ git config --global user.name $GIT_USERNAME
 sudo git clone https://${GIT_PAT}:x-oauth-basic@github.com/nigeljohnson73/coin73.git
 sudo chown -R pi:pi coin73
 cd coin73
-cp res/install.config.php www/config_override.php
+cp res/install.config_localhost.php www/config_localhost.php
+cp res/install.config_override.php www/config_override.php
 cd api
 ln -s ../www/config_override.php config_override.php
+ln -s ../www/config_localhost.php config_localhost.php
 
 ## install the composer dependancies
 echo "## Installing composer dependancies"

@@ -31,7 +31,7 @@ This will be the nonce you calculated.
   "data": {},
   "success": true,
   "status": "OK",
-  "console": [],
+  "console": "",
   "message": ""
 }
 ```
@@ -47,7 +47,7 @@ The `data` object will not be populated.
   "data": {},
   "success": false,
   "status": "FAIL",
-  "console": [],
+  "console": "",
   "message": "",
   "reason": "Invalid nonce"
 }

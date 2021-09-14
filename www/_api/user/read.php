@@ -1,7 +1,7 @@
 <?php
 // This api is called when the the user has requested a user creation providing username/password, toc approval as well as recaptcha details in $_POST
 //
-session_id(getDataNamespace());
+session_id ( getDataNamespace () );
 session_start ();
 $ret = startJsonResponse ();
 
@@ -14,18 +14,6 @@ logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 
 $success = false;
 $message = "";
-
-function sanitiseUser($user) {
-	$ret = new StdClass ();
-	echo "Sanitise user:\n";
-	print_r ( $user );
-
-	$ret->public_key = @$user ["public_key"];
-	$ret->balance = @$user ["balance"];
-
-	print_r ( $ret );
-	return $ret;
-}
 
 if (isset ( $_SESSION ["AUTHTOK"] )) {
 	$store = new UserStore ();

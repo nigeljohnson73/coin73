@@ -196,9 +196,9 @@ function submissionReward($s, $wallet_id = null) {
 	// $xd = 2.22; // t=15: 2.22, t=10: 1.5, t=5: 1; // Provides an x-shift
 	$sc = 1.140099116 * $t - 3.1;
 	$xd = 0.1644 * $t - 0.1;
-	
+
 	// 15, 1.140099116
-	// 2, 
+	// 2,
 	return 1 / (1 + exp ( - ($t - $sc) * ($s - ($t - $xd)) ));
 }
 
@@ -212,12 +212,12 @@ function degradedMinerEfficiency($n) {
 }
 
 function totalMinerEfficiency() {
-	return effectiveMinerEfficiency( minerMaxCount ());
-// 	$tot = 0;
-// 	for($xx = 1; $xx <= minerMaxCount (); $xx ++) {
-// 		$tot += degradedMinerEfficiency ( $xx );
-// 	}
-// 	return $tot;
+	return effectiveMinerEfficiency ( minerMaxCount () );
+	// $tot = 0;
+	// for($xx = 1; $xx <= minerMaxCount (); $xx ++) {
+	// $tot += degradedMinerEfficiency ( $xx );
+	// }
+	// return $tot;
 }
 
 function effectiveMinerEfficiency($n) {
@@ -1016,9 +1016,23 @@ function jsonApi($url, $post = null, $timeout = null) {
 	return $ret;
 }
 
+// Used to send only useful stuff t othe front end of the application.
+function sanitiseUser($user) {
+	$ret = new StdClass ();
+	logger ( LL_DBG, "Sanitise user" );
+	logger ( LL_DBG, ob_print_r ( $user ) );
+	
+	$ret->public_key = @$user ["public_key"];
+	$ret->balance = @$user ["balance"];
+	
+	logger ( LL_DBG, ob_print_r ( $ret ) );
+	return $ret;
+}
+
 $inc = array ();
 $inc [] = dirname ( __FILE__ ) . "/config.php";
 $inc [] = dirname ( __FILE__ ) . "/config_override.php";
+$inc [] = dirname ( __FILE__ ) . "/config_" . @$_SERVER ["SERVER_NAME"] . ".php";
 $inc = array_merge ( $inc, includeDirectory ( __DIR__ . "/_include" ) );
 foreach ( $inc as $file ) {
 	if (file_exists ( $file ) && ! is_dir ( $file )) {
@@ -1029,25 +1043,30 @@ foreach ( $inc as $file ) {
 
 if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	global $config;
-	global $localdev_namespace;
 	global $api_CORS_origin;
 	global $api_host;
 	global $www_host;
 	global $data_namespace;
+	global $localdev_namespace;
+	global $smtp_from_name;
 
 	// If we're on localdev/ update the config before we load it
 	$config = json_decode ( file_get_contents ( __DIR__ . "/../version.json" ) );
 	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
 	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
-	file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
-
-	$config->title .= " (Dev)";
+	
+	$local_monika = " (Dev)";
+	$config->title .= $local_monika;
+	$smtp_from_name .= $local_monika;
 	$data_namespace = $localdev_namespace;
+
 	$api_host = "http://localhost:8085/api/";
 	$www_host = "http://localhost:8080/";
 	if ($api_CORS_origin != "*") {
 		$api_CORS_origin = "http://localhost:8080";
 	}
+
+	file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
 } else {
 	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
 }
