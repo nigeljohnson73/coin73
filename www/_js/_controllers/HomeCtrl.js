@@ -80,6 +80,13 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 			logger("HomeCtrl::login()", "inf");
 			logger(data, "inf");
 			$scope.user = data.user;
+			$scope.tx.email = "";
+			$scope.tx.password = "";
+			$scope.tx.accept_toc = "";
+			$scope.email_valid = false;
+			$scope.password_valid = false;
+			$scope.submittable = false;
+
 
 			if (data.success) {
 				// Yay for us
