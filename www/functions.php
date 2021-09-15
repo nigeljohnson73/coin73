@@ -1034,7 +1034,6 @@ function is_cli() {
 		logger ( LL_SYS, "<< COMMAND LINE MODE >>" );
 		return true;
 	}
-
 	return false;
 }
 
