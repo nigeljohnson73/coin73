@@ -14,7 +14,7 @@ if (isset ( $_GET )) {
 }
 
 $difficulty = isset ( $_GET ["d"] ) ? $_GET ["d"] : 4;
-$max_count = isset ( $_GET ["n"] ) ? max ( 10, min ( $_GET ["n"], 1000 ) ) : 100;
+$max_count = isset ( $_GET ["n"] ) ? max ( 10, min ( $_GET ["n"], 1000 ) ) : 1000;
 
 $times = array ();
 // $nano_times = array ();
