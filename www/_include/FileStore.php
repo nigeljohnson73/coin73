@@ -6,9 +6,9 @@ class FileStore {
 	public function __construct($name, $options = [ ]) {
 		$this->storage = null;
 		$this->bucket = null;
-		$bucket_name = strtolower(getDataNamespace () . "_" . $name);
-		//$bucket_name = getDataNamespace () . "_" . $name;
-		
+		$bucket_name = strtolower ( getDataNamespace () . "_" . $name );
+		// $bucket_name = getDataNamespace () . "_" . $name;
+
 		$s_options = [ 
 				"suppressKeyFileNotice" => true,
 				"projectId" => getProjectId ()
@@ -34,7 +34,7 @@ class FileStore {
 			$b_options ["predefinedAcl"] = $b_options ["defaultObjectAcl"];
 			// Defaults to US
 			$b_options ["location"] = "EU"; // TODO: store this in a config field???
-			
+
 			try {
 				$this->bucket = $this->storage->bucket ( $bucket_name );
 			} catch ( Exception $e ) {
@@ -94,28 +94,72 @@ class FileStore {
 			$ret = $object->downloadAsString ();
 			logger ( LL_DBG, "FileStore::getContents(): Downloaded '" . $filename . "'" );
 		} catch ( Exception $e ) {
-			//$e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "FileStore::putContents(): Cannot download '" . $filename . "': " . $e->getMessage() );
+			// $e = json_decode ( $e->getMessage () )->error;
+			logger ( LL_ERR, "FileStore::putContents(): Cannot download '" . $filename . "': " . $e->getMessage () );
 		}
 		return $ret;
 	}
-	
+
 	public function delete($filename) {
 		if (! $this->bucket) {
 			return false;
 		}
-		
+
 		$ret = false;
 		try {
 			$object = $this->bucket->object ( $filename );
-			$ret = $object->delete ();
+			$object->delete ();
 			logger ( LL_DBG, "FileStore::delete(): Deleted '" . $filename . "'" );
+			$ret = true;
 		} catch ( Exception $e ) {
-			//$e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "FileStore::delete(): Cannot delete '" . $filename . "': " . $e->getMessage() );
+			// $e = json_decode ( $e->getMessage () )->error;
+			logger ( LL_ERR, "FileStore::delete(): Cannot delete '" . $filename . "': " . $e->getMessage () );
 		}
 		return $ret;
 	}
 }
 
+function __testFileStore() {
+
+	class TestFileStore extends FileStore {
+
+		public function __construct() {
+			parent::__construct ( "TestFileStore" );
+		}
+	}
+
+	global $logger;
+	$ll = $logger->getLevel ();
+	$logger->setLevel ( LL_DBG );
+
+	$store = new TestFileStore ();
+	$contents = "Welcome to the jungle!";
+	$filename = "welcome.txt";
+
+	if (! $store->putContents ( $filename, $contents )) {
+		logger ( LL_ERR, "Unable to store file contents" );
+		return false;
+	}
+	logger ( LL_INF, "Stored file contents" );
+
+	$c = $store->getContents ( $filename );
+	if ($c === false) {
+		logger ( LL_ERR, "Unable to retrieve file contents" );
+		return false;
+	}
+	logger ( LL_INF, "Retrieved file contents" );
+
+	if ($c !== $contents) {
+		logger ( LL_ERR, "Retrieved file contents do not match put file contents" );
+		return false;
+	}
+	logger ( LL_INF, "File contents match expected" );
+
+	if (! $store->delete ( $filename )) {
+		logger ( LL_ERR, "Unable to delete file" );
+		return false;
+	}
+	logger ( LL_INF, "Deleted file" );
+	$logger->setLevel ( $ll );
+}
 ?>

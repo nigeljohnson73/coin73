@@ -110,52 +110,23 @@ class UserStore extends DataStore {
 		$keys = $keystore->getKeys ( $arr ["email"] );
 
 		if ($keys) {
-			logger ( LL_DBG, "Already have a key pair for '" . $arr ["email"] . "'" );
+			logger ( LL_DBG, "Keystore provided key pair for '" . $arr ["email"] . "'" );
 			$arr ["public_key"] = $keys->public;
 			logger ( LL_DBG, "Public key: '" . $keys->public . "'" );
-		} else {
-			$ec = new EC ( 'secp256k1' );
-			$key = $ec->genKeyPair ();
-			$pubKey = $key->getPublic ( 'hex' );
-			$privKey = $key->getPrivate ( 'hex' );
-
-			logger ( LL_DBG, "Public key: '" . $pubKey . "'" );
-			logger ( LL_DBG, "Private key: '" . $privKey . "'" );
-
-			// Sign message (can be hex sequence or array)
-			$msg = 'Secret Data in here';
-			logger ( LL_DBG, "Data: '" . $msg . "'" );
-			$sha1 = sha1 ( $msg );
-			logger ( LL_DBG, "SHA1: '" . $sha1 . "'" );
-
-			$signature = $key->sign ( $sha1 );
-
-			// Export DER encoded signature to hex string
-			$derSign = $signature->toDER ( 'hex' );
-			logger ( LL_DBG, "SHA1 signature: '" . $derSign . "'" );
-
-			// Verify signature
-			$verified = $key->verify ( $sha1, $derSign );
-			logger ( LL_DBG, "Signature verification: " . ($verified ? "true" : "false") );
-
-			if (! $verified) {
-				logger ( LL_ERR, "UserStore::insert() - keypair does not work as expected - abandonning creation" );
+			$user = $this->update ( $arr );
+			if (! is_array ( $user )) {
+				logger ( LL_ERR, "UserStore::insert() - final update failed" );
 				$this->delete ( $arr );
 				return false;
+			} else {
+				logger ( LL_DBG, "UserStore::insert() - User has been created" );
 			}
-			$keystore->putKeys ( $arr ["email"], $pubKey, $privKey );
-			// $arr ["private_key"] = $privKey;
-			$arr ["public_key"] = $pubKey;
-			logger ( LL_DBG, "UserStore::insert() - public/private created" );
+		} else {
+			logger ( LL_DBG, "Keystore failed to provide keys for '" . $arr ["email"] . "'" );
+			$this->delete ( $arr );
+			return false;
 		}
 
-		// return $arr;
-		$user = $this->replace ( $arr );
-		if (! is_array ( $user )) {
-			logger ( LL_ERR, "UserStore::insert() - final replace failed" );
-		} else {
-			logger ( LL_DBG, "UserStore::insert() - User has been created" );
-		}
 		return $user;
 	}
 

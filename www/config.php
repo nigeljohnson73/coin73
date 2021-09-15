@@ -57,6 +57,9 @@ $miner_max_count = 5;
 // ($miner_submit_target_sec - 1) seconds to execute
 $miner_difficulty = 2;
 
+// How do we identify the coinbase in transactions for things like miner rewards etc.
+$coinbase = "SupremeOverlord";
+
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
 // 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
 $valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";

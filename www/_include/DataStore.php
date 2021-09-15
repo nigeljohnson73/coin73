@@ -35,13 +35,16 @@ class DataStore {
 	}
 
 	public function getItemById($key) {
+		$data = $this->_raw_getItemById ( $key );
+		return ($data) ? ($data->getData ()) : ($data);
+	}
+
+	private function _raw_getItemById($key) {
 		$gql = "SELECT * FROM " . $this->kind . " WHERE " . $this->key_field . " = @key";
 		$data = $this->obj_store->fetchOne ( $gql, [ 
 				'key' => $key
 		] );
-		// echo "DataStore::getItemById('" . $this->key_field . "'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		return ($data) ? ($data->getData ()) : ($data);
+		return $data;
 	}
 
 	public function insert($arr) {
@@ -75,7 +78,10 @@ class DataStore {
 		}
 		// echo "DataStore::insert() - source object pre-insert\n";
 		// print_r ( $arr );
-		$this->obj_store->upsert ( $obj );
+		if ($this->obj_store->upsert ( $obj )) {
+			logger ( LL_ERR, "DataStore::insert() - Upsert failed" );
+		}
+		logger ( LL_DBG, "DataStore::insert() - Entity inserted" );
 		// echo "DataStore::insert() - Entity added\n";
 		// echo "DataStore::insert() - '" . $key . "' => '" . $arr [$key] . "'\n";
 		// echo "DataStore::insert() - destination object post-insert\n";
@@ -105,6 +111,7 @@ class DataStore {
 		$odata = $data->getData ();
 		// usleep(10000);
 		if ($this->obj_store->delete ( $data )) {
+			logger ( LL_DBG, "DataStore::delete() - Entity deleted" );
 			// echo "DataStore::delete() - Entity deleted\n";
 			return $odata;
 		}
@@ -113,42 +120,34 @@ class DataStore {
 	}
 
 	public function update($arr) {
-		// echo "DataStore::update()\n";
 		$key = $this->getKeyField ();
 		if (! isset ( $arr [$key] )) {
 			logger ( LL_ERR, "DataStore::update() - No key field set in new entity" );
 			return false;
 		}
-		// echo "DataStore::replace() - Key field is set in new data entity\n";
 
-		$odata = $this->delete ( $arr );
-		if ($odata == false) {
-			logger ( LL_ERR, "DataStore::update() - Delete failed" );
+		$obj = $this->_raw_getItemById ( $arr [$key] );
+		if (! $obj) {
+			logger ( LL_ERR, "DataStore::update() - Cannot find existing entity" );
 			return false;
 		}
-		// echo "DataStore::update() - Entity Deleted\n";
 
-		$fields = $this->getDataFields ();
-		$obj = new GDS\Entity ();
-		$obj->$key = $arr [$key];
-		foreach ( $fields as $f ) {
-			if (isset ( $arr [$f] )) {
-				// write the new data
-				$obj->$f = $arr [$f];
-			} else if (isset ( $odata [$f] )) {
-				// Copy the old data
-				$obj->$f = $odata [$f];
+		$fields = array_merge ( $this->getDataFields (), [ 
+				$this->getKeyField ()
+		] );
+		// Overwrite any existing data
+		foreach ( $arr as $k => $v ) {
+			if (in_array ( $k, $fields )) {
+				$obj->$k = $v;
+			} else {
+				logger ( LL_ERR, "DataStore::update() - Cannot update unknown field '" . $k . "'" );
 			}
 		}
 
-		// echo "DataStore::update() - Entity about to be upserted:\n";
-		// print_r($obj->getData ());
 		if ($this->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::update() - Upsert failed" );
-			// TODO: Should put the old object back
-			// true === failure. This seems to be the case. It returns `$arr_auto_id_required` in the RESTv1 Gateway? assume that's ok, and the positive test should be if that's false.
 		}
-		// echo "DataStore::update() - Entity updated\n";
+		logger ( LL_DBG, "DataStore::update() - Entity updated" );
 		return $obj->getData ();
 	}
 
@@ -163,7 +162,7 @@ class DataStore {
 
 		$odata = $this->delete ( $arr );
 		if ($odata == false) {
-			logger ( LL_ERR, "DataStore::replace() - Delete failed??" );
+			logger ( LL_ERR, "DataStore::replace() - Delete failed" );
 			return false;
 		}
 		// echo "DataStore::replace() - Entity Deleted\n";
@@ -182,10 +181,10 @@ class DataStore {
 		// echo "DataStore::replace() - Entity about to be upserted:\n";
 		// print_r($obj->getData ());
 		if ($this->obj_store->upsert ( $obj )) {
-			logger ( LL_ERR, "DataStore::replace() - Upsert failed??" );
-			// TODO: Should put the old object back
-			// true === failure. This seems to be the case. It returns `$arr_auto_id_required` in the RESTv1 Gateway? assume that's ok, and the positive test should be if that's false.
+			logger ( LL_ERR, "DataStore::replace() - Upsert failed" );
 		}
+		logger ( LL_DBG, "DataStore::replace() - Entity replaced" );
+
 		// echo "DataStore::replace() - Entity replaced\n";
 		return $obj->getData ();
 	}

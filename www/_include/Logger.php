@@ -123,6 +123,10 @@ class Logger {
 		// echo $this->_fn."- logging level: ".$this->_level."<br />";
 	}
 
+	function getLevel() {
+		return $this->_level;
+	}
+
 	function log($level, $str) {
 		// echo "Logger::log()\n";
 		// echo " level: ".$level."\n";
@@ -179,7 +183,7 @@ if (strlen ( @$log_dir ) == 0) {
 }
 $log_dir = null;
 $logger = new Logger ( $log_dir, @ $app_name );
-$logger->setLevel($log_level);
+$logger->setLevel ( $log_level );
 
 // $logger->setLevel ( @ $log_level );
 function logger($level, $str) {

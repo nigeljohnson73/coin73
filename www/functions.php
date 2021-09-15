@@ -155,6 +155,11 @@ function minerDifficulty() {
 	return $miner_difficulty;
 }
 
+function coinbaseWalletId() {
+	global $coinbase;
+	return $coinbase;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );

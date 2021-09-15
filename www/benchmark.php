@@ -10,7 +10,7 @@ if (isset ( $_GET ["LOG"] ) || is_cli ()) {
 	logger ( LL_SYS, "Enabled logging" );
 }
 if (isset ( $_GET )) {
-	logger ( LL_SYS, "\$_GET: " . ob_print_r ( $_GET ) );
+	logger ( LL_SYS, "Parameters: " . ob_print_r ( $_GET ) );
 }
 
 $difficulty = isset ( $_GET ["d"] ) ? $_GET ["d"] : 4;
@@ -98,8 +98,8 @@ logger ( LL_SYS, "Execution time: " . durationFormat ( (microtime ( true ) - $ts
 logger ( LL_SYS, "Difficulty    : " . $difficulty );
 logger ( LL_SYS, "Iterations    : " . number_format ( $iterations, 0 ) );
 logger ( LL_SYS, "Solve time    : " . number_format ( $avgxt, 5 ) . "s" );
-logger ( LL_SYS, "Avg Hashrate  : " . number_format ( $avghr, 2 ) . " h/s" );
 logger ( LL_SYS, "Min Hashrate  : " . number_format ( $minhr, 2 ) . " h/s" );
+logger ( LL_SYS, "Avg Hashrate  : " . number_format ( $avghr, 2 ) . " h/s" );
 logger ( LL_SYS, "Max Hashrate  : " . number_format ( $maxhr, 2 ) . " h/s" );
 echo "\n";
 logger ( LL_SYS, "Hashrate distribution " );
