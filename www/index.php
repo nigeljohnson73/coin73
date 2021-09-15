@@ -42,6 +42,8 @@ $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}/{sub_sub_sub_page}"] = __DIR__ 
 
 $routes ["/cron/tick"] = __DIR__ . "/_cron/tick.php";
 $routes ["/cron/tidy"] = __DIR__ . "/_cron/tidy.php";
+
+$routes ["/benchmark"] = __DIR__ . "/benchmark.php";
 //$routes ["/svg.php"] = __DIR__ . "/svg.php"; // Testing purposes for now
 
 foreach ( array_keys ( $routes ) as $p ) {
