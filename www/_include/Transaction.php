@@ -35,9 +35,8 @@ class Transaction {
 	public function sign($privKey) {
 		$ec = new EC ( 'secp256k1' );
 		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
-		$pubKey = $sk->getPublic ( 'hex' );
-		if ($this->from != $pubKey) {
-			logger ( LL_ERR, "Cannot sign transation with incorrect private key" );
+		if ($this->from != $sk->getPublic ( 'hex' )) {
+			logger ( LL_ERR, "Transaction::sign(): Private key does not match sender public key" );
 			return false;
 		}
 		$signature = $sk->sign ( $this->calculateHash () );
@@ -48,10 +47,6 @@ class Transaction {
 	public function isValid() {
 		if ($this->to == null || $this->from == null || $this->amount <= 0) {
 			return false;
-		}
-
-		if ($this->from === coinbaseWalletId ()) {
-			return true;
 		}
 
 		if (strlen ( $this->signature ) == 0) {
@@ -146,11 +141,15 @@ function __testTransaction() {
 	logger ( LL_INF, "Verified  : " . ($verified ? "true" : "false") );
 
 	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
+	logger ( LL_INF, "Create coinbase transaction" );
 	$t = new Transaction ( coinbaseWalletId (), $pubKey, 1.23456789, "Loading some coin!" );
+	logger ( LL_INF, "Coinbase transaction valid : expect false, got " . ($t->isValid () ? ("true") : ("false")) );
+	logger ( LL_INF, "Signing transaction" );
+	$t->sign ( coinbasePrivateKey () );
 	logger ( LL_INF, "Coinbase transaction valid : expect true, got " . ($t->isValid () ? ("true") : ("false")) );
-
+	
 	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
-	logger ( LL_INF, "Create transaction" );
+	logger ( LL_INF, "Create return transaction" );
 	$t = new Transaction ( $pubKey, coinbaseWalletId (), 1.23456789, "Returning some coin!" );
 	logger ( LL_INF, "Return transaction valid   : expect false, got " . ($t->isValid () ? ("true") : ("false")) );
 	logger ( LL_INF, "Signing transaction" );

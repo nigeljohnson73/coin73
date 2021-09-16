@@ -1,6 +1,10 @@
 <?php
 // This file contains configuration that is not part of the software repo but
-// are part of the the production system.
+// is part of the the production system.
+
+// Set the production system key pair - override for localhost
+$coinbase_pubKey = "";
+$coinbase_privKey = "";
 
 // Set the google RECAPTCHA keys
 $recaptcha_site_key = "";

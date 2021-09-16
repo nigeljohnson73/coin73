@@ -155,9 +155,19 @@ function minerDifficulty() {
 	return $miner_difficulty;
 }
 
-function coinbaseWalletId() {
+function coinbaseName() {
 	global $coinbase;
 	return $coinbase;
+}
+
+function coinbaseWalletId() {
+	global $coinbase_pubKey;
+	return $coinbase_pubKey;
+}
+
+function coinbasePrivateKey() {
+	global $coinbase_privKey;
+	return $coinbase_privKey;
 }
 
 function ob_print_r($what) {

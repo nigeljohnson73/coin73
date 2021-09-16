@@ -60,6 +60,12 @@ $miner_difficulty = 2;
 // How do we identify the coinbase in transactions for things like miner rewards etc.
 $coinbase = "SupremeOverlord";
 
+// The keypair just ensure faking cannot occur without access to the specific software config.
+// These values should be setup in the system and stored here to reduce the load on the DataStore.
+// Override them in the config_override.php
+$coinbase_pubKey = "";
+$coinbase_privKey = "";
+
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
 // 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
 $valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";

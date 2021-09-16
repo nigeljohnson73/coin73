@@ -81,4 +81,35 @@ function __testKeyStore() {
 
 	$logger->setLevel ( $ll );
 }
+
+function __getOverlordKeys($namespace = null) {
+	if (! class_exists ( "OverrideKeyStore" )) {
+
+		class OverrideKeyStore extends KeyStore {
+
+			public function __construct($namespace) {
+				logger ( LL_DBG, "KeyStore::KeyStore()" );
+				$this->storage = null;
+				$this->bucket = null;
+				$this->bucket_name = strtolower ( $namespace . "_KeyStore" );
+				$this->options = [ ];
+				$this->init ();
+			}
+		}
+	}
+
+	// if($namespace == null) {
+	// $namespage = getDataNamespace();
+	// }
+	global $logger;
+	$ll = $logger->getLevel ();
+	$logger->setLevel ( LL_DBG );
+
+	$store = new OverrideKeyStore ( $namespace ?? getDataNamespace ());
+
+	$keys = $store->getKeys ( coinbaseName () );
+	print_r ( $keys );
+
+	$logger->setLevel ( $ll );
+}
 ?>

@@ -6,9 +6,14 @@ class FileStore {
 	public function __construct($name, $options = [ ]) {
 		$this->storage = null;
 		$this->bucket = null;
-		$bucket_name = strtolower ( getDataNamespace () . "_" . $name );
-		// $bucket_name = getDataNamespace () . "_" . $name;
+		$this->bucket_name = strtolower ( $this->namespace . "_" . $name );
+		$this->options = $options;
+		$this->init ();
+	}
 
+	protected function init() {
+		// $bucket_name = strtolower ( $this->namespace . "_" . $name );
+		// $bucket_name = getDataNamespace () . "_" . $name;
 		$s_options = [ 
 				"suppressKeyFileNotice" => true,
 				"projectId" => getProjectId ()
@@ -27,16 +32,16 @@ class FileStore {
 
 			// What type of storage: "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE"
 			// https://cloud.google.com/storage/docs/storage-classes
-			$b_options ["storageClass"] = isset ( $options ["storageClass"] ) ? ($options ["storageClass"]) : ("STANDARD");
+			$b_options ["storageClass"] = $this->options ["storageClass"] ?? ("STANDARD");
 
 			// Default access: "authenticatedRead", <<"bucketOwnerFullControl">>, "bucketOwnerRead", "private", "projectPrivate", "publicRead"
-			$b_options ["defaultObjectAcl"] = isset ( $options ["defaultObjectAcl"] ) ? ($options ["defaultObjectAcl"]) : ("projectPrivate");
+			$b_options ["defaultObjectAcl"] = $this->options ["defaultObjectAcl"] ?? "projectPrivate";
 			$b_options ["predefinedAcl"] = $b_options ["defaultObjectAcl"];
 			// Defaults to US
 			$b_options ["location"] = "EU"; // TODO: store this in a config field???
 
 			try {
-				$this->bucket = $this->storage->bucket ( $bucket_name );
+				$this->bucket = $this->storage->bucket ( $this->bucket_name );
 			} catch ( Exception $e ) {
 				logger ( LL_ERR, "FileStore::FileStore(): Cannot open Bucket: " . $e->getMessage () );
 				$this->bucket = null;
@@ -44,17 +49,17 @@ class FileStore {
 
 			try {
 				if (! ($this->bucket && $this->bucket->exists ())) {
-					logger ( LL_WRN, "FileStore::FileStore(): Attempting to create Bucket: '" . $bucket_name . "'" );
+					logger ( LL_WRN, "FileStore::FileStore(): Attempting to create Bucket: '" . $this->bucket_name . "'" );
 					try {
-						$this->bucket = $this->storage->createBucket ( $bucket_name, $b_options );
-						logger ( LL_DBG, "FileStore::FileStore(): Created Bucket '" . $bucket_name . "'" );
+						$this->bucket = $this->storage->createBucket ( $this->bucket_name, $b_options );
+						logger ( LL_DBG, "FileStore::FileStore(): Created Bucket '" . $this->bucket_name . "'" );
 					} catch ( Exception $e ) {
 						$e = json_decode ( $e->getMessage () )->error;
 						logger ( LL_ERR, "FileStore::FileStore(): Cannot create Bucket: " . $e->message );
 						$this->bucket = null;
 					}
 				} else {
-					logger ( LL_DBG, "FileStore::FileStore(): Opened Bucket '" . $bucket_name . "'" );
+					logger ( LL_DBG, "FileStore::FileStore(): Opened Bucket '" . $this->bucket_name . "'" );
 				}
 			} catch ( Exception $e ) {
 				$e = json_decode ( $e->getMessage () )->error;
@@ -164,13 +169,12 @@ function __testFileStore() {
 }
 
 function __testFileStoreRaw() {
-	
-	$cli_options = [
+	$cli_options = [ 
 			"suppressKeyFileNotice" => true,
 			"projectId" => getProjectId ()
 	];
 	$storage = null;
-	
+
 	try {
 		$storage = new StorageClient ( $cli_options );
 		logger ( LL_INF, "Created StorageClient" );
@@ -178,12 +182,12 @@ function __testFileStoreRaw() {
 		$e = json_decode ( $e->getMessage () )->error;
 		logger ( LL_ERR, "Cannot create StorageClient: " . $e->message );
 	}
-	
+
 	if ($storage) {
-		
+
 		$bucket_name = getDataNamespace () . '_public';
 		$bucket = null;
-		
+
 		try {
 			$bucket = $storage->bucket ( $bucket_name );
 			logger ( LL_INF, "Opened Bucket '" . $bucket_name . "'" );
@@ -191,7 +195,7 @@ function __testFileStoreRaw() {
 			$e = json_decode ( $e->getMessage () )->error;
 			logger ( LL_ERR, "Cannot open Bucket: " . $e->message );
 		}
-		
+
 		if (! $bucket) {
 			try {
 				$bucket = $storage->createBucket ( $bucket_name );
@@ -201,11 +205,11 @@ function __testFileStoreRaw() {
 				logger ( LL_ERR, "Cannot create Bucket: " . $e->message );
 			}
 		}
-		
+
 		if ($bucket) {
 			$file_name = "README.md";
 			try {
-				$bucket->upload ( file_get_contents ( __DIR__ . '/' . $file_name ), [
+				$bucket->upload ( file_get_contents ( __DIR__ . '/' . $file_name ), [ 
 						'name' => $file_name,
 						'predefinedAcl' => 'publicRead'
 				] );
@@ -214,7 +218,7 @@ function __testFileStoreRaw() {
 				$e = json_decode ( $e->getMessage () )->error;
 				logger ( LL_ERR, "Cannot upload '" . $file_name . "': " . $e->message );
 			}
-			
+
 			try {
 				$object = $bucket->object ( $file_name );
 				$object->downloadToFile ( __DIR__ . '/zzz_deleteme_' . $file_name );
