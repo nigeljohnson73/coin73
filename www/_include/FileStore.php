@@ -162,4 +162,70 @@ function __testFileStore() {
 	logger ( LL_INF, "Deleted file" );
 	$logger->setLevel ( $ll );
 }
+
+function __testFileStoreRaw() {
+	
+	$cli_options = [
+			"suppressKeyFileNotice" => true,
+			"projectId" => getProjectId ()
+	];
+	$storage = null;
+	
+	try {
+		$storage = new StorageClient ( $cli_options );
+		logger ( LL_INF, "Created StorageClient" );
+	} catch ( Exception $e ) {
+		$e = json_decode ( $e->getMessage () )->error;
+		logger ( LL_ERR, "Cannot create StorageClient: " . $e->message );
+	}
+	
+	if ($storage) {
+		
+		$bucket_name = getDataNamespace () . '_public';
+		$bucket = null;
+		
+		try {
+			$bucket = $storage->bucket ( $bucket_name );
+			logger ( LL_INF, "Opened Bucket '" . $bucket_name . "'" );
+		} catch ( Exception $e ) {
+			$e = json_decode ( $e->getMessage () )->error;
+			logger ( LL_ERR, "Cannot open Bucket: " . $e->message );
+		}
+		
+		if (! $bucket) {
+			try {
+				$bucket = $storage->createBucket ( $bucket_name );
+				logger ( LL_INF, "Created Bucket '" . $bucket_name . "'" );
+			} catch ( Exception $e ) {
+				$e = json_decode ( $e->getMessage () )->error;
+				logger ( LL_ERR, "Cannot create Bucket: " . $e->message );
+			}
+		}
+		
+		if ($bucket) {
+			$file_name = "README.md";
+			try {
+				$bucket->upload ( file_get_contents ( __DIR__ . '/' . $file_name ), [
+						'name' => $file_name,
+						'predefinedAcl' => 'publicRead'
+				] );
+				logger ( LL_INF, "Uploaded '" . $file_name . "'" );
+			} catch ( Exception $e ) {
+				$e = json_decode ( $e->getMessage () )->error;
+				logger ( LL_ERR, "Cannot upload '" . $file_name . "': " . $e->message );
+			}
+			
+			try {
+				$object = $bucket->object ( $file_name );
+				$object->downloadToFile ( __DIR__ . '/zzz_deleteme_' . $file_name );
+				logger ( LL_INF, "Downloaded '" . $file_name . "'" );
+			} catch ( Exception $e ) {
+				$e = json_decode ( $e->getMessage () )->error;
+				logger ( LL_ERR, "Cannot download '" . $file_name . "': " . $e->message );
+			}
+		} else {
+			logger ( LL_ERR, "Cannot access storage bucket" );
+		}
+	}
+}
 ?>

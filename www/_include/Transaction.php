@@ -35,8 +35,14 @@ class Transaction {
 	public function sign($privKey) {
 		$ec = new EC ( 'secp256k1' );
 		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
+		$pubKey = $sk->getPublic ( 'hex' );
+		if ($this->from != $pubKey) {
+			logger ( LL_ERR, "Cannot sign transation with incorrect private key" );
+			return false;
+		}
 		$signature = $sk->sign ( $this->calculateHash () );
 		$this->signature = $signature->toDER ( 'hex' );
+		return true;
 	}
 
 	public function isValid() {
