@@ -1,6 +1,6 @@
 <?php include_once(__DIR__."/_header.php")?>
 
-<div class="container-fluid text-center" data-ng-controller="ComingSoonCtrl">
+<div class="container-fluid text-center" data-ng-controller="MerchCtrl">
 <?php
 use Michelf\MarkdownExtra;
 $fn = __DIR__ . "/" . str_replace ( ".php", "", basename ( __FILE__ ) ) . ".md";
