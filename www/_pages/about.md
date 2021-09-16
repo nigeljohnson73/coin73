@@ -2,7 +2,7 @@
 
 This application is a learning experiment into building a multi-layered blockchain that provides access to everyone and does not reward greed.
 
-Becase we need to flatten out the mining experience, this is a centralised blockhain. That means you have to have some identifiable relationship with the system in order to use it and for this we use your email address. We don't ask for your name or anything else, just an email address and we only use that to validate your account or send you important system or account information.
+Because we need to flatten out the mining experience, this is a centralised blockchain. That means you have to have some identifiable relationship with the system in order to use it and for this we use your email address. We don't ask for your name or anything else, just an email address and we only use that to validate your account or send you important system or account information.
 
 Let's take a look at the levels of the blockchain.
 
