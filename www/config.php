@@ -9,7 +9,7 @@ $project_id = "coin73";
 // The CORS origin is used by the API so that other websites cannot host links to it.
 // This value will by the server domain that the application will be served from.
 // It is overwritten for localhost to support local testing.
-$api_CORS_origin = "https://coin73.appspot.com";
+$api_CORS_origin = "https://".$project_id.".appspot.com";
 
 // This is the public API server so that 'remote' calls in the application can be handled.
 // Local API calls are managed through the local application, but remote ones are run through
@@ -75,9 +75,9 @@ $valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?
 $recaptcha_site_key = "";
 $recaptcha_secret_key = "";
 
-// This is the configuration for GMail SMTP. The username is generally your username and your
+// This is the configuration for GMail SMTP. The username is generally your email address and your
 // password is an app password you need to set up. See the README.md file for more info on that.
-// Expected to be in config_override.php
+// Expected to be overridden in config_override.php
 $smtp_server = "smtp.gmail.com";
 $smtp_port = "465";
 $smtp_auth = true;
