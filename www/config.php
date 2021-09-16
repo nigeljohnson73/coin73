@@ -53,7 +53,7 @@ $miner_efficiency_degrade = 0.2;
 $miner_max_count = 5;
 
 // the number of zeros at the beginning of the output from hash("sha1", $sig.$nonce) - defined by
-// the lowest powered device taking between $miner_submit_target_sec and 
+// the lowest powered device taking between $miner_submit_target_sec and
 // ($miner_submit_target_sec - 1) seconds to execute
 $miner_difficulty = 2;
 
@@ -87,6 +87,10 @@ $smtp_from_email = "";
 $smtp_username = "";
 $smtp_password = "";
 
+// This  defines the tag that will appear after the title and email name so you can tell which system 
+// you are working with. This should only be overwritten in the config_localhost.php file.
+$local_monika = "";
+		
 // Configure the logging variables
 define ( "LL_NONE", 0 );
 define ( "LL_SYSTEM", 0 );

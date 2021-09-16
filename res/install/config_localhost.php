@@ -10,8 +10,11 @@ $log_level = LL_INF;
 // Have a data storage area all to yourself
 // $localdev_namespace = "NigelsNamespace";
 
-// Set the system key pair. Once you have a $localdev_namespace setup, run the key extractor:
-// __getOverlordKeys() and put the values in here
+// Override this to update titles so you can tell which system you're on.
+$local_monika = " (Dev)";
+
+// Set the system key pair. Once you have a $localdev_namespace setup, 
+// run the key extractor: `__getOverlordKeys()` and put the values in here
 $coinbase_pubKey = "";
 $coinbase_privKey = "";
 ?>
