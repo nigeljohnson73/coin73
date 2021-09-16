@@ -1,11 +1,12 @@
 body {
-	font: 400 15px 'Montserrat', sans-serif;
+	/* font: 400 15px 'Montserrat', sans-serif; */
+	font: 400 15px 'Urbanist', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
 
 strong {
-	font: 700 15px 'Montserrat', sans-serif;
+	font: 700 15px 'Urbanist', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
@@ -61,23 +62,6 @@ h3, h4 {
 	font-weight: 400;
 }
 
-h1 {
-	font-size: 22px;
-	text-transform: uppercase;
-}
-
-h2 {
-	font-size: 22px;
-}
-
-h3 {
-	font-size: 20px;
-}
-
-h4 {
-	font-size: 18px;
-}
-
 p, li {
 	margin-bottom: 1em;
 }
@@ -86,6 +70,23 @@ li p {
 	margin-bottom: 0px;
 }
 */
+h1 {
+	font-size: 28px;
+	text-transform: uppercase;
+}
+
+h2 {
+	font-size: 24px;
+}
+
+h3 {
+	font-size: 18px;
+}
+
+h4 {
+	font-size: 16px;
+}
+
 a {
 	color: #3b0084;
 }
