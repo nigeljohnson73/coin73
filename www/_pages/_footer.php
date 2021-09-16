@@ -14,7 +14,7 @@
 		<ul class="navbar-nav w-100 nav-justified">
 			<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 			<!-- 			<li class="nav-item"><a class="nav-link" href="/signup">Sign up</a></li> -->
-			<li class="nav-item"><a class="nav-link" href="/merch">Support us</a></li>
+			<li class="nav-item"><a class="nav-link" href="/supportus">Support us</a></li>
 			<li class="nav-item"><a class="nav-link" href="/about">About us</a></li>
 		</ul>
 	</nav>
@@ -78,7 +78,6 @@ $(document).ready(function() {
 	var pathname = window.location.pathname;
 	$('.navbar-nav > li > a[href="'+pathname+'"]').parent().addClass('active');
 });
-
 </script>
 </body>
 </html>

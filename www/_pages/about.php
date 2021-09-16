@@ -1,9 +1,17 @@
 <?php include_once(__DIR__."/_header.php")?>
 
 <div class="container-fluid text-center" data-ng-controller="AboutCtrl">
-	<h1>About this app</h1>
-	<p>Coming soon.</p>
-	<p>More details and stuff about what's going will probably be on <a href="/wiki">the wiki</a>.</p>
+<?php
+use Michelf\MarkdownExtra;
+$fn = __DIR__ . "/" . str_replace ( ".php", "", basename ( __FILE__ ) ) . ".md";
+if (file_exists ( $fn )) {
+	$md = file_get_contents ( $fn );
+	$html = MarkdownExtra::defaultTransform ( $md );
+	echo $html;
+} else {
+	echo "<h1>No content here - yet</h1>";
+}
+?>
 	<div class="about-data">
 		<div class="row">
 			<div class="col-6 text-end fw-bold">App version:</div>
