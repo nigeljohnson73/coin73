@@ -98,18 +98,21 @@ function __getOverlordKeys($namespace = null) {
 		}
 	}
 
-	// if($namespace == null) {
-	// $namespage = getDataNamespace();
-	// }
 	global $logger;
+	global $data_namespace;
+
+	$dns = getDataNamespace ();
+	$data_namespace = $namespace ?? $dns;
 	$ll = $logger->getLevel ();
 	$logger->setLevel ( LL_DBG );
 
-	$store = new OverrideKeyStore ( $namespace ?? getDataNamespace ());
+	$store = new OverrideKeyStore ( $data_namespace );
+	echo "Keys for '" . coinbaseName () . "'\n";
 
 	$keys = $store->getKeys ( coinbaseName () );
 	print_r ( $keys );
 
 	$logger->setLevel ( $ll );
+	$data_namespace = $dns;
 }
 ?>

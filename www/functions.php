@@ -157,7 +157,7 @@ function minerDifficulty() {
 
 function coinbaseName() {
 	global $coinbase;
-	return $coinbase;
+	return getDataNamespace().$coinbase;
 }
 
 function coinbaseWalletId() {

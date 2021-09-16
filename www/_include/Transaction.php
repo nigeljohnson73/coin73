@@ -115,7 +115,7 @@ function __testTransaction() {
 	logger ( LL_DBG, "privKey   : '" . $privKey . "'" );
 
 	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
-	logger ( LL_INF, "Sign our data" );
+	logger ( LL_INF, "Generate and sign some data" );
 	// Sign message (can be hex sequence or array)
 	$msg = 'Secret Data in here';
 	logger ( LL_DBG, "Data      : '" . $msg . "'" );
@@ -124,10 +124,11 @@ function __testTransaction() {
 	logger ( LL_DBG, "Hash      : '" . $hash . "'" );
 
 	// Sign our hashed data
+	logger ( LL_INF, "Sign the hash" );
 	$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
 	$signature = $sk->sign ( $hash );
 
-	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
+	//logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
 	logger ( LL_INF, "Export the signature" );
 	// Export DER encoded signature to hex string
 	$derSign = $signature->toDER ( 'hex' );
@@ -161,7 +162,7 @@ function __testTransaction() {
 	print_r ( $u );
 	logger ( LL_INF, "Loading transaction from a database rowset" );
 	$t = (new Transaction ())->load ( $u );
-	logger ( LL_INF, "Rebuilt transaction valid  : expect true, got " . ($t->isValid () ? ("true") : ("false")) );
+	logger ( LL_INF, "Loaded transaction valid   : expect true, got " . ($t->isValid () ? ("true") : ("false")) );
 	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
 	logger ( LL_INF, "Loading transaction from a payload and signature - from within the block" );
 	$t = (new Transaction ())->fromPayload ( $u ["payload"], $u ["signature"] );
