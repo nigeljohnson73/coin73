@@ -46,6 +46,9 @@ $miner_reward_target_day = 5;
 // The target submission time for each job
 $miner_submit_target_sec = 15;
 
+// If you are being a douche, the API will block for this long. Be less of a douche
+$miner_submit_punish_sec = 15;
+
 // how much should every subsequet miner degrade (0-1 as a percent);
 $miner_efficiency_degrade = 0.2;
 

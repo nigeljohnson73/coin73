@@ -128,6 +128,11 @@ function minerSubmitTargetSeconds($wallet_id = null) {
 	return $miner_submit_target_sec;
 }
 
+function minerSubmitPunishment() {
+	global $miner_submit_punish_sec;
+	return $miner_submit_punish_sec;
+}
+
 // Allow for capitalism tiers
 function minerSubmitMinSeconds($wallet_id = null) {
 	return minerSubmitTargetSeconds ( $wallet_id ) / 2;

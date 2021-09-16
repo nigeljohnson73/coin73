@@ -55,17 +55,28 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 					$coin = $coin_per_slot * $sub_time_pcnt * $miner_efficiency;
 					logger ( LL_DBG, "Transaction amount: " . number_format ( $coin, 6 ) );
 					logger ( LL_DBG, "--------" );
-					// look up any block with that hash,
-					// set it up with the details.
-					// Calculate the share
-					// submit a transaction
-					$success = true;
+					$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, "Miner reward" );
+					if ($t->sign ( coinbasePrivateKey () )) {
+						$store = new TransactionStore ();
+						if ($store->insert ( $t->unload () )) {
+							$success = true;
+						} else {
+							$ret->reason = "Transaction submit failed";
+						}
+					} else {
+						$ret->reason = "Transaction signing failed";
+					}
 				} else {
 					$ret->reason = "Invalid nonce";
 				}
 			} else {
 				if ($delta < minerSubmitMinSeconds ( $arr ["wallet_id"] )) {
-					$ret->reason = "Submitted too soon (" . number_format ( $delta, 2 ) . "<" . minerSubmitMinSeconds ( $arr ["wallet_id"] ) . ")";
+					if ($delta < (minerSubmitMinSeconds ( $arr ["wallet_id"] ) - 0.5)) {
+						$ret->reason = "Submitted waaaaaay too soon (" . number_format ( $delta, 2 ) . "<" . minerSubmitMinSeconds ( $arr ["wallet_id"] ) . ")";
+						sleep ( minerSubmitPunishment () );
+					} else {
+						$ret->reason = "Submitted too soon (" . number_format ( $delta, 2 ) . "<" . minerSubmitMinSeconds ( $arr ["wallet_id"] ) . ")";
+					}
 				}
 				if ($delta > minerSubmitMaxSeconds ( $arr ["wallet_id"] )) {
 					$ret->reason = "Submitted too late (" . number_format ( $delta, 2 ) . ">" . minerSubmitMaxSeconds ( $arr ["wallet_id"] ) . ")";
