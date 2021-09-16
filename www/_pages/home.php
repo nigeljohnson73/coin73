@@ -33,13 +33,13 @@
 		</div>
 		<form data-ng-show="!user" novalidate>
 			<h1>Welcome</h1>
-			<br />
-			<div data-ng-show="login_failure">
+			<div data-ng-show="reason">
 				<div class="alert alert-danger" role="alert">
 					<p>Login failed.</p>
-					<p data-ng-show="reason" data-ng-bind-html="reason"></p>
+					<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 				</div>
 			</div>
+			<br />
 			<div class="row">
 				<div class="col-md-6">
 					<label for="email" class="form-label">Email address</label> <input type="email" class="form-control" id="email" data-ng-model="tx.email" data-ng-class="email_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="emailAddressValidate($event)" required>

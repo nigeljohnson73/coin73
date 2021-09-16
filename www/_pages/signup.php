@@ -46,7 +46,7 @@
 	<div data-ng-show="account_not_created">
 		<div class="alert alert-danger" role="alert">
 			<p>The account creation process failed.</p>
-			<p data-ng-show="reason" data-ng-bind-html="reason"></p>
+			<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 		</div>
 	</div>
 </div>

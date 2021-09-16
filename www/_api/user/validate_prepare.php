@@ -54,6 +54,7 @@ if (isset ( $_POST ["payload"] )) {
 	$ret->reason = "Validation data cannot be identified.";
 }
 
+$ret->warning = "Hello World. <a href='/'>Go Home</a>";
 if (! $success) {
 	global $api_failure_delay;
 	sleep ( $api_failure_delay );

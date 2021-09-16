@@ -22,13 +22,19 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 		$store = new UserStore ();
 		$user = $store->getItemById ( @$_POST ["email"] );
 		if (is_array ( $user )) {
-			$ret->challenge = $store->recoverUser ( $user ["email"] );
-			$success = strlen ( $ret->challenge );
-			if ($success) {
-				$message = "Recovery request setup";
+			if (! $user ["recovery_nonce"]) {
+				$ret->challenge = $store->recoverUser ( $user ["email"] );
+				$success = strlen ( $ret->challenge );
+				if ($success) {
+					$message = "Recovery request setup";
+				} else {
+					$message = "Recovery request setup failed";
+					$ret->reason = "The request setup failed - the multifactor process did not complete";
+				}
 			} else {
-				$message = "Recovery request setup failed";
-				$ret->reason = "The request setup failed - The Multifactor process did not complete";
+				global $token_timeout_hours;
+				$message = "Outstanding recovery";
+				$ret->reason = "There is an outstanding recovery request. You can wait " . $token_timeout_hours . " hours, or [revalidate your account](/validate) with your existing password.";
 			}
 		} else {
 			// $success = true;

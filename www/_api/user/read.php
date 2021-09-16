@@ -19,8 +19,20 @@ if (isset ( $_SESSION ["AUTHTOK"] )) {
 	$store = new UserStore ();
 	$user = $store->getItemByGuid ( $_SESSION ["AUTHTOK"] );
 	if (is_array ( $user )) {
-		$ret->user = sanitiseUser ( $user );
-		$success = true;
+		if (strlen ( $user ["validation_data"] ) == 0) {
+			if (! $user ["locked"]) {
+				$user ["logged_in"] = timestampNow ();
+				$store->update ( $user );
+				$success = true;
+				$message = "User authenticated\n";
+				$_SESSION ["AUTHTOK"] = $user ["guid"];
+				$ret->user = sanitiseUser ( $user );
+			} else {
+				$ret->reason = "This account is locked.";
+			}
+		} else {
+			$ret->reason = "There is an outstanding validation request. Please complete that first.";
+		}
 	} else {
 		global $api_failure_delay;
 		sleep ( $api_failure_delay );

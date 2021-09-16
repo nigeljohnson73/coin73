@@ -8,6 +8,11 @@ echo trim ( $str );
 ?></script>
 <div class="container-fluid text-center" data-ng-controller="ValidateCtrl">
 	<h1>Validate your account</h1>
+	<div data-ng-show="warning">
+		<div class="alert alert-warning" role="alert">
+			<span data-ng-bind-html="warning"></span>
+		</div>
+	</div>
 	<form data-ng-show="!payload" novalidate>
 		<div data-ng-show="!validation_request_success && !validation_request_failure" novalidate>
 			<p>
@@ -47,11 +52,10 @@ echo trim ( $str );
 		<div data-ng-show="validation_request_failure">
 			<div class="alert alert-danger" role="alert">
 				<p>The account validation process failed.</p>
-				<p data-ng-show="reason" data-ng-bind-html="reason"></p>
+				<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 			</div>
 		</div>
 	</form>
-
 
 	<div data-ng-show="payload">
 		<div data-ng-show="!validation_success && !validation_failure">
@@ -62,15 +66,16 @@ echo trim ( $str );
 		<div data-ng-show="validation_success">
 			<div class="alert alert-success" role="alert">
 				<p>You have successfully validated your account - thank you.</p>
+				<span>You should now be able to <a href="/">log in</a>.
+				</span>
 			</div>
 		</div>
 		<div data-ng-show="validation_failure">
 			<div class="alert alert-danger" role="alert">
 				<p>Validation process failed</p>
-				<p data-ng-show="reason" data-ng-bind-html="reason"></p>
+				<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 			</div>
 		</div>
 	</div>
 </div>
-
 <?php include_once '_footer.php';?>

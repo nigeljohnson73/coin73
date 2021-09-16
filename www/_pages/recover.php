@@ -67,7 +67,8 @@ echo trim ( $str );
 				<br />
 				<div class="row">
 					<div class="col-12">
-						<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and conditions</a></label>
+						<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and
+								conditions</a></label>
 						<div class="invalid-feedback">You must agree before we can process your request.</div>
 					</div>
 				</div>
@@ -77,15 +78,15 @@ echo trim ( $str );
 		</div>
 		<div data-ng-show="recovery_success">
 			<div class="alert alert-success" role="alert">
-				<p>
-					You have successfully recovered your account. You should now be able to <a href="/">log in</a>.
-				</p>
+				<p>Recovery successful</p>
+				<span> You have successfully recovered your account. You should now be able to <a href="/">log in</a>.
+				</span>
 			</div>
 		</div>
 		<div data-ng-show="recovery_failure">
 			<div class="alert alert-danger" role="alert">
-				<p>Failure: coming soon</p>
-				<p data-ng-show="reason" data-ng-bind-html="reason"></p>
+				<p>Recovery failure</p>
+				<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 			</div>
 		</div>
 	</div>

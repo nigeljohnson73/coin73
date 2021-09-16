@@ -66,7 +66,7 @@ class UserStore extends DataStore {
 		$arr ["password"] = "";
 		logger ( LL_DBG, "UserStore::insert()" );
 		logger ( LL_DBG, "UserStore::insert() - email address: '" . $arr ["email"] . "'" );
-		//logger ( LL_DBG, "UserStore::insert() - passed password: '" . $password . "'" );
+		// logger ( LL_DBG, "UserStore::insert() - passed password: '" . $password . "'" );
 		$arr ["guid"] = GUIDv4 ();
 		$arr ["created"] = ( int ) timestampNow ();
 		$arr ["locked"] = 0; // timestamp
@@ -102,8 +102,6 @@ class UserStore extends DataStore {
 			return false;
 		}
 
-		// Create and initialize EC context
-		// (better do it once and reuse it)
 		logger ( LL_DBG, "UserStore::insert() - obtaining public/private key pair" );
 
 		$keystore = new KeyStore ();
@@ -156,10 +154,11 @@ class UserStore extends DataStore {
 			logger ( LL_ERR, "UserStore::revalidateUser('$email'): Unable to find user" );
 			return false;
 		}
-		if(strlen($user ["validation_nonce"])) {
-			logger ( LL_ERR, "UserStore::revalidateUser('$email'): Already an email outstanding - don't spam" );
-			return false;
-		}
+		// Because we have authenticated - accept that user asked for it, the user is gonna get it
+		// if (strlen ( $user ["validation_nonce"] )) {
+		// logger ( LL_ERR, "UserStore::revalidateUser('$email'): Already an email outstanding - don't spam" );
+		// return false;
+		// }
 		$validation = $this->generateMfa ();
 		print_r ( $validation );
 		$user ["validation_nonce"] = GUIDv4 ();
@@ -172,9 +171,9 @@ class UserStore extends DataStore {
 		$payload_url = $validation_url . "/"/*"?payload=" */. $user ["validation_nonce"];
 		$subject = "Account validation request";
 		$body = "";
-		$body .= "This account has requested an account activation or validation. In order to complete this request please head on over to [the revalidation page](" . $payload_url . ").\n\n";
+		$body .= "This account has requested an account validation. In order to complete this request please head on over to [the revalidation page](" . $payload_url . ").\n\n";
 		$body .= "If you cannot remember the challenge word you were shown, you should probably [validate your account](" . $validation_url . ") again.\n\n";
-		$body .= "If you did not make this request, then you should probably secure your account by [resetting your password](" . $recovery_url . ").";
+		$body .= "If you did not make this request, then you should probably secure your account by [recovering your account](" . $recovery_url . ").";
 
 		if (sendEmail ( $user ["email"], $subject, $body )) {
 			if ($this->update ( $user )) {
@@ -197,13 +196,14 @@ class UserStore extends DataStore {
 			logger ( LL_ERR, "UserStore::recovereUser('$email'): Unable to find user" );
 			return false;
 		}
-		if(strlen($user ["validation_nonce"])) {
-			logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
-			return false;
-		}
+		// Handled avove my paygrade
+		// if (strlen ( $user ["recovery_nonce"] )) {
+		// logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
+		// return false;
+		// }
 		$validation = $this->generateMfa ();
 		print_r ( $validation );
-		//$user ["locked"] = timestampNow ();
+		// $user ["locked"] = timestampNow ();
 		$user ["recovery_nonce"] = GUIDv4 ();
 		$user ["recovery_requested"] = ( int ) timestampNow ();
 		$user ["recovery_data"] = json_encode ( $validation );

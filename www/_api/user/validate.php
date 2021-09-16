@@ -30,7 +30,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 			$user ["validation_reminded"] = 0;
 			$user ["validation_nonce"] = "";
 			$user ["validation_data"] = "";
-			$user = $store->replace ( $user );
+			$user = $store->update ( $user );
 
 			if (is_array ( $user )) {
 				if ($success) {

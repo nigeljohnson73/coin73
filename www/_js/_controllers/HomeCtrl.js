@@ -3,6 +3,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 	$scope.submitting = false;
 	$scope.login_failure = false;
 	$scope.user = null;
+	$scope.reason = "";
 
 	var recaptcha_action = "login";
 	$scope.tx = {};
@@ -65,6 +66,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 					});
 				});
 			}
+			$scope.reason = $sce.trustAsHtml(data.reason);
 
 			if (data.message.length) {
 				toast(data.message);
@@ -86,6 +88,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 			$scope.email_valid = false;
 			$scope.password_valid = false;
 			$scope.submittable = false;
+			$scope.reason = "";
 
 
 			if (data.success) {

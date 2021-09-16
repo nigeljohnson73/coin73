@@ -40,7 +40,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				// $ret->reason = "There is an outstanding recovery request. Please complete that first.";
 				// } else
 				if (strlen ( $user ["validation_data"] ) == 0) {
-					if (strlen ( $user ["locked"] ) == 0) {
+					if (! $user ["locked"]) {
 						$user ["logged_in"] = timestampNow ();
 						$store->update ( $user );
 						$success = true;

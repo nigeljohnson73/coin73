@@ -38,8 +38,12 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$user ["recovery_requested"] = 0;
 				$user ["recovery_nonce"] = "";
 				$user ["recovery_data"] = "";
+				$user ["validation_requested"] = 0;
+				$user ["validation_reminded"] = 0;
+				$user ["validation_nonce"] = "";
+				$user ["validation_data"] = "";
 				
-				$user = $store->replace ( $user );
+				$user = $store->update ( $user );
 
 				if (is_array ( $user )) {
 					$user = $store->setPassword ( $user ["email"], $_POST ["password"] );

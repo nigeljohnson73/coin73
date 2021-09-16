@@ -1,6 +1,7 @@
 app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function($scope, $sce, $timeout, apiSvc) {
 	$scope.submitting = false;
 	$scope.reason = ""; // For failure reporting
+	$scope.warning = "";
 
 	// Requesting variables
 	$scope.email_valid = false;
@@ -58,6 +59,7 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function
 	$scope.requestValidateAccount = function() {
 		logger("ValidateCtrl::requestAccount()");
 		$scope.submitting = true;
+		$scope.warning = "";
 		if ($scope.submittable) {
 			apiSvc.callLocal("user/validate/request", $scope.tx, function(data) {
 				logger(data);
@@ -67,6 +69,7 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function
 					$scope.challenge = data.challenge;
 				}
 				$scope.reason = $sce.trustAsHtml(data.reason);
+				$scope.warning = $sce.trustAsHtml(data.warning);
 
 				if (data.message.length) {
 					toast(data.message);
@@ -106,6 +109,7 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function
 				$scope.validation_failure = true;
 			}
 			$scope.reason = $sce.trustAsHtml(data.reason);
+			$scope.warning = $sce.trustAsHtml(data.warning);
 
 			if (data.message.length) {
 				toast(data.message);
