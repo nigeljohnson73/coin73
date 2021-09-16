@@ -21,7 +21,7 @@ class TransactionStore extends DataStore {
 	}
 
 	public function insert($arr) {
-		echo "TransactionStore::insert()\n";
+		logger ( LL_DBG, "TransactionStore::insert()" );
 		$t = (new Transaction ())->load ( $arr );
 		if (! $t->isValid ()) {
 			logger ( LL_ERR, "TransactionStore::insert(): transaction is not valid" );
