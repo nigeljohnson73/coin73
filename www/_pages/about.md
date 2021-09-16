@@ -18,7 +18,7 @@ This level of work is under review. The idea is that, from time to time more mai
 
 Anyone remember the SETI or Cancer Research protein folding screensavers from the late 90's? Well, the idea was that while your computer was idle, your screensaver would download a package of work, process it, then submit it for the good of... well the relevant company. The idea here is that someone can post some work to be done, and the folk who process that work get rewarded by that someone.
 
-Or, we may just stick some NFT on the chain... Not sure what that is? Well, currently my mood suggests this might be [a good article](https://www.theverge.com/22310188/nft-explainer-what-is-blockchain-crypto-art-faq) to read. It doesn't really make it clearer, but I think that might be the point.
+Or, we may just stick some NFT on the chain... Not sure what that is? Well currently, my mood suggests this might be [a good article](https://www.theverge.com/22310188/nft-explainer-what-is-blockchain-crypto-art-faq) to read. It doesn't really make it clearer, but I think that might be the point.
 
 # Helping out
 
