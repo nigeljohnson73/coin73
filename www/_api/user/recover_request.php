@@ -28,7 +28,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$message = "Recovery request setup";
 			} else {
 				$message = "Recovery request setup failed";
-				$ret->reason = "The request setup failed - The Multifactor process could not complete";
+				$ret->reason = "The request setup failed - The Multifactor process did not complete";
 			}
 		} else {
 			// $success = true;

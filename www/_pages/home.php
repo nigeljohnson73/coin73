@@ -12,7 +12,7 @@
 						<p>
 							Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span>
 						</p>
-						<p class="user-details wallet-id">{{user.public_key}}</p>
+						<p class="user-details wallet-id text-truncate">{{user.public_key}}</p>
 					</div>
 				</div>
 			</div>

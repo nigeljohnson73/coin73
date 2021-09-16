@@ -12,7 +12,6 @@ class UserStore extends DataStore {
 		$this->addField ( "email", "String", true, true ); // indexed and key
 		$this->addField ( "guid", "String", true ); // for the password mechanism, and passing around instead of the email address
 		$this->addField ( "password", "String" );
-		// $this->addField ( "private_key", "String" );
 		$this->addField ( "public_key", "String", true ); // indexed for wallet management
 		$this->addField ( "balance", "Float" );
 		$this->addField ( "created", "Integer", true ); // timestamp to denote creation - birthdays etc ??? :D
@@ -25,6 +24,7 @@ class UserStore extends DataStore {
 		$this->addField ( "recovery_nonce", "String", true ); // This exists if are waiting on an email reponse to the recovery request
 		$this->addField ( "recovery_data", "String" ); // This is the validation string array that will hold the choices - lock the account while this is processing
 		$this->addField ( "locked", "Integer", true ); // the timestamp of the locking of this account. X days after this, funds will be re-distributed, cleared on account recovery
+		$this->addField ( "logged_in", "Integer", true ); // the timestamp of the last login of this account.
 
 		$this->init ();
 	}
@@ -66,11 +66,11 @@ class UserStore extends DataStore {
 		$arr ["password"] = "";
 		logger ( LL_DBG, "UserStore::insert()" );
 		logger ( LL_DBG, "UserStore::insert() - email address: '" . $arr ["email"] . "'" );
-		logger ( LL_DBG, "UserStore::insert() - passed password: '" . $password . "'" );
+		//logger ( LL_DBG, "UserStore::insert() - passed password: '" . $password . "'" );
 		$arr ["guid"] = GUIDv4 ();
 		$arr ["created"] = ( int ) timestampNow ();
-		$arr ["locked"] = 0;
-		// $arr ["private_key"] = "";
+		$arr ["locked"] = 0; // timestamp
+		$arr ["logged_in"] = 0; // timestamp
 		$arr ["public_key"] = "";
 		$arr ["balance"] = 0;
 		$arr ["validated"] = 0; // timestamp
@@ -104,7 +104,7 @@ class UserStore extends DataStore {
 
 		// Create and initialize EC context
 		// (better do it once and reuse it)
-		logger ( LL_DBG, "UserStore::insert() - generating public/private key pair" );
+		logger ( LL_DBG, "UserStore::insert() - obtaining public/private key pair" );
 
 		$keystore = new KeyStore ();
 		$keys = $keystore->getKeys ( $arr ["email"] );
@@ -156,6 +156,10 @@ class UserStore extends DataStore {
 			logger ( LL_ERR, "UserStore::revalidateUser('$email'): Unable to find user" );
 			return false;
 		}
+		if(strlen($user ["validation_nonce"])) {
+			logger ( LL_ERR, "UserStore::revalidateUser('$email'): Already an email outstanding - don't spam" );
+			return false;
+		}
 		$validation = $this->generateMfa ();
 		print_r ( $validation );
 		$user ["validation_nonce"] = GUIDv4 ();
@@ -193,9 +197,13 @@ class UserStore extends DataStore {
 			logger ( LL_ERR, "UserStore::recovereUser('$email'): Unable to find user" );
 			return false;
 		}
+		if(strlen($user ["validation_nonce"])) {
+			logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
+			return false;
+		}
 		$validation = $this->generateMfa ();
 		print_r ( $validation );
-		$user ["locked"] = timestampNow ();
+		//$user ["locked"] = timestampNow ();
 		$user ["recovery_nonce"] = GUIDv4 ();
 		$user ["recovery_requested"] = ( int ) timestampNow ();
 		$user ["recovery_data"] = json_encode ( $validation );
@@ -205,7 +213,7 @@ class UserStore extends DataStore {
 		$subject = "Account recovery request";
 		$body = "";
 		$body .= "This account has requested an account recovery. In order to complete this request please head on over to [the recovery page](" . $payload_url . ").\n\n";
-		$body .= "If you cannot remember the challenge word you were shown, you should probably [validate your account](" . $recovery_url . ") again.\n\n";
+		$body .= "If you cannot remember the challenge word you were shown, you should probably [recover your account](" . $recovery_url . ") again.\n\n";
 		$body .= "If you did not make this request, then you you can ignore this email, and apologies for interfering with your day.";
 
 		if (sendEmail ( $user ["email"], $subject, $body )) {
@@ -231,7 +239,7 @@ class UserStore extends DataStore {
 		$user ["password"] = md5 ( $user ["password"] );
 		logger ( LL_DBG, "UserStore::setPassword() - final password: '" . $user ["password"] . "'" );
 
-		return $this->replace ( $user );
+		return $this->update ( $user );
 	}
 
 	public function authenticate($email, $password) {

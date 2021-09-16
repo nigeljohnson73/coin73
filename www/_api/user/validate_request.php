@@ -28,7 +28,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$message = "Validation request setup\n";
 			} else {
 				$message = "Validation request setup failed\n";
-				$ret->reason = "The request setup failed - The Multifactor process could not complete";
+				$ret->reason = "The request setup failed - The Multifactor process did not complete";
 			}
 		} else {
 			$message = "Unable to find user\n";
