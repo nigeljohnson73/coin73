@@ -9,9 +9,9 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="shadow alert alert-secondary" role="alert">
-						<p>
+						<h2>
 							Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span>
-						</p>
+						</h2>
 						<p class="user-details wallet-id text-truncate">{{user.public_key}}</p>
 					</div>
 				</div>
@@ -19,8 +19,9 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="shadow alert alert-secondary" role="alert">
-						<p>Your Balance</p>
+						<h2>Your Balance</h2>
 						<h1 class="display-1">{{user.balance | number:4}}</h1>
+						<span>{{user.dollar | currency : "$" }}</span>
 					</div>
 				</div>
 			</div>

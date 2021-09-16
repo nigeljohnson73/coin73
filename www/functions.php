@@ -162,7 +162,7 @@ function minerDifficulty() {
 
 function coinbaseName() {
 	global $coinbase;
-	return getDataNamespace().$coinbase;
+	return getDataNamespace () . $coinbase;
 }
 
 function coinbaseWalletId() {
@@ -1044,6 +1044,8 @@ function sanitiseUser($user) {
 
 	$ret->public_key = @$user ["public_key"];
 	$ret->balance = @$user ["balance"];
+	$ret->xchng = 0;
+	$ret->dollar = $ret->balance * $ret->xchng;
 
 	logger ( LL_DBG, ob_print_r ( $ret ) );
 	return $ret;
