@@ -1,0 +1,11 @@
+indexes:
+- kind: User
+  properties:
+  - name: locked
+  - name: validation_reminded
+
+- kind: User
+  properties:
+  - name: locked
+  - name: validation_reminded
+  - name: validated

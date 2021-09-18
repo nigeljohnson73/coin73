@@ -320,16 +320,16 @@ class UserStore extends DataStore {
 		$body .= "It has been " . revalidationPeriodDays () . " days since this account was last validated. Within the next " . actionGraceDays () . " days please head on over to [the validation page](" . $payload_url . ") and revalidate this account.\n\n";
 		$body .= "If you have not performed this process within the next" . actionGraceDays () . " days, your account will be locked and you will not be able to mine or login to your account.";
 
-		if (sendEmail ( $user ["email"], $subject, $body )) {
-			if ($this->update ( $user )) {
-				logger ( LL_DBG, "UserStore::requestValidateUser('$email'): Sucessfully requested" );
-				return true;
-			} else {
-				logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to save challenge" );
-			}
-		} else {
-			logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to send email" );
-		}
+		// if (sendEmail ( $user ["email"], $subject, $body )) {
+		// if ($this->update ( $user )) {
+		// logger ( LL_DBG, "UserStore::requestValidateUser('$email'): Sucessfully requested" );
+		// return true;
+		// } else {
+		// logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to save challenge" );
+		// }
+		// } else {
+		// logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to send email" );
+		// }
 		return false;
 	}
 
@@ -377,7 +377,11 @@ class UserStore extends DataStore {
 
 		// Wipe any recovery requests
 		$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
-		$gql = "SELECT * FROM " . $this->kind . " WHERE recover_requested < @key";
+		$gql = "SELECT * FROM " . $this->kind . " WHERE recovery_requested > 0 AND recovery_requested < @key";
+		logger ( LL_DBG, "UserStore::tidyUp(): removing recovery tokens" );
+		// logger ( LL_DBG, "UserStore::tidyUp(): '" . $gql . "'" );
+		// logger ( LL_DBG, "UserStore::tidyUp(): @key: '" . $older . "'" );
+		logger ( LL_DBG, "UserStore::tidyUp(): '" . str_replace ( "@key", $older, $gql ) . "'" );
 		$this->obj_store->query ( $gql, [ 
 				'key' => $older
 		] );
@@ -389,9 +393,13 @@ class UserStore extends DataStore {
 			$this->obj_store->upsert ( $arr_page );
 		}
 
-		// Wipe any recovery requests
+		// Wipe any validation requests
 		$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
-		$gql = "SELECT * FROM " . $this->kind . " WHERE validation_requested < @key";
+		$gql = "SELECT * FROM " . $this->kind . " WHERE validation_requested  > 0 AND validation_requested < @key";
+		logger ( LL_DBG, "UserStore::tidyUp(): removing validation tokens" );
+		// logger ( LL_DBG, "UserStore::tidyUp(): '" . $gql . "'" );
+		// logger ( LL_DBG, "UserStore::tidyUp(): @key: '" . $older . "'" );
+		logger ( LL_DBG, "UserStore::tidyUp(): '" . str_replace ( "@key", $older, $gql ) . "'" );
 		$this->obj_store->query ( $gql, [ 
 				'key' => $older
 		] );
@@ -404,9 +412,12 @@ class UserStore extends DataStore {
 		}
 
 		// Lock any accounts that have not revalidated in the grace period
-		// TODO: Fix these indexed
 		$older = timestampAdd ( timestampNow (), - actionGraceDays () * 24 * 60 * 60 );
 		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < @key";
+		logger ( LL_DBG, "UserStore::tidyUp(): locking non-compliant validation requests" );
+		// logger ( LL_DBG, "UserStore::tidyUp(): '" . $gql . "'" );
+		// logger ( LL_DBG, "UserStore::tidyUp(): @key: '" . $older . "'" );
+		logger ( LL_DBG, "UserStore::tidyUp(): '" . str_replace ( "@key", $older, $gql ) . "'" );
 		$this->obj_store->query ( $gql, [ 
 				'key' => $older
 		] );
@@ -422,28 +433,41 @@ class UserStore extends DataStore {
 	}
 
 	protected function _requestRevalidations() {
-		logger ( LL_DBG, "UserStore::_requestRevalidations(): started" );
+		logger ( LL_DBG, "UserStore::requestRevalidations(): started" );
 
 		// Lock any accounts that have not revalidated in the grace period
 		$older = timestampAdd ( timestampNow (), - revalidationPeriodDays () * 24 * 60 * 60 );
-		// TODO: Fix these indexed
-		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validated < @key";
-		logger ( LL_DBG, "UserStore::_requestRevalidations(): GQL: '" . $gql . "'" );
-		logger ( LL_DBG, "UserStore::_requestRevalidations(): older: '" . $older . "'" );
+		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validation_reminded = 0 AND validated < @key";
+		logger ( LL_DBG, "UserStore::tidyUp(): sending revalidation requests" );
+		// logger ( LL_DBG, "UserStore::requestRevalidations(): GQL: '" . $gql . "'" );
+		// logger ( LL_DBG, "UserStore::requestRevalidations(): @key: '" . $older . "'" );
+		logger ( LL_DBG, "UserStore::requestRevalidations(): '" . str_replace ( "@key", $older, $gql ) . "'" );
 		$this->obj_store->query ( $gql, [ 
 				'key' => $older
 		] );
-		logger ( LL_DBG, "UserStore::_requestRevalidations(): query sent" );
 
 		$arr_page = $this->obj_store->fetchPage ( transactionsPerPage () );
-		logger ( LL_DBG, "UserStore::_requestRevalidations(): pulled " . count ( $arr_page ) . " validation request records" );
+		logger ( LL_DBG, "UserStore::requestRevalidations(): pulled " . count ( $arr_page ) . " validation request records" );
 
 		foreach ( $arr_page as $a ) {
-			logger ( LL_DBG, "UserStore::_requestRevalidations(): Requesting for '" . $a->getData () ["email"] . "'" );
-			$this->requestRecoverUser ( $a->getData () ["email"] );
+			$data = $a->getData ();
+			if ($data ["locked"] == 0 && $data ["validation_reminded"] == 0 && $data ["validated"] < $older) {
+				logger ( LL_DBG, "    Seems legit" );
+			} else {
+				// TODO: Stop coming in here
+				logger ( LL_DBG, "    Datastore lied!!!" );
+				$dbg = array();
+				$dbg["locked"] = $data["locked"];
+				$dbg["validation_reminded"] = $data["validation_reminded"];
+				$dbg["validated"] = $data["validated"];
+				logger(LL_DBG, ob_print_r($dbg));
+			}
+			// print_r ( $a->getData () );
+			// logger ( LL_DBG, "UserStore::requestRevalidations(): Requesting for '" . $a->getData () ["email"] . "'" );
+			// $this->requestValidateUser ( $a->getData () ["email"] );
 		}
 
-		logger ( LL_DBG, "UserStore::_requestRevalidations(): complete" );
+		logger ( LL_DBG, "UserStore::requestRevalidations(): complete" );
 	}
 
 	public static function tidyUp() {

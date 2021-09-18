@@ -13,4 +13,4 @@ cron:
 
 - description: "Every day"
   url: /cron/every_day
-  schedule: every 1 days 03:17
+  schedule: every day 03:17
