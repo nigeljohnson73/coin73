@@ -4,6 +4,7 @@ use Elliptic\EC;
 class Transaction {
 
 	public function __construct($from = null, $to = null, $amount = null, $message = "") {
+		$this->created = microtime(true);
 		$this->from = $from;
 		$this->to = $to;
 		$this->amount = $amount;
@@ -16,6 +17,7 @@ class Transaction {
 	public function getPayload() {
 		if (! $this->payload) {
 			$ret = new StdClass ();
+			$ret->created = $this->created;
 			$ret->from = $this->from;
 			$ret->to = $this->to;
 			$ret->amount = $this->amount;
@@ -45,7 +47,7 @@ class Transaction {
 	}
 
 	public function isValid() {
-		if ($this->to == null || $this->from == null || $this->amount <= 0) {
+		if (/*$this->created == null || */$this->to == null || $this->from == null || $this->amount <= 0) {
 			return false;
 		}
 
@@ -59,12 +61,13 @@ class Transaction {
 
 	public function unload() {
 		$arr = array ();
+		$arr ["created"] = $this->created;
 		$arr ["from"] = $this->from;
 		$arr ["to"] = $this->to;
 		$arr ["amount"] = $this->amount;
 		$arr ["message"] = $this->message;
 		$arr ["payload"] = $this->getPayload ();
-		// $arr ["hash"] = $this->calculateHash();
+		$arr ["hash"] = $this->calculateHash();
 		$arr ["signature"] = $this->signature;
 		return $arr;
 	}
@@ -74,6 +77,7 @@ class Transaction {
 	}
 
 	public function fromArray($arr) {
+		$this->created = $arr ["created"] ?? microtime(true);
 		$this->from = $arr ["from"] ?? null;
 		$this->to = $arr ["to"] ?? null;
 		$this->amount = $arr ["amount"] ?? null;
@@ -90,6 +94,7 @@ class Transaction {
 		$this->signature = $signature;
 
 		$payload = json_decode ( $payload );
+		$this->created = $payload->created ?? null;
 		$this->from = $payload->from ?? null;
 		$this->to = $payload->to ?? null;
 		$this->amount = $payload->amount ?? null;

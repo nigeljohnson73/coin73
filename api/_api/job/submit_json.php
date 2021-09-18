@@ -57,7 +57,7 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 					logger ( LL_DBG, "--------" );
 					$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, "Miner reward" );
 					if ($t->sign ( coinbasePrivateKey () )) {
-						$store = new TransactionStore ();
+						$store = new PendingTransactionStore ();
 						if ($store->insert ( $t->unload () )) {
 							$success = true;
 						} else {

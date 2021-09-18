@@ -1,14 +1,15 @@
 <?php
 include_once (__DIR__ . "/DataStore.php");
 
-class TransactionStore extends DataStore {
+class PendingTransactionStore extends DataStore {
 
 	public function __construct() {
-		logger ( LL_ERR, "TransactionStore::TransactionStore()" );
+		logger ( LL_ERR, "PendingTransactionStore::PendingTransactionStore()" );
 
 		parent::__construct ( "Transaction" );
 
 		$this->addField ( "txn_id", "String", true, true ); // indexed and key
+		$this->addField ( "created", "Float" , true);
 		$this->addField ( "from", "String" );
 		$this->addField ( "to", "String" );
 		$this->addField ( "amount", "Float" );
@@ -21,13 +22,14 @@ class TransactionStore extends DataStore {
 	}
 
 	public function insert($arr) {
-		logger ( LL_DBG, "TransactionStore::insert()" );
+		logger ( LL_DBG, "PendingTransactionStore::insert()" );
 		$t = (new Transaction ())->load ( $arr );
 		if (! $t->isValid ()) {
-			logger ( LL_ERR, "TransactionStore::insert(): transaction is not valid" );
+			logger ( LL_ERR, "PendingTransactionStore::insert(): transaction is not valid" );
 			return;
 		}
 		$arr = $t->unload ();
+		// Allow the 
 		if ($arr ["from"] == coinbaseWalletId ()) {
 			$arr ["txn_id"] = GUIDv4 () . "-" . timestampNow ();
 		} else {
