@@ -404,6 +404,7 @@ class UserStore extends DataStore {
 		}
 
 		// Lock any accounts that have not revalidated in the grace period
+		// TODO: Fix these indexed
 		$older = timestampAdd ( timestampNow (), - actionGraceDays () * 24 * 60 * 60 );
 		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < @key";
 		$this->obj_store->query ( $gql, [ 
@@ -425,6 +426,7 @@ class UserStore extends DataStore {
 
 		// Lock any accounts that have not revalidated in the grace period
 		$older = timestampAdd ( timestampNow (), - revalidationPeriodDays () * 24 * 60 * 60 );
+		// TODO: Fix these indexed
 		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validated < @key";
 		logger ( LL_DBG, "UserStore::_requestRevalidations(): GQL: '" . $gql . "'" );
 		logger ( LL_DBG, "UserStore::_requestRevalidations(): older: '" . $older . "'" );
