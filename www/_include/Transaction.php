@@ -4,7 +4,7 @@ use Elliptic\EC;
 class Transaction {
 
 	public function __construct($from = null, $to = null, $amount = null, $message = "") {
-		$this->created = microtime(true);
+		$this->created = microtime ( true );
 		$this->from = $from;
 		$this->to = $to;
 		$this->amount = $amount;
@@ -12,6 +12,11 @@ class Transaction {
 		$this->payload = null;
 		$this->hash = null;
 		$this->signature = null;
+		$this->invalid_reason = "";
+	}
+
+	public function getReason() {
+		return $this->invalid_reason;
 	}
 
 	public function getPayload() {
@@ -38,7 +43,8 @@ class Transaction {
 		$ec = new EC ( 'secp256k1' );
 		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
 		if ($this->from != $sk->getPublic ( 'hex' )) {
-			logger ( LL_ERR, "Transaction::sign(): Private key does not match sender public key" );
+			$this->invalid_reason = "Signing key does not belong to sender";
+			logger ( LL_ERR, "Transaction::sign(): " . $this->invalid_reason );
 			return false;
 		}
 		$signature = $sk->sign ( $this->calculateHash () );
@@ -47,16 +53,75 @@ class Transaction {
 	}
 
 	public function isValid() {
-		if (/*$this->created == null || */$this->to == null || $this->from == null || $this->amount <= 0) {
+		if ($this->created == null || $this->to == null || $this->from == null || $this->amount <= 0) {
+			$this->invalid_reason = "Transaction is not properly formed";
+			logger(LL_DBG, "Transaction::isValid(): ". $this->invalid_reason);
 			return false;
 		}
 
 		if (strlen ( $this->signature ) == 0) {
+			$this->invalid_reason = "Transaction is not signed";
+			logger(LL_DBG, "Transaction::isValid(): ". $this->invalid_reason);
 			return false;
 		}
 		$ec = new EC ( 'secp256k1' );
 		$vk = $ec->keyFromPublic ( $this->from, 'hex' );
-		return $vk->verify ( $this->calculateHash (), $this->signature );
+		if(!$vk->verify ( $this->calculateHash (), $this->signature )) {
+			$this->invalid_reason = "Transaction signature verification failed";
+			logger(LL_DBG, "Transaction::isValid(): ". $this->invalid_reason);
+			return false;
+		}
+		return true;
+	}
+
+	public function isServiceable($reciever_check = false) {
+		if (! $this->isValid ()) {
+			// The reason and error is posted in teh isValid() call
+			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is not valid" );
+			return false;
+		}
+
+		// It can still be from god, but it needs to be signed. That's why this is not at the top. 
+		// If we are not validating the receiver, we will not process any further on the basis that
+		// God didn't make up the receiver so they must be valid... or user entered guff in a miner, 
+		// either way, pick it up on the back end and return it to the pool there as the processing
+		// load is way lower there - potentailly maxMinerCount() times lower.
+		if ($this->from == coinbaseWalletId () && !$reciever_check) {
+			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '".str_replace( getDataNamespace(), "", coinbaseName())."'" );
+			return true;
+		}
+
+		$store = UserStore::getInstance();
+
+		// Check the receiver exists. We really should trust the send more, but they are only human
+		$receiver = $store->getItemByWalletId ( $this->to );
+		if (! $receiver) {
+			$this->invalid_reason = "Receiver does not exist";
+			logger ( LL_ERR, "Transaction::isServiceable(): " . $this->getReason () );
+			return false;
+		}
+
+		// Check the sender has funds (and exists)
+		
+		// Well obviously the coinbase exists
+		if ($this->from == coinbaseWalletId () && $reciever_check) {
+			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '".str_replace( getDataNamespace(), "", coinbaseName())."' (post receiver check)" );
+			return true;
+		}
+		
+		// The transaction amount will hav been checked in isValid() to be higher than zero. If a wallet 
+		// cannot send that (it has zero or doesn't exist), then throw an error.
+		$sender_bal = $store->getWalletBalance ( $this->from );
+		if ($sender_bal < $this->amount) {
+			$this->invalid_reason = "Sender balance is not sufficient";
+			logger ( LL_ERR, "Tranaction::isServiceable(): " . $this->getReason () );
+			logger ( LL_DBG, "                             (" . $sender_bal . " < " . $this->amount . ")" );
+			return false;
+		}
+		
+		// Performed all the checks, we must be as good as we can possibly get
+		logger ( LL_DBG, "Tranaction::isServiceable(): Sender has funds (" . $sender_bal . " >= " . $this->amount . ")" );
+		return true;
 	}
 
 	public function unload() {
@@ -67,7 +132,7 @@ class Transaction {
 		$arr ["amount"] = $this->amount;
 		$arr ["message"] = $this->message;
 		$arr ["payload"] = $this->getPayload ();
-		$arr ["hash"] = $this->calculateHash();
+		$arr ["hash"] = $this->calculateHash ();
 		$arr ["signature"] = $this->signature;
 		return $arr;
 	}
@@ -77,7 +142,7 @@ class Transaction {
 	}
 
 	public function fromArray($arr) {
-		$this->created = $arr ["created"] ?? microtime(true);
+		$this->created = $arr ["created"] ?? microtime ( true );
 		$this->from = $arr ["from"] ?? null;
 		$this->to = $arr ["to"] ?? null;
 		$this->amount = $arr ["amount"] ?? null;
@@ -133,7 +198,7 @@ function __testTransaction() {
 	$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
 	$signature = $sk->sign ( $hash );
 
-	//logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
+	// logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
 	logger ( LL_INF, "Export the signature" );
 	// Export DER encoded signature to hex string
 	$derSign = $signature->toDER ( 'hex' );
@@ -153,14 +218,16 @@ function __testTransaction() {
 	logger ( LL_INF, "Signing transaction" );
 	$t->sign ( coinbasePrivateKey () );
 	logger ( LL_INF, "Coinbase transaction valid : expect true, got " . ($t->isValid () ? ("true") : ("false")) );
-	
+	logger ( LL_INF, "Transaction servicable     : expect true, got " . ($t->isServiceable () ? ("true") : ("false")) );
+
 	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
 	logger ( LL_INF, "Create return transaction" );
 	$t = new Transaction ( $pubKey, coinbaseWalletId (), 1.23456789, "Returning some coin!" );
-	logger ( LL_INF, "Return transaction valid   : expect false, got " . ($t->isValid () ? ("true") : ("false")) );
+	logger ( LL_INF, "Return transaction valid      : expect false, got " . ($t->isValid () ? ("true") : ("false")) );
 	logger ( LL_INF, "Signing transaction" );
 	$t->sign ( $privKey );
 	logger ( LL_INF, "Return transaction valid   : expect true, got " . ($t->isValid () ? ("true") : ("false")) );
+	logger ( LL_INF, "Transaction servicable     : expect false, got " . ($t->isServiceable () ? ("true") : ("false")) );
 	logger ( LL_INF, "------------------------------------------------------------------------------------------------------" );
 	logger ( LL_INF, "Unloading transaction to stick into a database" );
 	$u = $t->unload ();

@@ -3,7 +3,7 @@ include_once (__DIR__ . "/DataStore.php");
 
 class BookStore extends DataStore {
 
-	public function __construct() {
+	protected function __construct() {
 		echo "BookStore::BookStore()\n";
 
 		parent::__construct ( "Book" );
@@ -23,7 +23,7 @@ function __testDataStore() {
 	$ll = $logger->getLevel ();
 	$logger->setLevel ( LL_DBG );
 
-	$store = new BookStore ();
+	$store = BookStore::getInstance ();
 
 	$isbn = "12345678";
 
@@ -51,7 +51,7 @@ function __testDataStore() {
 	$book ["title"] = "How to suceed at bing a dick";
 	$book ["author"] = "Nigel Johnson";
 	$book ["read_count"] = 100;
-	
+
 	$book = $store->replace ( $book );
 	if ($book === false) {
 		logger ( LL_ERR, "*** Well, that didn't go well ***" );
@@ -68,7 +68,7 @@ function __testDataStore() {
 	$book ["isbn"] = $isbn;
 	$book ["title"] = "All Sweetness and Light";
 	$book ["subtitle"] = "Especially on Wednesdays";
-	
+
 	$book = $store->update ( $book );
 	if ($book === false) {
 		logger ( LL_ERR, "*** Well, that didn't go well ***" );

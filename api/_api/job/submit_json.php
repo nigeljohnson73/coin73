@@ -17,7 +17,7 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 	$hashrate = isset ( $_POST ["hashrate"] ) ? $_POST ["hashrate"] : 0;
 	$chiptype = isset ( $_POST ["chiptype"] ) ? $_POST ["chiptype"] : "";
 
-	$store = new JobStore ();
+	$store = JobStore::getInstance ();
 
 	$arr = $store->getItemById ( $args ["job_id"] );
 	if (is_array ( $arr )) {
@@ -57,7 +57,7 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 					logger ( LL_DBG, "--------" );
 					$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, "Miner reward" );
 					if ($t->sign ( coinbasePrivateKey () )) {
-						$store = new PendingTransactionStore ();
+						$store = PendingTransactionStore::getInstance ();
 						if ($store->insert ( $t->unload () )) {
 							$success = true;
 						} else {

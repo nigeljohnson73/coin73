@@ -1,10 +1,12 @@
 <?php
 include_once (__DIR__ . "/DataStore.php");
-use Elliptic\EC;
+
+// Store this globally as wallet access is used in a few places... could move UserStore to a singleton??
+$__wallet = array ();
 
 class UserStore extends DataStore {
 
-	public function __construct() {
+	protected function __construct() {
 		logger ( LL_DBG, "UserStore::UserStore()" );
 
 		parent::__construct ( "User" );
@@ -37,6 +39,41 @@ class UserStore extends DataStore {
 		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
 		// echo " '$gql'\n";
 		return ($data) ? ($data->getData ()) : ($data);
+	}
+
+	public function getItemByPublicKey($key) {
+		global $__wallet;
+		// Because this will probably be called a lot within transaction processing, store the pull locally
+		if (isset ( $__wallet [$key] )) {
+			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - returning cached values" );
+			return $__wallet [$key]->getData ();
+		}
+
+		$gql = "SELECT * FROM " . $this->kind . " WHERE public_key = @key";
+		$data = $this->obj_store->fetchOne ( $gql, [ 
+				'key' => $key
+		] );
+
+		// Store it even if it's garbage so we don't go look for it again.
+		$__wallet [$key] = $data;
+		if ($data) {
+			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - storing cached values" );
+			return $data->getData ();
+		}
+		logger ( LL_WRN, "UserStore::getItemByPublicKey() - no such wallet" );
+		return $data;
+	}
+
+	public function getItemByWalletId($key) {
+		return $this->getItemByPublicKey ( $key );
+	}
+
+	public function getWalletBalance($key) {
+		$data = $this->getItemByWalletId ( $key );
+		return $data ["balance"] ?? 0;
+	}
+
+	public function updateWalletBalances($arr) {
 	}
 
 	public function getItemByRecoveryNonce($key) {
@@ -104,7 +141,7 @@ class UserStore extends DataStore {
 
 		logger ( LL_DBG, "UserStore::insert() - obtaining public/private key pair" );
 
-		$keystore = new KeyStore ();
+		$keystore = KeyStore::getInstance ();
 		$keys = $keystore->getKeys ( $arr ["email"] );
 
 		if ($keys) {

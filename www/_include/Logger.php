@@ -16,7 +16,9 @@ if (! defined ( "LL_NONE" )) {
 	define ( "LL_INFO", 3 );
 	define ( "LL_DBG", 4 );
 	define ( "LL_DEBUG", 4 );
+	define ( "LL_EDBG", 5 );
 	define ( "LL_EDEBUG", 5 );
+	define ( "LL_XDBG", 6 );
 	define ( "LL_XDEBUG", 6 );
 }
 

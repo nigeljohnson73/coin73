@@ -1,17 +1,34 @@
 <?php
 
 class DataStore {
+	private static $instances = [ ];
 
-	public function __construct($kind) {
+	protected function __clone() {
+	}
+
+	public function __wakeup() {
+		throw new \Exception ( "Cannot unserialize a singleton." );
+	}
+
+	public static function getInstance() {
+		$cls = static::class;
+		if (! isset ( self::$instances [$cls] )) {
+			self::$instances [$cls] = new static ();
+		}
+
+		return self::$instances [$cls];
+	}
+
+	protected function __construct($kind) {
 		logger ( LL_DBG, "DataStore::DataStore(" . getProjectId () . ", " . getDataNamespace () . ")" );
-
+		
 		$this->kind = $kind;
 		$this->non_key_fields = array ();
-
+		
 		$this->obj_gateway = new \GDS\Gateway\RESTv1 ( getProjectId (), getDataNamespace () );
 		$this->obj_schema = (new GDS\Schema ( $this->kind ));
 	}
-
+	
 	protected function init() {
 		$this->obj_store = new GDS\Store ( $this->obj_schema, $this->obj_gateway );
 	}

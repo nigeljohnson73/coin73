@@ -32,7 +32,7 @@ if (isset ( $_POST ["wallet_id"] ) && isset ( $_POST ["rig_id"] )) {
 	} else if (! validRigId ( $_POST ["rig_id"] )) {
 		$ret->reason = "Invalid rig_id";
 	} else {
-		$store = new JobStore ();
+		$store = JobStore::getInstance ();
 		$arr = array ();
 
 		$jobs = $store->getItemsByWalletId ( $_POST ["wallet_id"] );

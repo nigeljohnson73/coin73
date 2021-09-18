@@ -3,7 +3,7 @@ include_once (__DIR__ . "/DataStore.php");
 
 class JobStore extends DataStore {
 
-	public function __construct() {
+	protected function __construct() {
 		logger(LL_INF, "JobStore::JobStore()");
 
 		parent::__construct ( "Job" );

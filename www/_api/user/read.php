@@ -16,7 +16,7 @@ $success = false;
 $message = "";
 
 if (isset ( $_SESSION ["AUTHTOK"] )) {
-	$store = new UserStore ();
+	$store = UserStore::getInstance ();
 	$user = $store->getItemByGuid ( $_SESSION ["AUTHTOK"] );
 	if (is_array ( $user )) {
 		if (strlen ( $user ["validation_data"] ) == 0) {

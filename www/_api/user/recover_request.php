@@ -19,7 +19,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 	if ($resp->isSuccess ()) {
-		$store = new UserStore ();
+		$store = UserStore::getInstance ();
 		$user = $store->getItemById ( @$_POST ["email"] );
 		if (is_array ( $user )) {
 			if (! $user ["recovery_nonce"]) {

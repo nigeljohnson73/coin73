@@ -175,6 +175,15 @@ function coinbasePrivateKey() {
 	return $coinbase_privKey;
 }
 
+function transactionsPerBlock() {
+	global $transactions_per_block;
+	return $transactions_per_block;
+}
+function transactionsPerPage() {
+	global $transactions_per_page;
+	return $transactions_per_page;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );

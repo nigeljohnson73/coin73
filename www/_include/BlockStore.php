@@ -3,7 +3,7 @@ include_once (__DIR__ . "/FileStore.php");
 
 class BlockStore extends FileStore {
 
-	public function __construct() {
+	protected function __construct() {
 		logger ( LL_DBG, "BlockStore::BlockStore()" );
 
 		$options = array ();

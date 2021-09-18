@@ -32,7 +32,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 		if ($resp->isSuccess ()) {
 			logger(LL_DBG, "Loading data into user array");
 			$user = array ();
-			$store = new UserStore ();
+			$store = UserStore::getInstance ();
 			$fields = $store->getDataFields ();
 			$fields [] = $store->getKeyField ();
 			foreach ( $fields as $k ) {

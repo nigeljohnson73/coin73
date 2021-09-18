@@ -2,11 +2,28 @@
 use Google\Cloud\Storage\StorageClient;
 
 class FileStore {
+	private static $instances = [ ];
 
-	public function __construct($name, $options = [ ]) {
+	protected function __clone() {
+	}
+
+	public function __wakeup() {
+		throw new \Exception ( "Cannot unserialize a singleton." );
+	}
+
+	public static function getInstance() {
+		$cls = static::class;
+		if (! isset ( self::$instances [$cls] )) {
+			self::$instances [$cls] = new static ();
+		}
+
+		return self::$instances [$cls];
+	}
+
+	protected function __construct($name, $options = [ ]) {
 		$this->storage = null;
 		$this->bucket = null;
-		$this->bucket_name = strtolower ( $this->namespace . "_" . $name );
+		$this->bucket_name = strtolower ( getDataNamespace() . "_" . $name );
 		$this->options = $options;
 		$this->init ();
 	}
@@ -128,7 +145,8 @@ function __testFileStore() {
 
 	class TestFileStore extends FileStore {
 
-		public function __construct() {
+		protected function __construct() {
+			logger ( LL_DBG, "TestFileStore::TestFileStore()" );
 			parent::__construct ( "TestFileStore" );
 		}
 	}
@@ -137,7 +155,7 @@ function __testFileStore() {
 	$ll = $logger->getLevel ();
 	$logger->setLevel ( LL_DBG );
 
-	$store = new TestFileStore ();
+	$store = TestFileStore::getInstance ();
 	$contents = "Welcome to the jungle!";
 	$filename = "welcome.txt";
 

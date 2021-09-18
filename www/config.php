@@ -69,6 +69,10 @@ $coinbase = "SupremeOverlord";
 $coinbase_pubKey = "";
 $coinbase_privKey = "";
 
+// Manage the limits for processing transactions into blocks
+$transactions_per_block = 10;
+$transactions_per_page = 5;
+
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
 // 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
 $valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";
@@ -107,7 +111,9 @@ define ( "LL_INF", 3 );
 define ( "LL_INFO", 3 );
 define ( "LL_DBG", 4 );
 define ( "LL_DEBUG", 4 );
+define ( "LL_EDBG", 5 );
 define ( "LL_EDEBUG", 5 );
+define ( "LL_XDBG", 6 );
 define ( "LL_XDEBUG", 6 );
 
 // Fundamentally disable logging in the system - can be overriden in config_[hostname].php;

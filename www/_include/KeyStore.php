@@ -4,7 +4,7 @@ use Elliptic\EC;
 
 class KeyStore extends FileStore {
 
-	public function __construct() {
+	protected function __construct() {
 		logger ( LL_DBG, "KeyStore::KeyStore()" );
 
 		parent::__construct ( "KeyStore" );
@@ -69,7 +69,7 @@ function __testKeyStore() {
 	$ll = $logger->getLevel ();
 	$logger->setLevel ( LL_DBG );
 
-	$store = new KeyStore ();
+	$store = KeyStore::getInstance ();
 	$email = "test@testy.com";
 	$pubKey = "publick_key";
 	$privKey = "privat_key";

@@ -2,7 +2,7 @@
 
 class TestStore extends DataStore {
 
-	public function __construct() {
+	Protected function __construct() {
 		echo "UserStore::UserStore()\n";
 
 		parent::__construct ( "Test" );
@@ -68,7 +68,7 @@ function output($x) {
 	return $x;
 }
 
-$store = new TestStore ();
+$store = TestStore::instance ();
 $field_key = "TESTv1";
 $field_data_1 = "Data 1";
 $field_data_2 = "Data 2";

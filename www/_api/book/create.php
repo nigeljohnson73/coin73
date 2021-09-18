@@ -7,7 +7,7 @@ echo "_POST[]:\n";
 print_r ( $_POST );
 
 $book = array ();
-$bookstore = new BookStore ();
+$bookstore = BookStore::getInstance ();
 $fields = $bookstore->getDataFields ();
 $fields [] = $bookstore->getKeyField ();
 foreach ( $fields as $k ) {

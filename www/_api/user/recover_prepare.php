@@ -12,7 +12,7 @@ $ret->reason = "";
 $success = false;
 $message = "Unable to prepare recovery";
 
-$store = new UserStore ();
+$store = UserStore::getInstance ();
 if (isset ( $_POST ["payload"] )) {
 	$user = $store->getItemByRecoveryNonce ( $_POST ["payload"] );
 	if ($user) {

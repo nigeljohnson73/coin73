@@ -12,7 +12,7 @@ $message = "";
 if (strlen ( $args ["id"] ) == 0) {
 	$message = "Unable to find book details for blank ISBN";
 } else {
-	$bookstore = new BookStore ();
+	$bookstore = BookStore::getInstance ();
 	$ret->book = $bookstore->getItemById( $args ["id"] );
 	if ($ret->book) {
 		$message = "Found your book";
