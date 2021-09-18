@@ -179,9 +179,55 @@ function transactionsPerBlock() {
 	global $transactions_per_block;
 	return $transactions_per_block;
 }
+
 function transactionsPerPage() {
 	global $transactions_per_page;
 	return $transactions_per_page;
+}
+
+function circulationInfoKey() {
+	global $info_key_circulation;
+	return $info_key_circulation;
+}
+function minedSharesInfoKey() {
+	global $info_key_mined_shares;
+	return $info_key_mined_shares;
+}
+
+function blockDebugInfoKey() {
+//function lastBlockTransactionInfoKey() {
+	global $info_key_block_debug;
+	return $info_key_block_debug;
+}
+
+function lastBlockHashInfoKey() {
+	global $info_key_last_block_hash;
+	return $info_key_last_block_hash;
+}
+
+function blockCountInfoKey() {
+	global $info_key_last_block_count;
+	return $info_key_last_block_count;
+}
+
+function cronTickDebugInfoKey() {
+	global $info_key_cron_tick_debug;
+	return $info_key_cron_tick_debug;
+}
+
+function cronMinuteDebugInfoKey() {
+	global $info_key_cron_minute_debug;
+	return $info_key_cron_minute_debug;
+}
+
+function cronHourDebugInfoKey() {
+	global $info_key_cron_hour_debug;
+	return $info_key_cron_hour_debug;
+}
+
+function cronDayDebugInfoKey() {
+	global $info_key_cron_day_debug;
+	return $info_key_cron_day_debug;
 }
 
 function ob_print_r($what) {

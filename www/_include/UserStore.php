@@ -2,9 +2,9 @@
 include_once (__DIR__ . "/DataStore.php");
 
 // Store this globally as wallet access is used in a few places... could move UserStore to a singleton??
-$__wallet = array ();
-
 class UserStore extends DataStore {
+	private static $_wallet = array ();
+	private static $_updated_wallet = array ();
 
 	protected function __construct() {
 		logger ( LL_DBG, "UserStore::UserStore()" );
@@ -15,7 +15,7 @@ class UserStore extends DataStore {
 		$this->addField ( "guid", "String", true ); // for the password mechanism, and passing around instead of the email address
 		$this->addField ( "password", "String" );
 		$this->addField ( "public_key", "String", true ); // indexed for wallet management
-		$this->addField ( "balance", "Float" );
+		$this->addField ( "balance", "Float", true );
 		$this->addField ( "created", "Integer", true ); // timestamp to denote creation - birthdays etc ??? :D
 		$this->addField ( "validated", "Integer", true ); // Send validation request if this is older than X days and both validation_reminded and validation_requested are 0. Set this when validate suceeds
 		$this->addField ( "validation_reminded", "Integer", true ); // Set by the system when we are approaching the validation window
@@ -42,11 +42,9 @@ class UserStore extends DataStore {
 	}
 
 	public function getItemByPublicKey($key) {
-		global $__wallet;
-		// Because this will probably be called a lot within transaction processing, store the pull locally
-		if (isset ( $__wallet [$key] )) {
+		if (isset ( self::$_wallet [$key] )) {
 			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - returning cached values" );
-			return $__wallet [$key]->getData ();
+			return self::$_wallet [$key]->getData ();
 		}
 
 		$gql = "SELECT * FROM " . $this->kind . " WHERE public_key = @key";
@@ -55,7 +53,7 @@ class UserStore extends DataStore {
 		] );
 
 		// Store it even if it's garbage so we don't go look for it again.
-		$__wallet [$key] = $data;
+		self::$_wallet [$key] = $data;
 		if ($data) {
 			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - storing cached values" );
 			return $data->getData ();
@@ -74,6 +72,39 @@ class UserStore extends DataStore {
 	}
 
 	public function updateWalletBalances($arr) {
+		$suspect = array ();
+		foreach ( $arr as $id => $delta ) {
+			if ($id == coinbaseWalletId ()) {
+				// Delta will be negative unless people are returning coins
+				$delta *= - 1;
+
+				$created = InfoStore::getCirculation ();
+				logger ( LL_INF, "UserStore::updateWalletBalances() - increasing circulation (" . number_format ( $created, 6 ) . ") by '" . number_format ( $delta, 6 ) . "'" );
+				InfoStore::setCirculation ( $created + $delta );
+			} else {
+				$data = self::$_wallet [$id] ?? null;
+				if (! $data) {
+					// I wasn't asked about this wallet, so mark it as suspect
+					$suspect [] = $id;
+				} else {
+					unset ( self::$_wallet [$id] );
+					$data->balance = $data->getData () ["balance"] + $delta;
+					self::$_updated_wallet [] = $data;
+				}
+			}
+		}
+		return (count ( $suspect ) > 0) ? $suspect : null;
+	}
+
+	public function applyWalletBalances() {
+		while ( count ( self::$_updated_wallet ) ) {
+			// $arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
+			$arr_page = self::$_updated_wallet;
+			self::$_updated_wallet = [ ];
+			logger ( LL_DBG, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
+			$this->obj_store->upsert ( $arr_page );
+		}
+		return true;
 	}
 
 	public function getItemByRecoveryNonce($key) {
@@ -208,7 +239,7 @@ class UserStore extends DataStore {
 		$payload_url = $validation_url . "/"/*"?payload=" */. $user ["validation_nonce"];
 		$subject = "Account validation request";
 		$body = "";
-		$body .= "This account has requested an account validation. In order to complete this request please head on over to [the revalidation page](" . $payload_url . ").\n\n";
+		$body .= "This account has requested an account validation. In order to complete this request please head on over to [the validation page](" . $payload_url . ").\n\n";
 		$body .= "If you cannot remember the challenge word you were shown, you should probably [validate your account](" . $validation_url . ") again.\n\n";
 		$body .= "If you did not make this request, then you should probably secure your account by [recovering your account](" . $recovery_url . ").";
 
@@ -266,6 +297,42 @@ class UserStore extends DataStore {
 		return false;
 	}
 
+	// Called by the system
+	public function requestValidateUser($email) {
+		global $www_host;
+
+		$user = $this->getItemById ( $email );
+		if (! $user) {
+			logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Unable to find user" );
+			return false;
+		}
+		// Handled avove my paygrade
+		// if (strlen ( $user ["recovery_nonce"] )) {
+		// logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
+		// return false;
+		// }
+		$user ["validation_reminded"] = ( int ) timestampNow ();
+
+		$validation_url = $www_host . "validate";
+		$payload_url = $validation_url . "/"/*"?payload=" */. $user ["validation_nonce"];
+		$subject = "Account validation request";
+		$body = "";
+		$body .= "It has been " . revalidationPeriodDays () . " days since this account was last validated. Within the next " . actionGraceDays () . " days please head on over to [the validation page](" . $payload_url . ") and revalidate this account.\n\n";
+		$body .= "If you have not performed this process within the next" . actionGraceDays () . " days, your account will be locked and you will not be able to mine or login to your account.";
+
+		if (sendEmail ( $user ["email"], $subject, $body )) {
+			if ($this->update ( $user )) {
+				logger ( LL_DBG, "UserStore::requestValidateUser('$email'): Sucessfully requested" );
+				return true;
+			} else {
+				logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to save challenge" );
+			}
+		} else {
+			logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to send email" );
+		}
+		return false;
+	}
+
 	public function setPassword($email, $password) {
 		$user = $this->getItemById ( $email );
 		if (! $user) {
@@ -293,6 +360,96 @@ class UserStore extends DataStore {
 		}
 		logger ( LL_DBG, "UserStore::authenticate('$email'): User authentication failed: Password does not match" );
 		return false;
+	}
+
+	// https://stackoverflow.com/questions/1820908/how-to-turn-off-the-eclipse-code-formatter-for-certain-sections-of-java-code
+	// https://patorjk.com/software/taag/#p=display&f=Standard&t=Housekeeping
+	// @formatter:off
+	//  _   _                      _                   _
+	// | | | | ___  _   _ ___  ___| | _____  ___ _ __ (_)_ __   __ _
+	// | |_| |/ _ \| | | / __|/ _ \ |/ / _ \/ _ \ '_ \| | '_ \ / _` |
+	// |  _  | (_) | |_| \__ \  __/   <  __/  __/ |_) | | | | | (_| |
+	// |_| |_|\___/ \__,_|___/\___|_|\_\___|\___| .__/|_|_| |_|\__, |
+	//                                          |_|            |___/ 
+	// @formatter:on
+	protected function _tidyUp() {
+		logger ( LL_DBG, "UserStore::tidyUp(): started" );
+
+		// Wipe any recovery requests
+		$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
+		$gql = "SELECT * FROM " . $this->kind . " WHERE recover_requested < @key";
+		$this->obj_store->query ( $gql, [ 
+				'key' => $older
+		] );
+		while ( $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
+			logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " recovery records" );
+			foreach ( $arr_page as $a ) {
+				$a->recovery_nonce = "";
+			}
+			$this->obj_store->upsert ( $arr_page );
+		}
+
+		// Wipe any recovery requests
+		$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
+		$gql = "SELECT * FROM " . $this->kind . " WHERE validation_requested < @key";
+		$this->obj_store->query ( $gql, [ 
+				'key' => $older
+		] );
+		while ( $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
+			logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " validation records" );
+			foreach ( $arr_page as $a ) {
+				$a->validation_nonce = "";
+			}
+			$this->obj_store->upsert ( $arr_page );
+		}
+
+		// Lock any accounts that have not revalidated in the grace period
+		$older = timestampAdd ( timestampNow (), - actionGraceDays () * 24 * 60 * 60 );
+		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < @key";
+		$this->obj_store->query ( $gql, [ 
+				'key' => $older
+		] );
+		while ( $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
+			logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " validation lock records" );
+			foreach ( $arr_page as $a ) {
+				$a->locked = timestampNow ();
+			}
+			$this->obj_store->upsert ( $arr_page );
+		}
+
+		logger ( LL_DBG, "UserStore::tidyUp(): complete" );
+	}
+
+	protected function _requestRevalidations() {
+		logger ( LL_DBG, "UserStore::_requestRevalidations(): started" );
+
+		// Lock any accounts that have not revalidated in the grace period
+		$older = timestampAdd ( timestampNow (), - revalidationPeriodDays () * 24 * 60 * 60 );
+		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validated < @key";
+		logger ( LL_DBG, "UserStore::_requestRevalidations(): GQL: '" . $gql . "'" );
+		logger ( LL_DBG, "UserStore::_requestRevalidations(): older: '" . $older . "'" );
+		$this->obj_store->query ( $gql, [ 
+				'key' => $older
+		] );
+		logger ( LL_DBG, "UserStore::_requestRevalidations(): query sent" );
+
+		$arr_page = $this->obj_store->fetchPage ( transactionsPerPage () );
+		logger ( LL_DBG, "UserStore::_requestRevalidations(): pulled " . count ( $arr_page ) . " validation request records" );
+
+		foreach ( $arr_page as $a ) {
+			logger ( LL_DBG, "UserStore::_requestRevalidations(): Requesting for '" . $a->getData () ["email"] . "'" );
+			$this->requestRecoverUser ( $a->getData () ["email"] );
+		}
+
+		logger ( LL_DBG, "UserStore::_requestRevalidations(): complete" );
+	}
+
+	public static function tidyUp() {
+		self::getInstance ()->_tidyUp ();
+	}
+
+	public static function requestRevalidations() {
+		self::getInstance ()->_requestRevalidations ();
 	}
 }
 ?>

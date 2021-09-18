@@ -70,8 +70,8 @@ $coinbase_pubKey = "";
 $coinbase_privKey = "";
 
 // Manage the limits for processing transactions into blocks
-$transactions_per_block = 10;
-$transactions_per_page = 5;
+$transactions_per_block = 1500;
+$transactions_per_page = 500;
 
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
 // 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
@@ -93,6 +93,17 @@ $smtp_from_name = "Coin Admin";
 $smtp_from_email = "";
 $smtp_username = "";
 $smtp_password = "";
+
+// Key fields for info - just to stop typos consuming hours of debugging
+$info_key_circulation = "circulation";
+$info_key_mined_shares = "mined_shares";
+$info_key_last_block_hash = "last_block_hash";
+$info_key_last_block_count = "block_count";
+$info_key_block_debug = "block_debug";
+$info_key_cron_tick_debug = "cron_tick_debug";
+$info_key_cron_minute_debug = "cron_minute_debug";
+$info_key_cron_hour_debug = "cron_hour_debug";
+$info_key_cron_day_debug = "cron_day_debug";
 
 // This  defines the tag that will appear after the title and email name so you can tell which system 
 // you are working with. This should only be overwritten in the config_localhost.php file.

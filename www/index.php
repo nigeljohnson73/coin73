@@ -41,7 +41,9 @@ $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}"] = __DIR__ . "/_pages/wiki.php
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}/{sub_sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // No, really, this *is* enough
 
 $routes ["/cron/tick"] = __DIR__ . "/_cron/tick.php";
-$routes ["/cron/tidy"] = __DIR__ . "/_cron/tidy.php";
+$routes ["/cron/every_minute"] = __DIR__ . "/_cron/every_minute.php";
+$routes ["/cron/every_hour"] = __DIR__ . "/_cron/every_hour.php";
+$routes ["/cron/every_day"] = __DIR__ . "/_cron/every_day.php";
 
 $routes ["/benchmark"] = __DIR__ . "/benchmark.php";
 //$routes ["/svg.php"] = __DIR__ . "/svg.php"; // Testing purposes for now

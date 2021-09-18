@@ -79,14 +79,6 @@ echo "**************************************************************************
 
 logger ( LL_DEBUG, "tick(): completed" );
 
-// global $logger;
-// $str = $logger->getString ();
-// if (strlen ( trim ( $str ) ) == 0) {
-// $str = "*** NO LOG OUTPUT ***";
-// } else {
-// $str = trim ( $str ) . "\n*** END OF LOG ***";
-// }
-// echo "Log output:\n";
-// echo $str . "\n";
+InfoStore::getInstance ()->setInfo ( cronTickDebugInfoKey (), "Completed: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
 
 ?>

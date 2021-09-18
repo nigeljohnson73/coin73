@@ -98,7 +98,7 @@ class DataStore {
 		if ($this->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::insert() - Upsert failed" );
 		}
-		logger ( LL_DBG, "DataStore::insert() - Entity inserted" );
+		logger ( LL_XDBG, "DataStore::insert() - Entity inserted" );
 		// echo "DataStore::insert() - Entity added\n";
 		// echo "DataStore::insert() - '" . $key . "' => '" . $arr [$key] . "'\n";
 		// echo "DataStore::insert() - destination object post-insert\n";
@@ -128,7 +128,7 @@ class DataStore {
 		$odata = $data->getData ();
 		// usleep(10000);
 		if ($this->obj_store->delete ( $data )) {
-			logger ( LL_DBG, "DataStore::delete() - Entity deleted" );
+			logger ( LL_XDBG, "DataStore::delete() - Entity deleted" );
 			// echo "DataStore::delete() - Entity deleted\n";
 			return $odata;
 		}
@@ -164,7 +164,7 @@ class DataStore {
 		if ($this->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::update() - Upsert failed" );
 		}
-		logger ( LL_DBG, "DataStore::update() - Entity updated" );
+		logger ( LL_XDBG, "DataStore::update() - Entity updated" );
 		return $obj->getData ();
 	}
 
@@ -200,7 +200,7 @@ class DataStore {
 		if ($this->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::replace() - Upsert failed" );
 		}
-		logger ( LL_DBG, "DataStore::replace() - Entity replaced" );
+		logger ( LL_XDBG, "DataStore::replace() - Entity replaced" );
 
 		// echo "DataStore::replace() - Entity replaced\n";
 		return $obj->getData ();
