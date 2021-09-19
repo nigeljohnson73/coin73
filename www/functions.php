@@ -450,7 +450,7 @@ function endPage($compress = false, $strip_comments = true) {
 		if ($_SERVER ["SERVER_NAME"] == "localhost") {
 			echo "<!-- RUNNING ON DEV HOST -->\n";
 		}
-		echo "<!-- COIN73 - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved -->\n";
+		echo "<!-- ".getAppName()." - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved -->\n";
 		echo "<!-- uncompressed: " . number_format ( strlen ( $odirty ), 0 ) . " bytes, compressed: " . number_format ( strlen ( $clean ), 0 ) . " bytes -->\n";
 		// echo "<!-- \n";
 		// print_r($_SERVER);

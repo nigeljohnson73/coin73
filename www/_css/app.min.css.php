@@ -6009,7 +6009,7 @@ ob_end_clean ();
 
 $debug = true;
 header ( "Content-type: text/css" );
-echo "/* COIN73 - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved */\n";
+echo "/* ".getAppName()." - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved */\n";
 if ($debug)
 	echo '/* uncompressed: ' . number_format ( strlen ( $str ), 0 ) . ' bytes, ';
 $str = CssMin::minify ( $str );
