@@ -1,12 +1,14 @@
 body {
 	/* font: 400 15px 'Montserrat', sans-serif; */
-	font: 400 15px 'Urbanist', sans-serif;
+	/* font: 400 15px 'Urbanist', sans-serif; */
+	font: 400 15px 'Lato', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
 
 strong {
-	font: 700 15px 'Urbanist', sans-serif;
+	/* font: 700 15px 'Urbanist', sans-serif; */
+	font: 900 15px 'Lato', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }

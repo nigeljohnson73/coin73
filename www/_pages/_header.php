@@ -9,9 +9,10 @@ startPage ();
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+<!-- https://fonts.google.com/specimen/Lato -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Urbanist:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&family=Space+Mono&display=swap">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" integrity="sha512-xnP2tOaCJnzp2d2IqKFcxuOiVCbuessxM6wuiolT9eeEJCyy0Vhcwa4zQvdrZNVqlqaxXhHqsSV1Ww7T2jSCUQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -46,6 +47,6 @@ startPage ();
 			<?php
 			global $coinbase_privKey;
 			if (strlen ( $coinbase_privKey ) == 0) {
-				echo "<div class='alert alert-danger'> No coinbase keys are setup in config_".$_SERVER ["SERVER_NAME"].".php</div>";
+				echo "<div class='alert alert-danger'> No coinbase keys are setup in config_" . $_SERVER ["SERVER_NAME"] . ".php</div>";
 			}
 			?>

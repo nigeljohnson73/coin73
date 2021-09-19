@@ -11,8 +11,24 @@ if (file_exists ( $fn )) {
 } else {
 	echo "<h1>No content here - yet</h1>";
 }
+
+global $logger;
+$logger->setLevel ( LL_NONE );
+$data = InfoStore::getApi ();
 ?>
 	<div class="about-data">
+		<div class="row">
+			<div class="col-6 text-end fw-bold">Coin circulation:</div>
+			<div class="col-6 text-start"><?php echo number_format($data[circulationInfoKey()], 6)?></div>
+		</div>
+		<div class="row">
+			<div class="col-6 text-end fw-bold">Mined shares:</div>
+			<div class="col-6 text-start"><?php echo number_format($data[minedSharesInfoKey()])?></div>
+		</div>
+		<div class="row">
+			<div class="col-6 text-end fw-bold">Blockchain length:</div>
+			<div class="col-6 text-start"><?php echo number_format($data[blockCountInfoKey()])?></div>
+		</div>
 		<div class="row">
 			<div class="col-6 text-end fw-bold">App version:</div>
 			<div class="col-6 text-start">{{app_version}}</div>

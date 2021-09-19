@@ -15,21 +15,7 @@ logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 $success = true;
 $message = "";
 
-$tx = array ();
-$tx [] = minedSharesInfoKey ();
-$tx [] = circulationInfoKey ();
-$tx [] = lastBlockHashInfoKey ();
-$tx [] = blockCountInfoKey ();
-sort($tx);
-
-$data = InfoStore::getAll ();
-
-$rdata = array();
-foreach($tx as $key) {
-	$rdata[$key] = $data[$key];
-}
-
-$ret->data = (object) $rdata;
+$ret->data = ( object ) InfoStore::getApi ();
 
 endJsonResponse ( $response, $ret, $success, $message );
 ?>
