@@ -105,6 +105,7 @@ $info_key_cron_minute_debug = "cron_minute_debug";
 $info_key_cron_hour_debug = "cron_hour_debug";
 $info_key_cron_day_debug = "cron_day_debug";
 
+$miner_reward_tag = "-X- Miner Reward -X-";
 // This  defines the tag that will appear after the title and email name so you can tell which system 
 // you are working with. This should only be overwritten in the config_localhost.php file.
 $local_monika = "";

@@ -203,7 +203,6 @@ function transactionToBlock() {
 	$txns = PendingTransactionStore::getInstance ()->getTransactions ();
 
 	if (count ( $txns ) > 0) {
-		InfoStore::setMinedShares ( InfoStore::getMinedShares () + count ( $txns ) );
 
 		// Store the current log level so we can switch it off and restore it later.
 		$ll = $logger->getLevel ();
@@ -211,8 +210,12 @@ function transactionToBlock() {
 
 		// Iterate through transactions and create a deltas list.
 		logger ( LL_DBG, "Gathering wallet deltas" );
+		$mined_shares = 0;
 		foreach ( $txns as $txn ) {
 			if ($txn->isServiceable ( true )) {
+				if ($txn->message == minerRewardLabel ()) {
+					$mined_shares += 1;
+				}
 				$payload = json_decode ( $txn->getPayload () );
 				logger ( LL_DBG, "Processing transaction (" . $payload->amount . ")" );
 				$deltas [$payload->from] = ($deltas [$payload->from] ?? 0) - $payload->amount;
@@ -220,6 +223,9 @@ function transactionToBlock() {
 			} else {
 				logger ( LL_ERR, "Invalid transaction (" . $txn->getReason () . ")" );
 			}
+		}
+		if ($mined_shares) {
+			InfoStore::setMinedShares ( InfoStore::getMinedShares () + $mined_shares );
 		}
 
 		// Get the wallet deltas applied

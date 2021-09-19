@@ -189,13 +189,14 @@ function circulationInfoKey() {
 	global $info_key_circulation;
 	return $info_key_circulation;
 }
+
 function minedSharesInfoKey() {
 	global $info_key_mined_shares;
 	return $info_key_mined_shares;
 }
 
 function blockDebugInfoKey() {
-//function lastBlockTransactionInfoKey() {
+	// function lastBlockTransactionInfoKey() {
 	global $info_key_block_debug;
 	return $info_key_block_debug;
 }
@@ -228,6 +229,11 @@ function cronHourDebugInfoKey() {
 function cronDayDebugInfoKey() {
 	global $info_key_cron_day_debug;
 	return $info_key_cron_day_debug;
+}
+
+function minerRewardLabel() {
+	global $miner_reward_tag;
+	return $miner_reward_tag;
 }
 
 function ob_print_r($what) {
