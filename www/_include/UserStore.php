@@ -388,7 +388,9 @@ class UserStore extends DataStore {
 		while ( $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
 			logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " recovery records" );
 			foreach ( $arr_page as $a ) {
+				$a->recovery_requested = "";
 				$a->recovery_nonce = "";
+				$a->recovery_data = "";
 			}
 			$this->obj_store->upsert ( $arr_page );
 		}
@@ -435,12 +437,11 @@ class UserStore extends DataStore {
 	protected function _requestRevalidations() {
 		logger ( LL_DBG, "UserStore::requestRevalidations(): started" );
 
-		// Lock any accounts that have not revalidated in the grace period
+		// send email reminders to accounts that need to get validated
 		$older = timestampAdd ( timestampNow (), - revalidationPeriodDays () * 24 * 60 * 60 );
-		$gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validation_reminded = 0 AND validated < @key";
-		logger ( LL_DBG, "UserStore::tidyUp(): sending revalidation requests" );
-		// logger ( LL_DBG, "UserStore::requestRevalidations(): GQL: '" . $gql . "'" );
-		// logger ( LL_DBG, "UserStore::requestRevalidations(): @key: '" . $older . "'" );
+		// $gql = "SELECT * FROM " . $this->kind . " WHERE locked = 0 AND validation_reminded = 0 AND validated < @key";
+		$gql = "SELECT * FROM " . $this->kind . " WHERE validated < @key";
+		logger ( LL_DBG, "UserStore::tidyUp(): sending revalidation reminders" );
 		logger ( LL_DBG, "UserStore::requestRevalidations(): '" . str_replace ( "@key", $older, $gql ) . "'" );
 		$this->obj_store->query ( $gql, [ 
 				'key' => $older
@@ -451,18 +452,18 @@ class UserStore extends DataStore {
 
 		foreach ( $arr_page as $a ) {
 			$data = $a->getData ();
-			if ($data ["locked"] == 0 && $data ["validation_reminded"] == 0 && $data ["validated"] < $older) {
+			// if ($data ["locked"] == 0 && $data ["validation_reminded"] == 0 && $data ["validated"] < $older) {
+			if ($data ["validated"] < $older) {
 				logger ( LL_DBG, "    Seems legit" );
 			} else {
 				// TODO: Stop coming in here
 				logger ( LL_DBG, "    Datastore lied!!!" );
-				$dbg = array();
-				$dbg["locked"] = $data["locked"];
-				$dbg["validation_reminded"] = $data["validation_reminded"];
-				$dbg["validated"] = $data["validated"];
-				logger(LL_DBG, ob_print_r($dbg));
+				$dbg = array ();
+				// $dbg["locked"] = $data["locked"];
+				// $dbg["validation_reminded"] = $data["validation_reminded"];
+				$dbg ["validated"] = $data ["validated"];
+				logger ( LL_DBG, ob_print_r ( $dbg ) );
 			}
-			// print_r ( $a->getData () );
 			// logger ( LL_DBG, "UserStore::requestRevalidations(): Requesting for '" . $a->getData () ["email"] . "'" );
 			// $this->requestValidateUser ( $a->getData () ["email"] );
 		}
