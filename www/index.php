@@ -148,6 +148,8 @@ $apis ["/app/user/validate"] = __DIR__ . "/_api/user/validate.php";
 $apis ["/app/user/recover/request"] = __DIR__ . "/_api/user/recover_request.php";
 $apis ["/app/user/recover/prepare"] = __DIR__ . "/_api/user/recover_prepare.php";
 $apis ["/app/user/recover"] = __DIR__ . "/_api/user/recover.php";
+// Coin data
+$apis ["/app/coin/summary"] = __DIR__ . "/_api/coin/summary.php";
 // $apis ["/app/user/prevalidate/{payload}"] = __DIR__ . "/_api/user/prevalidate.php";
 // $apis ["/app/user/validate/{guid}/{challenge}"] = __DIR__ . "/_api/user/validate.php";
 // $apis ["/app/user/{{id}}"] = __DIR__ . "/_api/user/read.php";

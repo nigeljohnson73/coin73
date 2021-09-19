@@ -66,34 +66,59 @@ class InfoStore extends DataStore {
 		return true;
 	}
 
+	protected function _getAll() {
+		$data = array ();
+		$gql = "SELECT * FROM " . $this->kind;
+		$this->obj_store->query ( $gql );
+		while ( count ( $data ) < transactionsPerBlock () && $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
+			logger ( LL_DBG, "InfoStore::_getAll(): pulled " . count ( $arr_page ) . " records" );
+			$data = array_merge ( $data, $arr_page );
+			// $store->delete ( $arr_page );
+		}
+
+		$ret = array ();
+		if ($data) {
+			foreach ( $data as $r ) {
+				$x = $r->getData ();
+				$ret [$x["key"]] = $x["value"];
+			}
+		}
+
+		return $ret;
+	}
+
+	public static function getAll() {
+		return InfoStore::getInstance ()->_getAll ();
+	}
+
 	public static function getCirculation() {
 		return InfoStore::getInstance ()->getInfo ( circulationInfoKey (), 0 );
 	}
-	
+
 	public static function setCirculation($v) {
 		return InfoStore::getInstance ()->setInfo ( circulationInfoKey (), $v );
 	}
-	
+
 	public static function getMinedShares() {
 		return InfoStore::getInstance ()->getInfo ( minedSharesInfoKey (), 0 );
 	}
-	
+
 	public static function setMinedShares($v) {
 		return InfoStore::getInstance ()->setInfo ( minedSharesInfoKey (), $v );
 	}
-	
+
 	public static function getLastBlockHash() {
 		return InfoStore::getInstance ()->getInfo ( lastBlockHashInfoKey (), "" );
 	}
-	
+
 	public static function setLastBlockHash($v) {
 		return InfoStore::getInstance ()->setInfo ( lastBlockHashInfoKey (), $v );
 	}
-	
+
 	public static function getBlockCount() {
 		return InfoStore::getInstance ()->getInfo ( blockCountInfoKey (), 0 );
 	}
-	
+
 	public static function setBlockCount($v) {
 		return InfoStore::getInstance ()->setInfo ( blockCountInfoKey (), $v );
 	}

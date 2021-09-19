@@ -419,9 +419,9 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 	}
 	$ret->success = $success;
 	$ret->status = $success ? "OK" : "FAIL";
-	$ret->console = $c;
 	$ret->message = $message;
-
+	$ret->console = $c;
+	
 	$resp = json_encode ( $ret );
 	if ($response) {
 		$response->getBody ()->write ( $resp );
