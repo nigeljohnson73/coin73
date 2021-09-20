@@ -32,42 +32,46 @@ if (isset ( $_POST ["wallet_id"] ) && isset ( $_POST ["rig_id"] )) {
 	} else if (! validRigId ( $_POST ["rig_id"] )) {
 		$ret->reason = "Invalid rig_id";
 	} else {
-		$store = JobStore::getInstance ();
-		$arr = array ();
+		if (InfoStore::miningEnabled ()) {
+			$store = JobStore::getInstance ();
+			$arr = array ();
 
-		$jobs = $store->getItemsByWalletId ( $_POST ["wallet_id"] );
-		if (count ( $jobs ) < minerMaxCount ( $_POST ["wallet_id"] )) {
-			$miner_in_use = false;
-			if (count ( $jobs ) > 0) {
-				foreach ( $jobs as $job ) {
-					if ($job ["rig_id"] == $_POST ["rig_id"]) {
-						$miner_in_use = true;
+			$jobs = $store->getItemsByWalletId ( $_POST ["wallet_id"] );
+			if (count ( $jobs ) < minerMaxCount ( $_POST ["wallet_id"] )) {
+				$miner_in_use = false;
+				if (count ( $jobs ) > 0) {
+					foreach ( $jobs as $job ) {
+						if ($job ["rig_id"] == $_POST ["rig_id"]) {
+							$miner_in_use = true;
+						}
 					}
 				}
-			}
-			if (! $miner_in_use) {
-				$arr ["wallet_id"] = $_POST ["wallet_id"];
-				$arr ["rig_id"] = $_POST ["rig_id"];
-				$arr ["hash"] = hash ( "sha1", $_POST ["wallet_id"] . $_POST ["rig_id"] . timestampNow () . rand () ); // TODO: get the next block hash
-				$arr ["difficulty"] = minerDifficulty ();
-				$arr ["shares"] = count ( $jobs ) + 1;
-				$arr = $store->insert ( $arr );
+				if (! $miner_in_use) {
+					$arr ["wallet_id"] = $_POST ["wallet_id"];
+					$arr ["rig_id"] = $_POST ["rig_id"];
+					$arr ["hash"] = hash ( "sha1", $_POST ["wallet_id"] . $_POST ["rig_id"] . timestampNow () . rand () ); // TODO: get the next block hash
+					$arr ["difficulty"] = minerDifficulty ();
+					$arr ["shares"] = count ( $jobs ) + 1;
+					$arr = $store->insert ( $arr );
 
-				if (is_array ( $arr )) {
-					$ret->data->job_id = $arr ["job_id"];
-					$ret->data->hash = $arr ["hash"];
-					$ret->data->difficulty = $arr ["difficulty"];
-					$ret->data->target_seconds = minerSubmitTargetSeconds ( $_POST ["wallet_id"] );
-					$success = true;
+					if (is_array ( $arr )) {
+						$ret->data->job_id = $arr ["job_id"];
+						$ret->data->hash = $arr ["hash"];
+						$ret->data->difficulty = $arr ["difficulty"];
+						$ret->data->target_seconds = minerSubmitTargetSeconds ( $_POST ["wallet_id"] );
+						$success = true;
+					} else {
+						$ret->reason = "Database failure";
+					}
 				} else {
-					$ret->reason = "Database failure";
+					$ret->reason = "Miner in use";
 				}
+				// Get all the jobs for the wallet_id;
 			} else {
-				$ret->reason = "Miner in use";
+				$ret->reason = "Miner limit reached";
 			}
-			// Get all the jobs for the wallet_id;
 		} else {
-			$ret->reason = "Miner limit reached";
+			$ret->reason = "Mining currenty disabled";
 		}
 	}
 } else {

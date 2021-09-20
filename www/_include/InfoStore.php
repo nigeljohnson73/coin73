@@ -143,5 +143,21 @@ class InfoStore extends DataStore {
 	public static function setBlockCount($v) {
 		return InfoStore::getInstance ()->setInfo ( blockCountInfoKey (), $v );
 	}
+
+	public static function signupEnabled() {
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeySignup (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+	}
+
+	public static function loginEnabled() {
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyLogin (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+	}
+
+	public static function miningEnabled() {
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeymining (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+	}
+
+	public static function blockCreationEnabled() {
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyBlocking (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+	}
 }
 ?>

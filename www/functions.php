@@ -236,6 +236,31 @@ function minerRewardLabel() {
 	return $miner_reward_tag;
 }
 
+function switchEnabled() {
+	global $switch_key_enabled;
+	return $switch_key_enabled;
+}
+
+function switchKeySignup() {
+	global $switch_key_signup;
+	return $switch_key_signup;
+}
+
+function switchKeyLogin() {
+	global $switch_key_login;
+	return $switch_key_login;
+}
+
+function switchKeymining() {
+	global $switch_key_mining;
+	return $switch_key_mining;
+}
+
+function switchKeyBlocking() {
+	global $switch_key_blocks;
+	return $switch_key_blocks;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );

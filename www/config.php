@@ -105,6 +105,12 @@ $info_key_cron_minute_debug = "cron_minute_debug";
 $info_key_cron_hour_debug = "cron_hour_debug";
 $info_key_cron_day_debug = "cron_day_debug";
 
+$switch_key_enabled = "ENABLED";
+$switch_key_signup = "switch_signup";
+$switch_key_login = "switch_login";
+$switch_key_mining = "switch_mining";
+$switch_key_blocks = "switch_blocking";
+
 $miner_reward_tag = "-X- Miner Reward -X-";
 // This  defines the tag that will appear after the title and email name so you can tell which system 
 // you are working with. This should only be overwritten in the config_localhost.php file.

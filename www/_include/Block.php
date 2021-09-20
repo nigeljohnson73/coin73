@@ -188,6 +188,10 @@ function __testBlock() {
 }
 
 function transactionToBlock() {
+	if (! InfoStore::blockCreationEnabled ()) {
+		logger ( LL_WRN, "Block creation is disabled" );
+		return;
+	}
 	global $logger;
 	logger ( LL_DBG, "################################################################" );
 	logger ( LL_DBG, "#" );
