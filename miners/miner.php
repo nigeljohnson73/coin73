@@ -31,10 +31,10 @@ function help() {
 	echo "    -c 'id' : Set the chip id for this miner (defaults to 'PHP Script')\n";
 	echo "    -d      : Use the development server\n";
 	echo "    -h      : This help message\n";
-	echo "    -q      : Shhhh!!, hide all the 'MESSAGE' lines\n";
+	echo "    -q      : Shhhh!!, hide all the 'MESSAGE' output lines\n";
 	echo "    -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')\n";
 	echo "    -w 'id' : Set 130 character wallet ID for miner rewards\n";
-	echo "    -y      : Yes, everything is correct, just get on with it\n";
+	echo "    -y      : Yes!! I got everything correct, just get on with it\n";
 	echo "\n";
 	exit ();
 }
@@ -89,7 +89,7 @@ if ($pause) {
 	echo "#\n";
 	echo "#    Rig ID    : '" . $rig_id . "'\n";
 	echo "#    Wallet ID : '" . $wallet_id . "'\n";
-	echo "#    API       : '" . $api_host . "'\n";
+	echo "#    API host  : '" . $api_host . "'\n";
 	echo "#    Messages  : " . (($messages) ? ("Enabled") : ("Disabled")) . "\n";
 	echo "#\n";
 	echo "#####################################################################################################################################################\n";
@@ -158,7 +158,7 @@ while ( 1 ) {
 			// Check if the signature starts with the expected number of zeros
 			if (strpos ( $signed, $begins ) === 0) { // If it has, we found one
 				$duration = microtime ( true ) - $started;
-				$spost ["hashrate"] = $cnonce / $duration;
+				$spost ["hashrate"] = ($cnonce+1) / $duration;
 				// Set the nonce so we can end this loop
 				$nonce = $cnonce;
 			}

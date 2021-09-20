@@ -58,7 +58,7 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 						logger ( LL_DBG, "--------" );
 						logger ( LL_XDBG, "setting transaction label: '" . minerRewardLabel () . "'" );
 						logger ( LL_XDBG, "--------" );
-						$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, minerRewardLabel () );
+						$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, minerRewardLabel () . " " .$arr["rig_id"] );
 						if ($t->sign ( coinbasePrivateKey () )) {
 							$store = PendingTransactionStore::getInstance ();
 							if ($store->insert ( $t->unload () )) {

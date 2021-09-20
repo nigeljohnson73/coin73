@@ -217,7 +217,7 @@ function transactionToBlock() {
 		$mined_shares = 0;
 		foreach ( $txns as $txn ) {
 			if ($txn->isServiceable ( true )) {
-				if ($txn->message == minerRewardLabel ()) {
+				if (strpos ( $txn->message, minerRewardLabel () ) === 0) {
 					$mined_shares += 1;
 				}
 				$payload = json_decode ( $txn->getPayload () );
@@ -256,7 +256,7 @@ function transactionToBlock() {
 			$str .= " (" . number_format ( count ( $txns ) / $t, 2 ) . " t/s)";
 		}
 		logger ( LL_INF, "Processed " . $str );
-		InfoStore::getInstance ()->setInfo ( blockDebugInfoKey (), $str );
+		InfoStore::getInstance ()->setInfo ( debugBlockInfoKey (), $str );
 
 		logger ( LL_XDBG, "Deltas: " . ob_print_r ( $deltas ) );
 

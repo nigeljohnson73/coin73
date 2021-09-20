@@ -1,14 +1,14 @@
 body {
 	/* font: 400 15px 'Montserrat', sans-serif; */
 	/* font: 400 15px 'Urbanist', sans-serif; */
-	font: 400 15px 'Lato', sans-serif;
+	font: 400 18px 'Lato', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
 
 strong {
 	/* font: 700 15px 'Urbanist', sans-serif; */
-	font: 900 15px 'Lato', sans-serif;
+	font: 900 18px 'Lato', sans-serif;
 	line-height: 1.6em;
 	color: #666;
 }
@@ -78,15 +78,15 @@ h1 {
 }
 
 h2 {
-	font-size: 24px;
+	font-size: 26px;
 }
 
 h3 {
-	font-size: 18px;
+	font-size: 24px;
 }
 
 h4 {
-	font-size: 16px;
+	font-size: 22px;
 }
 
 a {

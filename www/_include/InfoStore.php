@@ -78,7 +78,7 @@ class InfoStore extends DataStore {
 
 		$rdata = array ();
 		foreach ( $tx as $key ) {
-			$rdata [$key] = $data [$key];
+			$rdata [$key] = @$data [$key];
 		}
 		return $rdata;
 	}

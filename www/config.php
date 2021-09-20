@@ -9,7 +9,7 @@ $project_id = "coin73";
 // The CORS origin is used by the API so that other websites cannot host links to it.
 // This value will by the server domain that the application will be served from.
 // It is overwritten for localhost to support local testing.
-$api_CORS_origin = "https://".$project_id.".appspot.com";
+$api_CORS_origin = "https://" . $project_id . ".appspot.com";
 
 // This is the public API server so that 'remote' calls in the application can be handled.
 // Local API calls are managed through the local application, but remote ones are run through
@@ -95,11 +95,18 @@ $smtp_username = "";
 $smtp_password = "";
 
 // Key fields for info - just to stop typos consuming hours of debugging
-$info_key_circulation = "circulation";
-$info_key_mined_shares = "mined_shares";
-$info_key_last_block_hash = "last_block_hash";
-$info_key_last_block_count = "block_count";
-$info_key_block_debug = "block_debug";
+// $info_key_circulation = "circulation";
+// $info_key_mined_shares = "mined_shares";
+// $info_key_last_block_hash = "last_block_hash";
+// $info_key_last_block_count = "block_count";
+// Next rebuild:
+$info_key_circulation = "info_circulation";
+$info_key_mined_shares = "info_mined_shares";
+$info_key_last_block_hash = "info_last_block_hash";
+$info_key_last_block_count = "info_block_count";
+
+$info_key_debug_blocks = "debug_blocking";
+
 $info_key_cron_tick_debug = "cron_tick_debug";
 $info_key_cron_minute_debug = "cron_minute_debug";
 $info_key_cron_hour_debug = "cron_hour_debug";
@@ -112,10 +119,10 @@ $switch_key_mining = "switch_mining";
 $switch_key_blocks = "switch_blocking";
 
 $miner_reward_tag = "-X- Miner Reward -X-";
-// This  defines the tag that will appear after the title and email name so you can tell which system 
+// This defines the tag that will appear after the title and email name so you can tell which system
 // you are working with. This should only be overwritten in the config_localhost.php file.
 $local_monika = "";
-		
+
 // Configure the logging variables
 define ( "LL_NONE", 0 );
 define ( "LL_SYSTEM", 0 );

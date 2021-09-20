@@ -185,6 +185,12 @@ function transactionsPerPage() {
 	return $transactions_per_page;
 }
 
+function minerRewardLabel() {
+	global $miner_reward_tag;
+	return $miner_reward_tag;
+}
+
+// Info keys
 function circulationInfoKey() {
 	global $info_key_circulation;
 	return $info_key_circulation;
@@ -193,12 +199,6 @@ function circulationInfoKey() {
 function minedSharesInfoKey() {
 	global $info_key_mined_shares;
 	return $info_key_mined_shares;
-}
-
-function blockDebugInfoKey() {
-	// function lastBlockTransactionInfoKey() {
-	global $info_key_block_debug;
-	return $info_key_block_debug;
 }
 
 function lastBlockHashInfoKey() {
@@ -211,6 +211,13 @@ function blockCountInfoKey() {
 	return $info_key_last_block_count;
 }
 
+// Debug keys
+function debugBlockInfoKey() {
+	global $info_key_debug_blocks;
+	return $info_key_debug_blocks;
+}
+
+// cron keys
 function cronTickDebugInfoKey() {
 	global $info_key_cron_tick_debug;
 	return $info_key_cron_tick_debug;
@@ -231,11 +238,7 @@ function cronDayDebugInfoKey() {
 	return $info_key_cron_day_debug;
 }
 
-function minerRewardLabel() {
-	global $miner_reward_tag;
-	return $miner_reward_tag;
-}
-
+// Switch keys
 function switchEnabled() {
 	global $switch_key_enabled;
 	return $switch_key_enabled;

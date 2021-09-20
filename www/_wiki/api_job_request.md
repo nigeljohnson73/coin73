@@ -2,8 +2,6 @@
 
 There are 2 API entry points for requesting a job. If your device can handle and process JSON then this option is preferable. Both require you to send a post request, and they both require your `wallet_id` and `rig_id` in the `x-www-form-urlencoded` body.
 
-If you want to see this in action in PHP, check out [Performing work in PHP](/wiki/api/example/job).
-
 ### wallet_id
 
 This is your Wallet ID as defined on your miner dashboard.
@@ -71,7 +69,7 @@ This call uses the JSON call, but just decodes the output into a fixed format st
 
 You will receive a whitespace separated string.
 
-```
+```language-console
 Y 6f7e7378-6ae2-4135-a9f7-043d58781c53 07fbbe0f96faeb037ee1f00984e9774ee4206aec 02 05
 ```
 
@@ -89,6 +87,6 @@ The last section (`05`) is the target submission time in seconds.
 
 You will receive the letter `N` to denote the failure a white space, then the reason text:
 
-```
+```language-console
 N Miner limit reached 
 ```
