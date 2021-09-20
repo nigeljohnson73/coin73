@@ -33,7 +33,7 @@ function help() {
 	echo "    -h      : This help message\n";
 	echo "    -q      : Shhhh!!, hide all the 'MESSAGE' lines\n";
 	echo "    -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')\n";
-	echo "    -w 'id' : Set 130 charagter wallet ID for miner rewards\n";
+	echo "    -w 'id' : Set 130 character wallet ID for miner rewards\n";
 	echo "    -y      : Yes, everything is correct, just get on with it\n";
 	echo "\n";
 	exit ();
