@@ -22,15 +22,16 @@ if (function_exists ( "curl_init" )) {
 	}
 } else {
 	echo "Unimplimented API calling procedure. Install php-curl and you'll get one for free\n";
-	exit();
+	exit ();
 }
 
 function help() {
 	global $argv;
-	echo "\nUsage:- " . basename ( $argv [0] ) . " [-c 'chip-id'] [-d] [-h] [-r 'rig-id'] -w 'wallet-id' [-y]\n\n";
+	echo "\nUsage:- " . basename ( $argv [0] ) . " [-c 'chip-id'] [-d] [-h] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]\n\n";
 	echo "    -c 'id' : Set the chip id for this miner (defaults to 'PHP Script')\n";
 	echo "    -d      : Use the development server\n";
 	echo "    -h      : This help message\n";
+	echo "    -q      : Shhhh!!, hide all the 'MESSAGE' lines\n";
 	echo "    -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')\n";
 	echo "    -w 'id' : Set 130 charagter wallet ID for miner rewards\n";
 	echo "    -y      : Yes, everything is correct, just get on with it\n";
@@ -43,8 +44,9 @@ $rig_id = "PHP-Miner";
 $chip_id = "PHP Script";
 $wallet_id = "";
 $pause = true;
+$messages = true;
 
-$opts = getopt ( 'c:dhr:w:y' );
+$opts = getopt ( 'c:dhqr:w:y' );
 foreach ( $opts as $k => $v ) {
 	if ($k == "c") {
 		$chip_id = $v;
@@ -52,6 +54,8 @@ foreach ( $opts as $k => $v ) {
 		$api_host = "http://localhost:8085/api/";
 	} else if ($k == "h") {
 		help ();
+	} else if ($k == "q") {
+		$messages = false;
 	} else if ($k == "r") {
 		$rig_id = $v;
 	} else if ($k == "w") {
@@ -86,6 +90,7 @@ if ($pause) {
 	echo "#    Rig ID    : '" . $rig_id . "'\n";
 	echo "#    Wallet ID : '" . $wallet_id . "'\n";
 	echo "#    API       : '" . $api_host . "'\n";
+	echo "#    Messages  : " . (($messages) ? ("Enabled") : ("Disabled")) . "\n";
 	echo "#\n";
 	echo "#####################################################################################################################################################\n";
 	echo "Press return to continue\n";
@@ -94,10 +99,14 @@ if ($pause) {
 
 // the production server
 function output($are, $hr, $txt = "") {
+	global $messages;
+	if (strtoupper ( $are ) == "MESSAGE" && ! $messages) {
+		return;
+	}
 	$d = date ( "Y/m/d H:i:s", time () );
 	echo $d . "; ";
-	echo str_pad ( strtoupper($are), max ( strlen ( "MESSAGE" ), strlen ( "ERROR" ), strlen ( "ACCEPTED" ), strlen ( "REJECTED" ) ) ) . "; ";
-	echo str_pad ( (strlen ( $hr ) ? number_format ( $hr, 3 ) : ""), strlen ( "100,000,000.000" ), " ", STR_PAD_LEFT ) . (strlen($hr)?(" h/s"):("    "))."; ";
+	echo str_pad ( strtoupper ( $are ), max ( strlen ( "MESSAGE" ), strlen ( "ERROR" ), strlen ( "ACCEPTED" ), strlen ( "REJECTED" ) ) ) . "; ";
+	echo str_pad ( (strlen ( $hr ) ? number_format ( $hr, 3 ) : ""), strlen ( "100,000,000.000" ), " ", STR_PAD_LEFT ) . (strlen ( $hr ) ? (" h/s") : ("    ")) . "; ";
 	// echo (strlen ( $shares )?("Share "):(" "));
 	// echo str_pad ( (strlen ( $shares ) ? number_format ( $shares ) : ""), strlen ( "100,000,000" ), " ", STR_PAD_LEFT ) . "; ";
 	echo $txt;
@@ -118,7 +127,7 @@ output ( "MESSAGE", "", "Starting mining operation" );
 while ( 1 ) {
 	output ( "MESSAGE", "", "Requesting job" );
 	$data = jsonApi ( $api_host . "job/request/json", $rpost );
-	
+
 	if (! ($data && $data->success)) {
 		output ( "ERROR", "", isset ( $data->reason ) ? ($data->reason) : ("API call failed") );
 		// Got an error.

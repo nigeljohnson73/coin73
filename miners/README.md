@@ -20,11 +20,12 @@ The script runs from the command line amd the `-h` flag will display the help:
 ```
 bash-3.2$ php miner.php -h
 
-Usage:- miner.php [-c 'chip-id'] [-d] [-h] [-r 'rig-id'] -w 'wallet-id' [-y]
+Usage:- miner.php [-c 'chip-id'] [-d] [-h] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]
 
     -c 'id' : Set the chip id for this miner (defaults to 'PHP Script')
     -d      : Use the development server
     -h      : This help message
+    -q      : Shhhh!!, hide all the 'MESSAGE' lines
     -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')
     -w 'id' : Set 130 charagter wallet ID for miner rewards
     -y      : Yes, everything is correct, just get on with it
