@@ -3,10 +3,10 @@
 //
 $ret = startJsonResponse ();
 
-logger(LL_DBG, "ARGS:");
-logger(LL_DBG, ob_print_r ( $args ));
-logger(LL_DBG, "_POST[]:");
-logger(LL_DBG, ob_print_r ( $_POST ));
+logger ( LL_DBG, "ARGS:" );
+logger ( LL_DBG, ob_print_r ( $args ) );
+logger ( LL_DBG, "_POST[]:" );
+logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = "";
@@ -19,50 +19,54 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 	} else if (filter_var ( $_POST ["email"], FILTER_VALIDATE_EMAIL ) === false) {
 		$message = "User creation failed";
 		$ret->reason = "Not sure how it happened, but the email address you provided seems to be invalid";
-	} else if (preg_match ( "/".$valid_password_regex."/", $_POST ["password"] ) === false) {
+	} else if (preg_match ( "/" . $valid_password_regex . "/", $_POST ["password"] ) === false) {
 		$message = "User creation failed";
 		$ret->reason = "Not sure how it happened, but the password you provided seems to be invalid";
 	} else {
 
-		// use the reCAPTCHA PHP client library for validation
-		$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-		$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
+		if (InfoStore::signupEnabled ()) {
+			// use the reCAPTCHA PHP client library for validation
+			$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
+			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
 
-		// verify the response
-		if ($resp->isSuccess ()) {
-			logger(LL_DBG, "Loading data into user array");
-			$user = array ();
-			$store = UserStore::getInstance ();
-			$fields = $store->getDataFields ();
-			$fields [] = $store->getKeyField ();
-			foreach ( $fields as $k ) {
-				if (isset ( $_POST [$k] )) {
-					$user [$k] = $_POST [$k];
+			// verify the response
+			if ($resp->isSuccess ()) {
+				logger ( LL_DBG, "Loading data into user array" );
+				$user = array ();
+				$store = UserStore::getInstance ();
+				$fields = $store->getDataFields ();
+				$fields [] = $store->getKeyField ();
+				foreach ( $fields as $k ) {
+					if (isset ( $_POST [$k] )) {
+						$user [$k] = $_POST [$k];
+					}
 				}
-			}
 
-			$user = $store->insert ( $user );
-			if (is_array ( $user )) {
-				$ret->challenge = $store->revalidateUser ( $user ["email"] );
-				ksort ( $user );
-				echo "Created user: \n";
-				print_r ( $user );
-				$success = strlen ( $ret->challenge );
-				if ($success) {
-					$message = "User created successfuly\n";
+				$user = $store->insert ( $user );
+				if (is_array ( $user )) {
+					$ret->challenge = $store->revalidateUser ( $user ["email"] );
+					ksort ( $user );
+					echo "Created user: \n";
+					print_r ( $user );
+					$success = strlen ( $ret->challenge );
+					if ($success) {
+						$message = "User created successfuly\n";
+					} else {
+						$message = "User creation failed\n";
+						$ret->reason = "The user setup failed - The Multifactor process could not complete";
+					}
 				} else {
 					$message = "User creation failed\n";
-					$ret->reason = "The user setup failed - The Multifactor process could not complete";
+					$ret->reason = "The user setup failed - Looks like a database issue";
 				}
+				// $ret->words = $cwords;
 			} else {
-				$message = "User creation failed\n";
-				$ret->reason = "The user setup failed - Looks like a database issue";
+				echo "Google says no:\n";
+				print_r ( $resp->getErrorCodes () );
+				$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 			}
-			// $ret->words = $cwords;
 		} else {
-			echo "Google says no:\n";
-			print_r ( $resp->getErrorCodes () );
-			$ret->reason = "The request was invalid - Google did not like the cut of your jib";
+			$ret->reason = "Signups are currently disbled";
 		}
 	}
 } else {

@@ -65,7 +65,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 			}
 		} else {
-			$ret->reason = "Logins are currently disabled.";
+			$ret->reason = "Logins are currently disabled";
 			$ret->disabled = true;
 		}
 	}

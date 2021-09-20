@@ -28,7 +28,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				if ($user ["validation_data"]) {
 					$ret->warning = "There is an outstanding validation request. If you did not receive the email, please check your spam folder, and only follow the link in the latest email. If you did not request these, you may want to <a href='/recover'>recover your account.";
 				}
-					
+
 				$message = "Validation request setup\n";
 			} else {
 				$message = "Validation request setup failed\n";

@@ -3,6 +3,16 @@
 <div class="container-fluid text-center" data-ng-controller="SignupCtrl">
 	<form data-ng-show="!account_created && !account_not_created" novalidate>
 		<h1>Sign up</h1>
+		<?php
+		global $logger;
+		$logger->setLevel(LL_NONE);
+		if (!InfoStore::signupEnabled ()) :
+			?>
+		<div class="alert alert-danger" role="alert">
+			<span>Account signups are currently disabled</span>
+		</div>
+		<?php else: ?>
+		
 		<p>Thanks for wanting to join the alliance, however we are not accepting requests at this point. The interface below is just for testing purposes, but please check back again soon.</p>
 		<p>Passwords need to be strong: at least 8 charaters long, with at least 1 lower case letter, 1 upper case letter, 1 digit and one special character (!@#$%^&amp;*).</p>
 		<p>You will recieve an email at the address you provide to complete the sign-up process, so please ensure it is your email address.</p>
@@ -27,7 +37,8 @@
 		<br />
 		<div class="row">
 			<div class="col-12">
-				<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and conditions</a></label>
+				<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and
+						conditions</a></label>
 				<div class="invalid-feedback">You must agree before you will be given an account.</div>
 			</div>
 		</div>
@@ -49,6 +60,7 @@
 			<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 		</div>
 	</div>
+	<?php endif ?>
 </div>
 
 <?php include_once '_footer.php';?>

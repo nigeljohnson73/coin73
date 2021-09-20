@@ -43,7 +43,7 @@ if (isset ( $_POST ["payload"] )) {
 			print_r ( $user );
 		} else {
 			logger ( LL_DBG, "Unable to update user details" );
-			$ret->reason = "Validation preparation failed - Unable to update user details.";
+			$ret->reason = "Validation preparation failed - Unable to update user details";
 		}
 	} else {
 		logger ( LL_DBG, "Unable to find nonce" );
@@ -51,10 +51,9 @@ if (isset ( $_POST ["payload"] )) {
 	}
 } else {
 	logger ( LL_DBG, "no payload sent - bad bot!!!" );
-	$ret->reason = "Validation data cannot be identified.";
+	$ret->reason = "Validation data cannot be identified";
 }
 
-$ret->warning = "Hello World. <a href='/'>Go Home</a>";
 if (! $success) {
 	global $api_failure_delay;
 	sleep ( $api_failure_delay );

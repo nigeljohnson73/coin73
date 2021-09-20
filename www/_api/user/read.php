@@ -41,7 +41,7 @@ if (InfoStore::loginEnabled ()) {
 		}
 	}
 } else {
-	$ret->reason = "Logins are currently disabled.";
+	$ret->reason = "Logins are currently disabled";
 	$ret->disabled = true;
 }
 
