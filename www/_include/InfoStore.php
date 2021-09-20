@@ -144,6 +144,14 @@ class InfoStore extends DataStore {
 		return InfoStore::getInstance ()->setInfo ( blockCountInfoKey (), $v );
 	}
 
+	public static function isBlockBusy() {
+		return InfoStore::getInstance ()->getInfo ( blockBusyInfoKey (), "NO" ) == "YES";
+	}
+
+	public static function setBlockBusy($v) {
+		return InfoStore::getInstance ()->setInfo ( blockBusyInfoKey (), strtoupper ( $v ) );
+	}
+
 	public static function signupEnabled() {
 		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeySignup (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}

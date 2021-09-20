@@ -6,6 +6,8 @@ if (@$_SERVER ["SERVER_NAME"] != "localhost" && @$_SERVER ["HTTP_X_FORWARDED_FOR
 	exit ();
 }
 
+DebugStore::tidyUp ();
+
 // Remove any hung jobs
 // TODO: should probably go into system tick
 JobStore::tidyUp ();

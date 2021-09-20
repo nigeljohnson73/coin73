@@ -95,11 +95,6 @@ $smtp_username = "";
 $smtp_password = "";
 
 // Key fields for info - just to stop typos consuming hours of debugging
-// $info_key_circulation = "circulation";
-// $info_key_mined_shares = "mined_shares";
-// $info_key_last_block_hash = "last_block_hash";
-// $info_key_last_block_count = "block_count";
-// Next rebuild:
 $info_key_circulation = "info_circulation";
 $info_key_mined_shares = "info_mined_shares";
 $info_key_last_block_hash = "info_last_block_hash";
@@ -117,6 +112,7 @@ $switch_key_signup = "switch_signup";
 $switch_key_login = "switch_login";
 $switch_key_mining = "switch_mining";
 $switch_key_blocks = "switch_blocking";
+$switch_key_block_busy = "switch_block_busy";
 
 $miner_reward_tag = "-X- Miner Reward -X-";
 // This defines the tag that will appear after the title and email name so you can tell which system

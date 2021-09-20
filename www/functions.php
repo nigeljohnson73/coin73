@@ -264,6 +264,11 @@ function switchKeyBlocking() {
 	return $switch_key_blocks;
 }
 
+function switchKeyBlockBusy() {
+	global $switch_key_block_busy;
+	return $switch_key_block_busy;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );

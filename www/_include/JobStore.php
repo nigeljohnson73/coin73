@@ -56,7 +56,7 @@ class JobStore extends DataStore {
 			// Assume the key was broken and retry
 			$arr = $oarr;
 			$arr [$this->getKeyField ()] = GUIDv4 ();
-			$arr ["created"] = timestampNow ();
+			$arr ["created"] = msTime ();
 			$arr = parent::insert ( $arr );
 			if ($arr == false) {
 				logger ( LL_ERR, "JobStore::insert() - failed again - You got bigger problems" );

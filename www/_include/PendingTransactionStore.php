@@ -66,8 +66,8 @@ class PendingTransactionStore extends DataStore {
 
 	public function clearTransactions() {
 		while ( count ( $this->active_transactions ) ) {
-			// $arr_page = array_splice ( $this->active_transactions, 0, transactionsPerPage () );
-			$arr_page = $this->active_transactions;
+			$arr_page = array_splice ( $this->active_transactions, 0, transactionsPerPage () );
+			// $arr_page = $this->active_transactions;
 			$this->active_transactions = [ ];
 			logger ( LL_DBG, "PendingTransactions::clearTransactions(): deleting " . count ( $arr_page ) . " records" );
 			$this->obj_store->delete ( $arr_page );
