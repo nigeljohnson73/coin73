@@ -14,29 +14,35 @@ logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 
 $success = false;
 $message = "";
+$ret->disabled = false;
 
-if (isset ( $_SESSION ["AUTHTOK"] )) {
-	$store = UserStore::getInstance ();
-	$user = $store->getItemByGuid ( $_SESSION ["AUTHTOK"] );
-	if (is_array ( $user )) {
-		if (strlen ( $user ["validation_data"] ) == 0) {
-			if (! $user ["locked"]) {
-				$user ["logged_in"] = timestampNow ();
-				$store->update ( $user );
-				$success = true;
-				$message = "User authenticated\n";
-				$_SESSION ["AUTHTOK"] = $user ["guid"];
-				$ret->user = sanitiseUser ( $user );
+if (InfoStore::loginEnabled ()) {
+	if (isset ( $_SESSION ["AUTHTOK"] )) {
+		$store = UserStore::getInstance ();
+		$user = $store->getItemByGuid ( $_SESSION ["AUTHTOK"] );
+		if (is_array ( $user )) {
+			if (strlen ( $user ["validation_data"] ) == 0) {
+				if (! $user ["locked"]) {
+					$user ["logged_in"] = timestampNow ();
+					$store->update ( $user );
+					$success = true;
+					$message = "User authenticated\n";
+					$_SESSION ["AUTHTOK"] = $user ["guid"];
+					$ret->user = sanitiseUser ( $user );
+				} else {
+					$ret->reason = "This account is locked.";
+				}
 			} else {
-				$ret->reason = "This account is locked.";
+				$ret->reason = "There is an outstanding validation request. Please complete that first.";
 			}
 		} else {
-			$ret->reason = "There is an outstanding validation request. Please complete that first.";
+			global $api_failure_delay;
+			sleep ( $api_failure_delay );
 		}
-	} else {
-		global $api_failure_delay;
-		sleep ( $api_failure_delay );
 	}
+} else {
+	$ret->reason = "Logins are currently disabled.";
+	$ret->disabled = true;
 }
 
 // if (! $success) {

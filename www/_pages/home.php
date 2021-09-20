@@ -9,7 +9,9 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="shadow alert alert-secondary" role="alert">
-						<h2>Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span></h2>
+						<h2>
+							Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span>
+						</h2>
 						<p class="user-details wallet-id text-truncate">{{user.public_key}}</p>
 					</div>
 				</div>
@@ -38,33 +40,35 @@
 					<span data-ng-show="reason" data-ng-bind-html="reason"></span>
 				</div>
 			</div>
-			<br />
-			<div class="row">
-				<div class="col-md-6">
-					<label for="email" class="form-label">Email address</label> <input type="email" class="form-control" id="email" data-ng-model="tx.email" data-ng-class="email_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="emailAddressValidate($event)" required>
-					<div class="valid-feedback">Looks good!</div>
-				</div>
-				<div class="col-md-6">
-					<label for="password" class="form-label">Password</label> <input type="password" class="form-control" id="password" data-ng-model="tx.password" data-ng-class="password_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="passwordValidate($event)" required>
-					<div class="valid-feedback">Looks good!</div>
-					<div class="invalid-feedback">8 characters, 1 uppercase, 1 lowercase, 1 digit and one of !@#$%^&amp;*</div>
-				</div>
-			</div>
-			<br />
-			<div class="row">
-				<div class="col-12">
-					<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and
-							conditions</a></label>
-					<div class="invalid-feedback">You must agree before we can process your request.</div>
-				</div>
-			</div>
-			<div class="col-12">
+			<div data-ng-show="!disabled">
 				<br />
-				<button class="btn btn-custom" data-ng-disabled="!submittable" data-ng-click="login()" data-ng-hide="submitting">Login</button>
-				<img src="/gfx/ajax-loader-spinner.gif" alt="submitting" data-ng-show="submitting" />
-			</div>
-			<div class="col-12">
-				<br /> <a class="btn btn-custom" href="/signup">Signup</a> <a class="btn btn-custom" href="/recover">Recover account</a>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="email" class="form-label">Email address</label> <input type="email" class="form-control" id="email" data-ng-model="tx.email" data-ng-class="email_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="emailAddressValidate($event)" required>
+						<div class="valid-feedback">Looks good!</div>
+					</div>
+					<div class="col-md-6">
+						<label for="password" class="form-label">Password</label> <input type="password" class="form-control" id="password" data-ng-model="tx.password" data-ng-class="password_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="passwordValidate($event)" required>
+						<div class="valid-feedback">Looks good!</div>
+						<div class="invalid-feedback">8 characters, 1 uppercase, 1 lowercase, 1 digit and one of !@#$%^&amp;*</div>
+					</div>
+				</div>
+				<br />
+				<div class="row">
+					<div class="col-12">
+						<input class="form-check-input" type="checkbox" value="" id="tocCheck" data-ng-model="tx.accept_toc" data-ng-class="tx.accept_toc ? 'is-valid' : 'is-invalid'" data-ng-change="tocValidate($event)" required> <label class="form-check-label" for="tocCheck"> I agree to the <a href="/terms" target="new">terms and
+								conditions</a></label>
+						<div class="invalid-feedback">You must agree before we can process your request.</div>
+					</div>
+				</div>
+				<div class="col-12">
+					<br />
+					<button class="btn btn-custom" data-ng-disabled="!submittable" data-ng-click="login()" data-ng-hide="submitting">Login</button>
+					<img src="/gfx/ajax-loader-spinner.gif" alt="submitting" data-ng-show="submitting" />
+				</div>
+				<div class="col-12">
+					<br /> <a class="btn btn-custom" href="/signup">Signup</a> <a class="btn btn-custom" href="/recover">Recover account</a>
+				</div>
 			</div>
 		</form>
 	</div>

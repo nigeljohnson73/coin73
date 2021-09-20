@@ -66,6 +66,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 					});
 				});
 			}
+			$scope.disabled = data.disabled;
 			$scope.reason = $sce.trustAsHtml(data.reason);
 
 			if (data.message.length) {
@@ -103,6 +104,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 					});
 				});
 			}
+			$scope.disabled = data.disabled;
 			$scope.reason = $sce.trustAsHtml(data.reason);
 
 			if (data.message.length) {
