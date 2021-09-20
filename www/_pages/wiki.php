@@ -24,12 +24,12 @@ if (! file_exists ( $fn )) {
 
 $md = processSendableFile ( file_get_contents ( $fn ) );
 $html = MarkdownExtra::defaultTransform ( $md );
-$is_api_doc = strpos(basename($fn), "api_") === 0;
-if($is_api_doc) {
+$is_api_doc = strpos ( basename ( $fn ), "api_" ) === 0;
+if ($is_api_doc) {
 	echo "<div class='text-start'>";
 }
 echo $html;
-if($is_api_doc) {
+if ($is_api_doc) {
 	echo "</div>";
 }
 
@@ -57,8 +57,9 @@ if ($show_index) {
 	$mt = filemtime ( $fn );
 }
 
-$t = date ( "Y/m/d H:i:s", $mt );
-echo "<p class='updated'>This page was last updated on " . $t . "</p>";
+// This doesn't work on the server :(
+// $t = date ( "Y/m/d H:i:s", $mt );
+// echo "<p class='updated'>This page was last updated on " . $t . "</p>";
 
 ?>
 </div>

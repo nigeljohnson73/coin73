@@ -4,7 +4,7 @@ For doing work on behalf of the blockchain (mining) each miner is rewarded with 
 
 In summary though, if you mine with the maximum number of miners ({{MINER_MAX_COUNT}}) and nail the submission time ({{MINER_SUBMIT_TARGET_SEC}} seconds) you should see your balance grow by approximately:
 
-#### {{ACCOUNT_MINED_COINS_PER_DAY}}/day
+**{{ACCOUNT_MINED_COINS_PER_DAY}}/day**
 
 While this may seem like a low number, please remember that this is an arbitary amount of a not-real currency that is designed for learning and social benefit, **NOT** for getting rich.
 
@@ -50,4 +50,4 @@ Doing the substitution and you get:
 
 `total = {{MINER_REWARD_TARGET_DAY}} x {{MINER_SUBMIT_TARGET_REWARD_PERCENT}} x {{MINER_PERCEIVED_MAX}}`
 
-This gives you the {{ACCOUNT_MINED_COINS_PER_DAY}} coins per day shown at the top of the page. Bear in mind though, that your milage **WILL** vary due to the number of miners submitting on your account at any one time, as well as the submission times you actaully get, and the fact that to calcluate the rate per job you need to work out a fraction of that for the time you took.
+This gives you the {{ACCOUNT_MINED_COINS_PER_DAY}} coins per day shown at the top of the page. Bear in mind though, that your milage **WILL** vary due to the number of miners submitting on your account at any one time, as well as the submission times you actually get, and the fact that to calcluate the rate per job you need to work out a fraction of day rate for the target time.
