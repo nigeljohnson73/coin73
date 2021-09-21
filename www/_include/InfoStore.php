@@ -145,11 +145,11 @@ class InfoStore extends DataStore {
 	}
 
 	public static function isBlockBusy() {
-		return InfoStore::getInstance ()->getInfo ( blockBusyInfoKey (), "NO" ) == "YES";
+		return InfoStore::getInstance ()->getInfo ( switchKeyBlockBusy (), "NO" ) == "YES";
 	}
 
 	public static function setBlockBusy($v) {
-		return InfoStore::getInstance ()->setInfo ( blockBusyInfoKey (), strtoupper ( $v ) );
+		return InfoStore::getInstance ()->setInfo ( switchKeyBlockBusy (), strtoupper ( $v ) );
 	}
 
 	public static function signupEnabled() {
@@ -165,7 +165,7 @@ class InfoStore extends DataStore {
 	}
 
 	public static function blockCreationEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyBlocking (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyBlockCreation (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
 }
 ?>

@@ -56,12 +56,11 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 						$coin = $coin_per_slot * $sub_time_pcnt * $miner_efficiency;
 						logger ( LL_DBG, "Transaction amount: " . number_format ( $coin, 6 ) );
 						logger ( LL_DBG, "--------" );
-						logger ( LL_XDBG, "setting transaction label: '" . minerRewardLabel () . "'" );
+						logger ( LL_XDBG, "setting transaction label: '" . minerRewardLabel () . " " . $arr ["rig_id"] . "'" );
 						logger ( LL_XDBG, "--------" );
-						$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, minerRewardLabel () . " " .$arr["rig_id"] );
+						$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, minerRewardLabel () . " " . $arr ["rig_id"] );
 						if ($t->sign ( coinbasePrivateKey () )) {
-							$store = PendingTransactionStore::getInstance ();
-							if ($store->insert ( $t->unload () )) {
+							if (TransactionStore::getInstance ()->insert ( $t->unload () )) {
 								$success = true;
 							} else {
 								$ret->reason = "Transaction submit failed";

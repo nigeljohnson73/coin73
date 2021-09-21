@@ -100,7 +100,7 @@ class UserStore extends DataStore {
 		while ( count ( self::$_updated_wallet ) ) {
 			$arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
 			// $arr_page = self::$_updated_wallet;
-			self::$_updated_wallet = [ ];
+			//self::$_updated_wallet = [ ];
 			logger ( LL_DBG, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
 			$this->obj_store->upsert ( $arr_page );
 		}

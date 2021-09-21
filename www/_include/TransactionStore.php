@@ -1,10 +1,10 @@
 <?php
 include_once (__DIR__ . "/DataStore.php");
 
-class PendingTransactionStore extends DataStore {
+class TransactionStore extends DataStore {
 
 	protected function __construct() {
-		logger ( LL_DBG, "PendingTransactionStore::PendingTransactionStore()" );
+		logger ( LL_DBG, "TransactionStore::TransactionStore()" );
 
 		parent::__construct ( "Transaction" );
 
@@ -22,15 +22,20 @@ class PendingTransactionStore extends DataStore {
 		$this->active_transactions = array ();
 	}
 
-	public function insert($arr) {
-		logger ( LL_DBG, "PendingTransactionStore::insert()" );
-		$t = (new Transaction ())->load ( $arr );
-		if (! $t->isValid ()) {
-			logger ( LL_ERR, "PendingTransactionStore::insert(): transaction is not valid" );
-			return;
+	public function addTransaction($t) {
+		if (! $t->isServiceable ()) {
+			logger ( LL_ERR, "TransactionStore::addTransaction(): transaction is not serviceable" );
+			logger ( LL_ERR, "    Reason: '" . $t->getReason () . "'" );
+			return null;
 		}
-		$arr = $t->unload ();
-		// Allow the
+
+		return self::insert ( $t->unload () );
+	}
+
+	public function insert($arr) {
+		logger ( LL_DBG, "TransactionStore::insert()" );
+
+		// Allow the coinbase to insert as many transctions as it likes.
 		if ($arr ["from"] == coinbaseWalletId ()) {
 			$arr ["txn_id"] = GUIDv4 () . "-" . timestampNow ();
 		} else {
@@ -41,20 +46,13 @@ class PendingTransactionStore extends DataStore {
 	}
 
 	public function getTransactions() {
-		// $gql = "SELECT * FROM " . $this->kind . " WHERE validation_nonce = @key";
-		// $data = $this->obj_store->fetchOne ( $gql, [
-		// 'key' => $key
-		// ] );
-		// // echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
-		// // echo " '$gql'\n";
-		// return ($data) ? ($data->getData ()) : ($data);
 		$this->obj_store->query ( "SELECT * FROM " . $this->kind );
 		while ( count ( $this->active_transactions ) < transactionsPerBlock () && $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
-			logger ( LL_DBG, "PendingTransactions::getTransactions(): pulled " . count ( $arr_page ) . " records" );
+			logger ( LL_DBG, "Transactions::getTransactions(): pulled " . count ( $arr_page ) . " records" );
 			$this->active_transactions = array_merge ( $this->active_transactions, $arr_page );
-			// $store->delete ( $arr_page );
+			// $this->obj_store->delete ( $arr_page );
 		}
-		logger ( LL_DBG, "PendingTransactions::getTransactions(): total of " . count ( $this->active_transactions ) . " records" );
+		logger ( LL_DBG, "Transactions::getTransactions(): total of " . count ( $this->active_transactions ) . " records" );
 
 		$ret = array ();
 		foreach ( $this->active_transactions as $txn ) {
@@ -67,9 +65,7 @@ class PendingTransactionStore extends DataStore {
 	public function clearTransactions() {
 		while ( count ( $this->active_transactions ) ) {
 			$arr_page = array_splice ( $this->active_transactions, 0, transactionsPerPage () );
-			// $arr_page = $this->active_transactions;
-			$this->active_transactions = [ ];
-			logger ( LL_DBG, "PendingTransactions::clearTransactions(): deleting " . count ( $arr_page ) . " records" );
+			logger ( LL_DBG, "Transactions::clearTransactions(): deleting " . count ( $arr_page ) . " records" );
 			$this->obj_store->delete ( $arr_page );
 		}
 	}

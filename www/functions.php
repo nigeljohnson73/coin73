@@ -211,12 +211,6 @@ function blockCountInfoKey() {
 	return $info_key_last_block_count;
 }
 
-// Debug keys
-function debugBlockInfoKey() {
-	global $info_key_debug_blocks;
-	return $info_key_debug_blocks;
-}
-
 // cron keys
 function cronTickDebugInfoKey() {
 	global $info_key_cron_tick_debug;
@@ -259,9 +253,9 @@ function switchKeymining() {
 	return $switch_key_mining;
 }
 
-function switchKeyBlocking() {
-	global $switch_key_blocks;
-	return $switch_key_blocks;
+function switchKeyBlockCreation() {
+	global $switch_key_block_creation;
+	return $switch_key_block_creation;
 }
 
 function switchKeyBlockBusy() {

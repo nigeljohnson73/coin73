@@ -8,37 +8,17 @@ class DebugStore extends DataStore {
 
 		parent::__construct ( "Debug" );
 
-		$this->addField ( "debug_id", "String", true, true ); // indexed and key
-		$this->addField ( "created", "Float", true );
-		$this->addField ( "time", "String" );
+		$this->addField ( "created", "Float", true, true );
+		$this->addField ( "time", "String", true );
 		$this->addField ( "detail", "String" );
 
 		$this->init ();
 	}
 
 	public function insert($arr) {
-		$oarr = $arr; // Save it in case the insert fails!!
-
-		$arr [$this->getKeyField ()] = GUIDv4 ();
+		$arr ["time"] = timestampFormat ( timestampNow (), "Y/m/d H:i:s" );
 		$arr ["created"] = microtime ( true );
-		$arr ["time"] = timestampNow ();
-		$arr = parent::insert ( $arr );
-
-		if ($arr == false) {
-			logger ( LL_ERR, "DebugStore::insert() - failed - regenerating key" );
-			// Assume the key was broken and retry
-			$arr = $oarr;
-			$arr [$this->getKeyField ()] = GUIDv4 ();
-			$arr ["created"] = microtime ( true );
-			$arr ["time"] = timestampNow ();
-			$arr = parent::insert ( $arr );
-			if ($arr == false) {
-				logger ( LL_ERR, "DebugStore::insert() - failed again - You got bigger problems" );
-			}
-			// if it's still bust... well we all screwed
-		}
-		// Nothing else to do...
-		return $arr;
+		return parent::insert ( $arr );
 	}
 
 	// https://stackoverflow.com/questions/1820908/how-to-turn-off-the-eclipse-code-formatter-for-certain-sections-of-java-code
@@ -53,7 +33,7 @@ class DebugStore extends DataStore {
 	// @formatter:on
 	protected function _tidyUp() {
 		logger ( LL_DBG, "DebugStore::tidyUp(): started" );
-		$older = microtime ( true ) - (12 * 60 * 60);
+		$older = microtime ( true ) - (3 * 60 * 60);
 		$gql = "SELECT * FROM " . $this->kind . " WHERE created < @key";
 		$this->obj_store->query ( $gql, [ 
 				'key' => $older

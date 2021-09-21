@@ -70,7 +70,7 @@ $coinbase_pubKey = "";
 $coinbase_privKey = "";
 
 // Manage the limits for processing transactions into blocks
-$transactions_per_block = 1500;
+$transactions_per_block = 2500;
 $transactions_per_page = 500;
 
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
@@ -100,8 +100,6 @@ $info_key_mined_shares = "info_mined_shares";
 $info_key_last_block_hash = "info_last_block_hash";
 $info_key_last_block_count = "info_block_count";
 
-$info_key_debug_blocks = "debug_blocking";
-
 $info_key_cron_tick_debug = "cron_tick_debug";
 $info_key_cron_minute_debug = "cron_minute_debug";
 $info_key_cron_hour_debug = "cron_hour_debug";
@@ -111,10 +109,12 @@ $switch_key_enabled = "ENABLED";
 $switch_key_signup = "switch_signup";
 $switch_key_login = "switch_login";
 $switch_key_mining = "switch_mining";
-$switch_key_blocks = "switch_blocking";
+$switch_key_block_creation = "switch_block_creation";
 $switch_key_block_busy = "switch_block_busy";
 
+// This is used in the message of miner rewards so that mined shares can be attributed
 $miner_reward_tag = "-X- Miner Reward -X-";
+
 // This defines the tag that will appear after the title and email name so you can tell which system
 // you are working with. This should only be overwritten in the config_localhost.php file.
 $local_monika = "";

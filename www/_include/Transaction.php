@@ -40,6 +40,12 @@ class Transaction {
 	}
 
 	public function sign($privKey) {
+		if ($this->created == null || $this->to == null || $this->from == null || $this->amount <= 0) {
+			$this->invalid_reason = "Transaction is not properly formed";
+			logger ( LL_DBG, "Transaction::sign(): " . $this->invalid_reason );
+			return false;
+		}
+
 		$ec = new EC ( 'secp256k1' );
 		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
 		if ($this->from != $sk->getPublic ( 'hex' )) {
@@ -52,48 +58,52 @@ class Transaction {
 		return true;
 	}
 
-	public function isValid() {
+	public function isValid($signature_check = false) {
 		if ($this->created == null || $this->to == null || $this->from == null || $this->amount <= 0) {
 			$this->invalid_reason = "Transaction is not properly formed";
-			logger(LL_DBG, "Transaction::isValid(): ". $this->invalid_reason);
+			logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
 			return false;
 		}
 
 		if (strlen ( $this->signature ) == 0) {
 			$this->invalid_reason = "Transaction is not signed";
-			logger(LL_DBG, "Transaction::isValid(): ". $this->invalid_reason);
+			logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
 			return false;
 		}
-		$ec = new EC ( 'secp256k1' );
-		$vk = $ec->keyFromPublic ( $this->from, 'hex' );
-		if(!$vk->verify ( $this->calculateHash (), $this->signature )) {
-			$this->invalid_reason = "Transaction signature verification failed";
-			logger(LL_DBG, "Transaction::isValid(): ". $this->invalid_reason);
-			return false;
+
+		if ($signature_check) {
+			$ec = new EC ( 'secp256k1' );
+			$vk = $ec->keyFromPublic ( $this->from, 'hex' );
+			if (! $vk->verify ( $this->calculateHash (), $this->signature )) {
+				$this->invalid_reason = "Transaction signature verification failed";
+				logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
+				return false;
+			}
 		}
+
 		return true;
 	}
 
-	public function isServiceable($reciever_check = false) {
-		if (! $this->isValid ()) {
+	public function isServiceable() {
+		if (! $this->isValid ( true )) {
 			// The reason and error is posted in teh isValid() call
 			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is not valid" );
 			return false;
 		}
 
-		// It can still be from god, but it needs to be signed. That's why this is not at the top. 
+		// It can still be from god, but it needs to be signed. That's why this is not at the top.
 		// If we are not validating the receiver, we will not process any further on the basis that
-		// God didn't make up the receiver so they must be valid... or user entered guff in a miner, 
+		// God didn't make up the receiver so they must be valid... or user entered guff in a miner,
 		// either way, pick it up on the back end and return it to the pool there as the processing
 		// load is way lower there - potentailly maxMinerCount() times lower.
-		if ($this->from == coinbaseWalletId () && !$reciever_check) {
-			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '".str_replace( getDataNamespace(), "", coinbaseName())."'" );
-			return true;
-		}
+// 		if ($this->from == coinbaseWalletId () && ! $reciever_check) {
+// 			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '" . str_replace ( getDataNamespace (), "", coinbaseName () ) . "'" );
+// 			return true;
+// 		}
 
-		$store = UserStore::getInstance();
+		$store = UserStore::getInstance ();
 
-		// Check the receiver exists. We really should trust the send more, but they are only human
+		// Check the receiver exists. We really should trust the sender more, but they are only human
 		$receiver = $store->getItemByWalletId ( $this->to );
 		if (! $receiver) {
 			$this->invalid_reason = "Receiver does not exist";
@@ -102,14 +112,14 @@ class Transaction {
 		}
 
 		// Check the sender has funds (and exists)
-		
-		// Well obviously the coinbase exists
-		if ($this->from == coinbaseWalletId () && $reciever_check) {
-			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '".str_replace( getDataNamespace(), "", coinbaseName())."' (post receiver check)" );
+
+		// Well obviously the coinbase exists and is good for it
+		if ($this->from == coinbaseWalletId ()) {
+			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '" . str_replace ( getDataNamespace (), "", coinbaseName () ) );
 			return true;
 		}
-		
-		// The transaction amount will hav been checked in isValid() to be higher than zero. If a wallet 
+
+		// The transaction amount will hav been checked in isValid() to be higher than zero. If a wallet
 		// cannot send that (it has zero or doesn't exist), then throw an error.
 		$sender_bal = $store->getWalletBalance ( $this->from );
 		if ($sender_bal < $this->amount) {
@@ -118,7 +128,7 @@ class Transaction {
 			logger ( LL_DBG, "                             (" . $sender_bal . " < " . $this->amount . ")" );
 			return false;
 		}
-		
+
 		// Performed all the checks, we must be as good as we can possibly get
 		logger ( LL_DBG, "Tranaction::isServiceable(): Sender has funds (" . $sender_bal . " >= " . $this->amount . ")" );
 		return true;
