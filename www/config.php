@@ -70,7 +70,7 @@ $coinbase_pubKey = "";
 $coinbase_privKey = "";
 
 // Manage the limits for processing transactions into blocks
-$transactions_per_block = 2500;
+$transactions_per_block = 3000;
 $transactions_per_page = 500;
 
 // Used to validate passwrods for users of the site. This says at least 8 chars long, at least
