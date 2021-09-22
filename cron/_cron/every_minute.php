@@ -30,9 +30,14 @@ if (strtoupper ( InfoStore::getInstance ()->getInfo ( "switch_load_test_transact
 	for($i = 0; $i < $test; $i ++) {
 		$t = new Transaction ( coinbaseWalletId (), $demo_to_wallet, 1 / $test, minerRewardLabel () . " TESTING" );
 		if ($t->sign ( coinbasePrivateKey () )) {
+			logger ( LL_INF, "Storing transaction: " . ob_print_r ( $t->unload () ) );
 			if (TransactionStore::getInstance ()->insert ( $t->unload () )) {
 				$c += 1;
+			} else {
+				logger ( LL_ERR, "Insert transaction failed: " . ($t->getReason ()) );
 			}
+		} else {
+			logger ( LL_ERR, "Signing transaction failed: " . ($t->getReason ()) );
 		}
 		if (($i > 0) && ($i % 100 == 0)) {
 			DebugStore::log ( "Test transaction load count: " . $i . "/" . $test );

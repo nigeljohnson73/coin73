@@ -23,6 +23,9 @@
 						<h1 class="display-1">{{user.balance | number:4}}</h1>
 						<span>{{user.dollar | currency : "$" }}</span>
 					</div>
+					<div>
+					<p>You'll need a mining rig/script. <a href="/wiki/mining/script">Write your own</a> if you don't have access to the ones here.</p>
+					</div>
 				</div>
 			</div>
 			<div class="row">

@@ -13,6 +13,9 @@
 		</div>
 		<?php else: ?>
 		
+		<div class="alert alert-warning" role="alert">
+			<span>Account signups are currently enabled for testing</span>
+		</div>
 		<p>Thanks for wanting to join the alliance, however we are not accepting requests at this point. The interface below is just for testing purposes, but please check back again soon.</p>
 		<p>Passwords need to be strong: at least 8 charaters long, with at least 1 lower case letter, 1 upper case letter, 1 digit and one special character (!@#$%^&amp;*).</p>
 		<p>You will recieve an email at the address you provide to complete the sign-up process, so please ensure it is your email address.</p>

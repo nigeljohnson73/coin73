@@ -15,7 +15,45 @@ logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 $success = true;
 $message = "";
 
-$ret->data = ( object ) InfoStore::getApi ();
+$data = ( object ) InfoStore::getAll ();
+
+// protected function _getApi() {
+// $tx = array ();
+// $tx [] = minedSharesInfoKey ();
+// $tx [] = circulationInfoKey ();
+// $tx [] = lastBlockHashInfoKey ();
+// $tx [] = blockCountInfoKey ();
+// sort ( $tx );
+
+// $data = InfoStore::getAll ();
+
+// $rdata = array ();
+// foreach ( $tx as $key ) {
+// $rdata [$key] = @$data [$key];
+// }
+// return $rdata;
+// }
+
+// public static function getApi() {
+// return InfoStore::getInstance ()->_getApi ();
+// }
+
+$ret->data = new StdClass ();
+$key = circulationInfoKey ();
+$lkey = str_replace ( "info_", "", $key );
+$ret->data->$lkey = ( double ) ($data->$key);
+
+$key = minedSharesInfoKey ();
+$lkey = str_replace ( "info_", "", $key );
+$ret->data->$lkey = ( int ) ($data->$key);
+
+$key = blockCountInfoKey ();
+$lkey = str_replace ( "info_", "", $key );
+$ret->data->$lkey = ( int ) ($data->$key);
+
+$key = lastBlockHashInfoKey ();
+$lkey = str_replace ( "info_", "", $key );
+$ret->data->$lkey = $data->$key;
 
 endJsonResponse ( $response, $ret, $success, $message );
 ?>

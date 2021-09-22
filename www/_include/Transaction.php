@@ -20,22 +20,19 @@ class Transaction {
 	}
 
 	public function getPayload() {
-		if (! $this->payload) {
-			$ret = new StdClass ();
-			$ret->created = $this->created;
-			$ret->from = $this->from;
-			$ret->to = $this->to;
-			$ret->amount = $this->amount;
-			$ret->message = $this->message;
-			$this->payload = json_encode ( $ret );
-		}
+		$ret = new StdClass ();
+
+		$ret->created = $this->created;
+		$ret->from = $this->from;
+		$ret->to = $this->to;
+		$ret->amount = $this->amount;
+		$ret->message = $this->message;
+		$this->payload = json_encode ( $ret );
+
 		return $this->payload;
 	}
 
 	public function calculateHash() {
-		if ($this->hash && strlen ( $this->hash )) {
-			return $this->hash;
-		}
 		return $this->hash = hash ( "sha256", $this->getPayload () );
 	}
 
@@ -96,10 +93,10 @@ class Transaction {
 		// God didn't make up the receiver so they must be valid... or user entered guff in a miner,
 		// either way, pick it up on the back end and return it to the pool there as the processing
 		// load is way lower there - potentailly maxMinerCount() times lower.
-// 		if ($this->from == coinbaseWalletId () && ! $reciever_check) {
-// 			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '" . str_replace ( getDataNamespace (), "", coinbaseName () ) . "'" );
-// 			return true;
-// 		}
+		// if ($this->from == coinbaseWalletId () && ! $reciever_check) {
+		// logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '" . str_replace ( getDataNamespace (), "", coinbaseName () ) . "'" );
+		// return true;
+		// }
 
 		$store = UserStore::getInstance ();
 
@@ -141,8 +138,8 @@ class Transaction {
 		$arr ["to"] = $this->to;
 		$arr ["amount"] = $this->amount;
 		$arr ["message"] = $this->message;
-		$arr ["payload"] = $this->getPayload ();
 		$arr ["hash"] = $this->calculateHash ();
+		$arr ["payload"] = $this->getPayload ();
 		$arr ["signature"] = $this->signature;
 		return $arr;
 	}

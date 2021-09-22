@@ -14,17 +14,17 @@ class BlockStore extends FileStore {
 	}
 
 	public static function putBlock($b) {
-		if (! $b->isValid ()) {
-			logger ( LL_ERR, "BlockStore::putBlock(): Cannot add an invalid block" );
-			return false;
-		}
+// 		if (! $b->isValid ()) {
+// 			logger ( LL_ERR, "BlockStore::putBlock(): Cannot add an invalid block" );
+// 			return false;
+// 		}
 		if (! self::getInstance ()->putContents ( $b->hash, $b->toPayload () )) {
 			logger ( LL_ERR, "BlockStore::putBlock(): put contents failed" );
 			return false;
 		}
 
-		InfoStore::setLastBlockHash ( $b->hash );
-		InfoStore::setBlockCount ( InfoStore::getBlockCount () + 1 );
+		//InfoStore::setLastBlockHash ( $b->hash );
+		//InfoStore::setBlockCount ( InfoStore::getBlockCount () + 1 );
 
 		return true;
 	}

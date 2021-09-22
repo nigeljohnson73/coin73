@@ -207,30 +207,38 @@ function transactionToBlock() {
 	logger ( LL_DBG, "################################################################" );
 
 	logger ( LL_DBG, "Getting pending transactions" );
-	$deltas = array ();
 
-	// DebugStore::log ( "Checking block busy: " . InfoStore::getInstance ()->getInfo ( switchKeyBlockBusy (), "NO" ) );
-	// Start a timer for debugging later
+	// Store any failures here
+	$suspect = [ ];
+	$reprocess = [ ];
+
 	InfoStore::setBlockBusy ( "YES" );
+	// Start a timer for debugging later
 	$pt = new ProcessTimer ();
 
 	$ipt = new ProcessTimer ();
 	$txns = TransactionStore::getInstance ()->getTransactions ();
+
 	if (count ( $txns ) > 0) {
-		DebugStore::log ( "Starting txns -> block process" );
-		DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " getTransactions(): " . count ( $txns ) . " in " . durationFormat ( $ipt->duration () ) );
+		$deltas = array ();
+
+		// DebugStore::log ( "Starting txns -> block process" );
+		// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " getTransactions() (TS: " . durationFormat ( $pt->duration () ) . ")" );
 		try {
 
-			// Store the current log level so we can switch it off and restore it later.
-			$ll = $logger->getLevel ();
-			$logger->setLevel ( LL_WRN );
+			// DebugStore::log ( "clearTransactions()" );
+			// logger ( LL_DBG, "clearTransactions()" );
+			$ipt = new ProcessTimer ();
+			TransactionStore::getInstance ()->clearTransactions ();
+			// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " clearTransactions() (TS: " . durationFormat ( $pt->duration () ) . ")" );
 
 			// Iterate through transactions and create a deltas list.
-			DebugStore::log ( "Gathering wallet deltas" );
-			logger ( LL_DBG, "Gathering wallet deltas" );
+			// DebugStore::log ( "validateTransactions()" );
+			// logger ( LL_DBG, "validateTransactions()" );
 			$mined_shares = 0;
 			$ipt = new ProcessTimer ();
-			foreach ( $txns as $txn ) {
+			foreach ( $txns as $k => $txn ) {
+				// logger ( LL_SYS, "Got transaction: " . ob_print_r ( $txn->unload () ) );
 				// Just do a simple check here, we make the assumption that the storage is secure.
 				// We also don't care if the reciever does not exist. :(
 				if ($txn->isValid ( false )) {
@@ -238,42 +246,16 @@ function transactionToBlock() {
 						$mined_shares += 1;
 					}
 					$payload = json_decode ( $txn->getPayload () );
-					logger ( LL_DBG, "Processing transaction (" . $payload->amount . ")" );
+					// logger ( LL_DBG, "Processing transaction (" . $payload->amount . ")" );
 					$deltas [$payload->from] = ($deltas [$payload->from] ?? 0) - $payload->amount;
 					$deltas [$payload->to] = ($deltas [$payload->to] ?? 0) + $payload->amount;
 				} else {
 					logger ( LL_ERR, "Invalid transaction (" . $txn->getReason () . ")" );
+					unset ( $txns [$k] );
+					$suspect [] = $txn;
 				}
 			}
-			DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Gather wallet deltas" );
-			// Get the wallet deltas applied
-			DebugStore::log ( "Updating wallet deltas" );
-			logger ( LL_DBG, "Updating wallet deltas" );
-			$ipt = new ProcessTimer ();
-			$suspect = UserStore::getInstance ()->updateWalletBalances ( $deltas );
-			if ($suspect) {
-				// do something to weeld out the ids I just got passed.
-			}
-			DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " UserStore::updateWalletBalances()" );
-
-			DebugStore::log ( "Applying wallet deltas" );
-			logger ( LL_DBG, "Applying wallet deltas" );
-			$ipt = new ProcessTimer ();
-			if (UserStore::getInstance ()->applyWalletBalances ()) {
-				DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " UserStore::applyWalletBalances()" );
-
-				DebugStore::log ( "Clearing transactions" );
-				logger ( LL_DBG, "Clearing transactions" );
-				$ipt = new ProcessTimer ();
-				TransactionStore::getInstance ()->clearTransactions ();
-				DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " clearTransactions()" );
-			} else {
-				// An error occurred
-				// remove transactions that are thrown back.
-			}
-
-			// Reset Log levels
-			$logger->setLevel ( $ll );
+			// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " validateTransactions() (TS: " . durationFormat ( $pt->duration () ) . ")" );
 
 			if (InfoStore::getLastBlockHash () == "") {
 				logger ( LL_INF, "Creating Genesis block" );
@@ -282,37 +264,53 @@ function transactionToBlock() {
 				BlockStore::putBlock ( $b );
 			}
 
-			DebugStore::log ( "Creating transaction block" );
-			logger ( LL_DBG, "Creating transaction block" );
+			// DebugStore::log ( "Creating transaction block" );
+			// logger ( LL_DBG, "Creating transaction block" );
 			$b = new Block ();
-			DebugStore::log ( "Adding transactions" );
+
+			// DebugStore::log ( "Adding transactions" );
 			$ipt = new ProcessTimer ();
 			$b->addTransactions ( $txns );
-			DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Block::addTransactions()" );
-			DebugStore::log ( "Signing block" );
+			// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Block::addTransactions() (TS: " . durationFormat ( $pt->duration () ) . ")" );
+
+			// DebugStore::log ( "Signing block" );
 			$b->sign ();
-			logger ( LL_DBG, "Last block '" . $b->last_hash . "'" );
-			logger ( LL_DBG, "New block '" . $b->hash . "'" );
-			DebugStore::log ( "Validating block" );
+
 			$ipt = new ProcessTimer ();
-			// if ($b->isValid (false)) {
+			// DebugStore::log ( "Validating block" );
+			$ipt = new ProcessTimer ();
 			if ($b->isValid ( false )) {
-				DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Block::isValid()" );
+				// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Block::isValid() (TS: " . durationFormat ( $pt->duration () ) . ")" );
+
+				logger ( LL_DBG, "Last block '" . $b->last_hash . "'" );
+				logger ( LL_DBG, "New block '" . $b->hash . "'" );
+				InfoStore::setLastBlockHash ( $b->hash );
+				InfoStore::setBlockCount ( InfoStore::getBlockCount () + 1 );
 
 				// We can let the next call in now
-				DebugStore::log ( "*** " . durationFormat ( $pt->duration () ) . " Complete txns -> block process" );
-
+				DebugStore::log ( "*** " . durationFormat ( $pt->duration () ) . ": " . number_format ( count ( $txns ) ) . " txns -> block" );
 				InfoStore::setBlockBusy ( "NO" );
-				DebugStore::log ( "Adding block to the blockchain" );
+
+				// print_r($deltas);
+				// Get the wallet deltas applied
+				// DebugStore::log ( "Updating wallet deltas" );
+				// logger ( LL_DBG, "Updating wallet deltas" );
+				$ipt = new ProcessTimer ();
+				$suspect = UserStore::getInstance ()->updateWalletBalances ( $deltas );
+				// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " UserStore::updateWalletBalances()" );
+
+				// DebugStore::log ( "Adding block to the blockchain" );
 				$ipt = new ProcessTimer ();
 				if (BlockStore::putBlock ( $b )) {
 					DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " BlockStore::putBlock()" );
-					logger ( LL_INF, "Block stored :)" );
+					// logger ( LL_INF, "Block stored :)" );
+				} else {
+					logger ( LL_ERR, "Block cannot be put into the store :( We should not be here" );
+					$reprocess = array_merge ( $reprocess, $$txns );
 				}
-				// } else {
-				// logger ( LL_ERR, "Block cannot be put into the store :(" );
 			} else {
-				logger ( LL_ERR, "Block is invalid :(" );
+				logger ( LL_ERR, "Block is invalid :( we REALLY should not be here" );
+				$reprocess = array_merge ( $reprocess, $$txns );
 			}
 
 			if ($mined_shares) {
@@ -320,6 +318,18 @@ function transactionToBlock() {
 			}
 		} catch ( Exception $e ) {
 			DebugStore::log ( "Block Exception: " . $e->getMessage () );
+			$reprocess = array_merge ( $reprocess, $$txns );
+		}
+
+		if ($suspect) {
+			// WARNING: could be a transaction, or a Wallet ID
+			DebugStore::log ( "Got suspect transactions: " . ob_print_r ( $suspect ) );
+			// TODO: do something to dig out transactions for this these and reverse them.
+		}
+
+		if ($reprocess) {
+			DebugStore::log ( "Got invalid transactions: " . ob_print_r ( $reprocess ) );
+			// TODO: these were deemed invalid or I failed somehere. Store them somewhere for review
 		}
 	} else {
 		InfoStore::setBlockBusy ( "NO" );

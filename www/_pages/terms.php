@@ -1,8 +1,15 @@
 <?php include_once '_header.php';?>
 <div class="container-fluid text-center" data-ng-controller="TermsCtrl">
-	<h1>Terms of service</h1>
-	<p>In using this application you are agreeing to adhere to the terms of service. These are outlined below.</p>
-	<p>Don't be a douche.</p>
-	<p>That's pretty much it. Just be nice to people and smile more.</p>
+<?php
+use Michelf\MarkdownExtra;
+$fn = __DIR__ . "/" . str_replace ( ".php", "", basename ( __FILE__ ) ) . ".md";
+if (file_exists ( $fn )) {
+	$md = file_get_contents ( $fn );
+	$html = MarkdownExtra::defaultTransform ( $md );
+	echo $html;
+} else {
+	echo "<h1>No content here - yet</h1>";
+}
+?>
 </div>
 <?php include_once '_footer.php';?>

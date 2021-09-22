@@ -66,27 +66,6 @@ class InfoStore extends DataStore {
 		return true;
 	}
 
-	protected function _getApi() {
-		$tx = array ();
-		$tx [] = minedSharesInfoKey ();
-		$tx [] = circulationInfoKey ();
-		$tx [] = lastBlockHashInfoKey ();
-		$tx [] = blockCountInfoKey ();
-		sort ( $tx );
-
-		$data = InfoStore::getAll ();
-
-		$rdata = array ();
-		foreach ( $tx as $key ) {
-			$rdata [$key] = @$data [$key];
-		}
-		return $rdata;
-	}
-
-	public static function getApi() {
-		return InfoStore::getInstance ()->_getApi ();
-	}
-
 	protected function _getAll() {
 		$data = array ();
 		$gql = "SELECT * FROM " . $this->kind;

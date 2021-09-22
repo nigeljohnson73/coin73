@@ -14,7 +14,9 @@ if (file_exists ( $fn )) {
 
 global $logger;
 $logger->setLevel ( LL_NONE );
-$data = InfoStore::getApi ();
+
+$data = ( array ) InfoStore::getAll ();
+
 ?>
 	<div class="about-data">
 		<div class="row">

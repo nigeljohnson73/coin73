@@ -20,7 +20,14 @@ class DebugStore extends DataStore {
 		$arr ["created"] = microtime ( true );
 		return parent::insert ( $arr );
 	}
-
+	
+	public static function log($str) {
+		$arr = array ();
+		$arr ["detail"] = $str;
+		self::getInstance ()->insert ( $arr );
+		logger(LL_DBG, $str);
+	}
+	
 	// https://stackoverflow.com/questions/1820908/how-to-turn-off-the-eclipse-code-formatter-for-certain-sections-of-java-code
 	// https://patorjk.com/software/taag/#p=display&f=Standard&t=Housekeeping
 	// @formatter:off
@@ -48,12 +55,6 @@ class DebugStore extends DataStore {
 
 	public static function tidyUp() {
 		self::getInstance ()->_tidyUp ();
-	}
-
-	public static function log($str) {
-		$arr = array ();
-		$arr ["detail"] = $str;
-		self::getInstance ()->insert ( $arr );
 	}
 }
 ?>

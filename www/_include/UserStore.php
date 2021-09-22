@@ -73,40 +73,57 @@ class UserStore extends DataStore {
 
 	public function updateWalletBalances($arr) {
 		$suspect = array ();
+		$users = [ ];
+
 		foreach ( $arr as $id => $delta ) {
 			if ($id == coinbaseWalletId ()) {
 				// Delta will be negative unless people are returning coins
 				$delta *= - 1;
 
-				$created = InfoStore::getCirculation ();
-				logger ( LL_INF, "UserStore::updateWalletBalances() - increasing circulation (" . number_format ( $created, 6 ) . ") by '" . number_format ( $delta, 6 ) . "'" );
-				InfoStore::setCirculation ( $created + $delta );
+				$circulation = InfoStore::getCirculation ();
+				// logger ( LL_INF, "UserStore::updateWalletBalances() - increasing circulation (" . number_format ( $created, 6 ) . ") by '" . number_format ( $delta, 6 ) . "'" );
+				logger ( LL_SYS, "UserStore::updateWalletBalances() - increasing circulation (" . number_format ( $circulation, 6 ) . ") by '" . number_format ( $delta, 6 ) . "'" );
+				InfoStore::setCirculation ( $circulation + $delta );
 			} else {
 				$data = self::$_wallet [$id] ?? null;
 				if (! $data) {
-					// I wasn't asked about this wallet, so mark it as suspect
-					$suspect [] = $id;
-				} else {
-					unset ( self::$_wallet [$id] );
+					$user = self::getItemByPublicKey ( $id );
+					if (! $user) {
+						// User does not exist
+						logger ( LL_SYS, "UserStore::updateWalletBalances() - Delta for '" . $data->getData () ["email"] . "' by '" . number_format ( $delta, 6 ) . "' seems suspect" );
+						$suspect [] = $id;
+					}
+					$data = self::$_wallet [$id] ?? null;
+				}
+
+				if ($data) {
 					$data->balance = $data->getData () ["balance"] + $delta;
 					self::$_updated_wallet [] = $data;
+					logger ( LL_SYS, "UserStore::updateWalletBalances() - Updating wallet balance for '" . $data->getData () ["email"] . "' by '" . number_format ( $delta, 6 ) . "'" );
 				}
 			}
 		}
+
+		while ( count ( self::$_updated_wallet ) ) {
+			$arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
+			logger ( LL_SYS, "UserStore::updateWalletBalances(): updating " . count ( $arr_page ) . " records" );
+			$this->obj_store->upsert ( $arr_page );
+		}
+
 		return (count ( $suspect ) > 0) ? $suspect : null;
 	}
 
-	public function applyWalletBalances() {
-		while ( count ( self::$_updated_wallet ) ) {
-			$arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
-			// $arr_page = self::$_updated_wallet;
-			//self::$_updated_wallet = [ ];
-			logger ( LL_DBG, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
-			$this->obj_store->upsert ( $arr_page );
-		}
-		return true;
-	}
-
+	// public function applyWalletBalances() {
+	// while ( count ( self::$_updated_wallet ) ) {
+	// $arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
+	// // $arr_page = self::$_updated_wallet;
+	// // self::$_updated_wallet = [ ];
+	// //logger ( LL_DBG, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
+	// logger ( LL_SYS, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
+	// $this->obj_store->upsert ( $arr_page );
+	// }
+	// return true;
+	// }
 	public function getItemByRecoveryNonce($key) {
 		$gql = "SELECT * FROM " . $this->kind . " WHERE recovery_nonce = @key";
 		$data = $this->obj_store->fetchOne ( $gql, [ 
