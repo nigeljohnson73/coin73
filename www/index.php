@@ -136,9 +136,6 @@ $apis ["/app/user/validate"] = __DIR__ . "/_api/user/validate.php";
 $apis ["/app/user/recover/request"] = __DIR__ . "/_api/user/recover_request.php";
 $apis ["/app/user/recover/prepare"] = __DIR__ . "/_api/user/recover_prepare.php";
 $apis ["/app/user/recover"] = __DIR__ . "/_api/user/recover.php";
-// Coin data TODO: move this to the API service
-$apis ["/app/coin/summary"] = __DIR__ . "/_api/coin/summary.php";
-$apis ["/app/coin/balance"] = __DIR__ . "/_api/coin/balance.php";
 
 //$apis ["/app/test/execute"] = __DIR__ . "/_api/testDataStore/execute.php";
 foreach ( array_keys ( $apis ) as $p ) {

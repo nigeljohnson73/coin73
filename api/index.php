@@ -48,6 +48,8 @@ $apis ["/job/request/json"] = __DIR__ . "/_api/job/request_json.php";
 $apis ["/job/request/text"] = __DIR__ . "/_api/job/request_text.php";
 $apis ["/job/submit/json/{job_id}/{nonce}"] = __DIR__ . "/_api/job/submit_json.php";
 $apis ["/job/submit/text/{job_id}/{nonce}"] = __DIR__ . "/_api/job/submit_text.php";
+$apis ["/coin/summary"] = __DIR__ . "/_api/coin/summary.php";
+$apis ["/coin/balance"] = __DIR__ . "/_api/coin/balance.php";
 
 foreach ( array_keys ( $apis ) as $p ) {
 	$roots = array (

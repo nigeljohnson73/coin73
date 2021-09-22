@@ -12,7 +12,7 @@ logger ( LL_DBG, ob_print_r ( $_POST ) );
 logger ( LL_DBG, "_SESSION[]:" );
 logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 
-$success = true;
+$success = false;
 $message = "";
 
 $ret->reason = "Not implemented";
