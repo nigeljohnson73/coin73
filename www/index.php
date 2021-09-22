@@ -3,15 +3,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
-// TODO: get some variables from the $_GET to handle account validaton and password recovery
-
 include_once (__DIR__ . '/functions.php');
 require __DIR__ . '/vendor/autoload.php';
-
-// function logger($str) {
-// $logfile = "./tmp.log";
-// file_put_contents ( $logfile, trim ( $str ) . "\n", FILE_APPEND );
-// }
 
 // Instantiate App
 $app = AppFactory::create ();
@@ -40,12 +33,7 @@ $routes ["/wiki/{page}/{sub_page}"] = __DIR__ . "/_pages/wiki.php";
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // Surely this is enough
 $routes ["/wiki/{page}/{sub_page}/{sub_sub_page}/{sub_sub_sub_page}"] = __DIR__ . "/_pages/wiki.php"; // No, really, this *is* enough
 
-$routes ["/cron/tick"] = __DIR__ . "/_cron/tick.php";
-$routes ["/cron/every_minute"] = __DIR__ . "/_cron/every_minute.php";
-$routes ["/cron/every_hour"] = __DIR__ . "/_cron/every_hour.php";
-$routes ["/cron/every_day"] = __DIR__ . "/_cron/every_day.php";
-
-$routes ["/benchmark"] = __DIR__ . "/benchmark.php";
+//$routes ["/benchmark"] = __DIR__ . "/benchmark.php";
 //$routes ["/svg.php"] = __DIR__ . "/svg.php"; // Testing purposes for now
 
 foreach ( array_keys ( $routes ) as $p ) {
@@ -132,11 +120,11 @@ foreach ( array_keys ( $images ) as $p ) {
 }
 
 $apis = array ();
-// BookStore testing
-$apis ["/app/book/create"] = __DIR__ . "/_api/book/create.php";
-$apis ["/app/book/{id}"] = __DIR__ . "/_api/book/read.php";
-$apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
-$apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
+// // BookStore testing
+// $apis ["/app/book/create"] = __DIR__ . "/_api/book/create.php";
+// $apis ["/app/book/{id}"] = __DIR__ . "/_api/book/read.php";
+// $apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
+// $apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
 // User management
 $apis ["/app/user"] = __DIR__ . "/_api/user/read.php";
 $apis ["/app/user/login"] = __DIR__ . "/_api/user/login.php";
@@ -148,15 +136,11 @@ $apis ["/app/user/validate"] = __DIR__ . "/_api/user/validate.php";
 $apis ["/app/user/recover/request"] = __DIR__ . "/_api/user/recover_request.php";
 $apis ["/app/user/recover/prepare"] = __DIR__ . "/_api/user/recover_prepare.php";
 $apis ["/app/user/recover"] = __DIR__ . "/_api/user/recover.php";
-// Coin data
+// Coin data TODO: move this to the API service
 $apis ["/app/coin/summary"] = __DIR__ . "/_api/coin/summary.php";
-// $apis ["/app/user/prevalidate/{payload}"] = __DIR__ . "/_api/user/prevalidate.php";
-// $apis ["/app/user/validate/{guid}/{challenge}"] = __DIR__ . "/_api/user/validate.php";
-// $apis ["/app/user/{{id}}"] = __DIR__ . "/_api/user/read.php";
-// $apis ["/app/user/{{id}}/validate"] = __DIR__ . "/_api/user/validate.php";
-// $apis ["/app/user/{{id}}/authenticate"] = __DIR__ . "/_api/user/authenticate.php";
-// $apis ["/app/user/{{id}}/update"] = __DIR__ . "/_api/user/update.php";
-$apis ["/app/test/execute"] = __DIR__ . "/_api/testDataStore/execute.php";
+$apis ["/app/coin/balance"] = __DIR__ . "/_api/coin/balance.php";
+
+//$apis ["/app/test/execute"] = __DIR__ . "/_api/testDataStore/execute.php";
 foreach ( array_keys ( $apis ) as $p ) {
 	$app->post ( $p, function (Request $request, Response $response, $args) {
 		global $apis;
@@ -190,9 +174,7 @@ $app->map ( [
 		'PATCH'
 ], '/{routes:.+}', function ($request, $response) {
 	// Anything we didn't handle before. Tell the requestor we didn't find it.
-	$uri = $request->getUri ()->getPath ();
 	include (__DIR__ . "/_pages/404.php");
-	// $response->getBody ()->write ( "Could not find '" . $uri . "'" );
 	return $response->withStatus ( 404 );
 } );
 

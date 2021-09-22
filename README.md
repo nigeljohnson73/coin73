@@ -55,13 +55,15 @@ This project is built on the Google App Engine platform. The main idea here is t
 
 You shouldn't need to do this on the PI cuz it's setup in the crontab. This is for the install on the Mac.
 
- * Start 2 terminal windows
- * Goto the main code directory in both terminals
+ * Start 3 terminal windows
+ * Goto the main code directory in all terminals
  * `cd ~/git/coin73` 
- * In one window start a test server for the API service
- * `php -S localhost:8085 -t api api/index.php`
- * In the other window, start the test server for the web service
+ * In the first window, start the test server for the web service
  * `php -S localhost:8080 -t www www/index.php`
+ * In the second window start a test server for the API service
+ * `php -S localhost:8085 -t api api/index.php`
+ * In the third window, start the test server for the cron handler
+ * `php -S localhost:8090 -t cron cron/index.php`
 
 ## Project URLs:
 

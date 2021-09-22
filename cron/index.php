@@ -3,12 +3,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
-// TODO: get some variables from the $_GET to handle account validaton and password recovery
-
 include_once (__DIR__ . '/functions.php');
 require __DIR__ . '/vendor/autoload.php';
 
-// function logger($str) {
 // Instantiate App
 $app = AppFactory::create ();
 
@@ -54,9 +51,7 @@ $app->map ( [
 		'PATCH'
 ], '/{routes:.+}', function ($request, $response) {
 	// Anything we didn't handle before. Tell the requestor we didn't find it.
-	$uri = $request->getUri ()->getPath ();
 	include (__DIR__ . "/_pages/404.php");
-	// $response->getBody ()->write ( "Could not find '" . $uri . "'" );
 	return $response->withStatus ( 404 );
 } );
 
