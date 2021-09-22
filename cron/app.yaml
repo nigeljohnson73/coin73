@@ -1,0 +1,7 @@
+runtime: php74
+service: cron
+
+handlers:
+  - url: .*
+    secure: always
+    script: auto

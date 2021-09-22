@@ -3,6 +3,10 @@ dispatch:
   - url: "*/api/*"
     service: api
 
+  # Send all API stuff to the API backend.
+  - url: "*/cron/*"
+    service: cron
+
   # Send anything else to the default handlers
   - url: "*/*"
     service: default
