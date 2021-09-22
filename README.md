@@ -1,6 +1,6 @@
 # Coin73
 
-The codename for Nigels new Blockchain. The name will be changing changing but it's core will not.
+The codename for Nigels new Blockchain. The name might change. but it's core will not.
 
 ## Overview
 
