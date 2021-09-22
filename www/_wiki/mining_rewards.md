@@ -4,9 +4,9 @@ Please remember throughout this page that you are mining an arbitrary amount of 
 
 For doing work on behalf of the blockchain (mining) each miner is rewarded with some of the currency. The amount can be quite a complex subject and is even more so here because of the in-built limitations to flatten out the mining experience.
 
-In summary though, if you mine with the maximum number of miners ({{MINER_MAX_COUNT}}) and nail the submission time ({{MINER_SUBMIT_TARGET_SEC}} seconds) you should see your balance grow by approximately:
+In summary though, if you mine with the maximum number of miners ({{MINER_MAX_COUNT}}) and nail the submission time ({{MINER_SUBMIT_TARGET_SEC}} seconds) you should see your balance grow by:
 
-**{{ACCOUNT_MINED_COINS_PER_DAY}}/day**
+**Approximately {{ACCOUNT_MINED_COINS_PER_DAY}} coins per day**
 
 ## Targets and limits
 

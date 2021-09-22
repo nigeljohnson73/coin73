@@ -1,4 +1,4 @@
-# Mining work
+# Mining difficult work
 
 The work you are doing is solving a hash that will secure the blockchain. You are provided with a hash that identifies the latest block, and you have to work on it until the signature meets some rules. The rules are pretty simple... The signature needs to start with a certain number of zeros. How many zeros? well that is where the difficulty comes in. In the Bitcoin blockchain the difficulty defines how many 'bits' need to be zero and so there is a lot more resolution and allows for simpler comparisons, but tiny little microcontrollers cannot be throwing 64-bit numbers around the place so they have to work a little differently.
 
