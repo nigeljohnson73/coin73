@@ -1,4 +1,5 @@
-app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($scope, $timeout, $sce, apiSvc) {
+app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function($scope, $timeout, $interval, $sce, apiSvc) {
+	$scope.auto_refresh_balance = false;
 	$scope.loading = true;
 	$scope.submitting = false;
 	$scope.login_failure = false;
@@ -37,19 +38,34 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 		$scope.checkValidation();
 	};
 
-	var ping = function() {
-		apiSvc.queuePublic("ping", {}, function(data) {
-			logger("HomeCtrl::ping()", "dbg");
-			logger(data, "inf");
-			if (data.success) {
-				// Yay for us
+	//	var ping = function() {
+	//		apiSvc.queuePublic("ping", {}, function(data) {
+	//			logger("HomeCtrl::ping()", "dbg");
+	//			logger(data, "inf");
+	//			if (data.success) {
+	//				// Yay for us
+	//			}
+	//			if (data.message.length) {
+	//				toast(data.message);
+	//			}
+	//		});
+	//	};
+
+	var loadUser = function(force = false) {
+		//console.log("loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "')");
+		if (!$scope.loading) {
+			if (!$scope.auto_refresh_balance) {
+				// Force seems to be a number when called through interval
+				if (typeof force != "boolean") {
+					//console.log("not loading, auto refreshing");
+					return;
+				} else if (!force) {
+					//console.log("not forcing");
+					return;
+				}
 			}
-			if (data.message.length) {
-				toast(data.message);
-			}
-		});
-	};
-	var loadUser = function() {
+		}
+		$scope.getting = true;
 		apiSvc.queueLocal("user", {}, function(data) {
 			logger("HomeCtrl::loadUser()", "dbg");
 			logger(data, "inf");
@@ -73,8 +89,11 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 				toast(data.message);
 			}
 			$scope.loading = false;
+			$scope.getting = false;
 		});
 	};
+
+	$scope.loadUser = loadUser;
 
 	$scope.login = function() {
 		$scope.submitting = true;
@@ -144,7 +163,8 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$sce", "apiSvc", function($sc
 
 	// Start the calling, but after a startup grace period
 	$scope.load_user_api_call = $timeout(loadUser, 100);
-	$scope.ping_api_call = $timeout(ping, 500);
+	$scope.load_user_api_interval = $interval(loadUser, 60000);
+	//	$scope.ping_api_call = $timeout(ping, 500);
 
 }]);
 

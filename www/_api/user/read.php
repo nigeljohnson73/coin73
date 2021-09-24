@@ -26,7 +26,7 @@ if (InfoStore::loginEnabled ()) {
 					$user ["logged_in"] = timestampNow ();
 					$store->update ( $user );
 					$success = true;
-					$message = "User authenticated\n";
+					//$message = "User authenticated\n";
 					$_SESSION ["AUTHTOK"] = $user ["guid"];
 					$ret->user = sanitiseUser ( $user );
 				} else {

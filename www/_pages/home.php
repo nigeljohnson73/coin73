@@ -19,19 +19,35 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="shadow alert alert-secondary" role="alert">
-						<h2>Your Balance</h2>
-						<h1 class="display-1">{{user.balance | number:4}}</h1>
-						<span>{{user.dollar | currency : "$" }}</span>
-					</div>
-					<div>
-					<p>You'll need a mining rig/script. <a href="/wiki/mining/script">Write your own</a> if you don't have access to the ones here.</p>
+						<div class="row row-cols-2">
+							<div class="col-md-1">
+								<span title="Refresh balance now" class="form-check form-switch" data-ng-show="!getting">
+									<input title="Auto refresh balance every minute" class="form-check-input" type="checkbox" data-ng-model="auto_refresh_balance" id="auto-upload-switch">
+									<i data-ng-show="!getting && !auto_refresh_balance" data-ng-click="loadUser(true)" class="bi bi-arrow-repeat"></i>
+								</span>
+							</div>
+							<div class="col-md-10">
+								<h2>Your Balance</h2>
+							</div>
+							<div class="col-md-12">
+								<h1 class="display-1">
+									<span data-highlight-on-change="{{user.balance}}">{{user.balance | number:4}}</span>
+								</h1>
+								<span data-ng-show="!getting">{{user.dollar | currency : "$" }}</span><span data-ng-show="getting" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;<span data-ng-show="getting">Loading...</span>
+							</div>
+						</div>
 					</div>
 				</div>
+			</div>
+			<div>
+				<p>
+					You'll need a mining rig/script. <a href="/wiki/mining/script">Write your own</a> if you don't have access to the ones here.
+				</p>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
 					<button class="btn btn-custom" data-ng-hide="submitting" data-ng-click="logout()">Logout</button>
-					<img src="/gfx/ajax-loader-spinner.gif" alt="submitting" data-ng-show="submitting" class="float-end" />
+					<img src="/gfx/ajax-loader-spinner.gif" alt="submitting" data-ng-show="submitting" />
 				</div>
 			</div>
 		</div>

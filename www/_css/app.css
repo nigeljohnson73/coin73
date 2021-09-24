@@ -125,6 +125,16 @@ footer.app-footer {
 */
 
 /*************
+ * Highlight on Change
+ */
+@keyframes flash {
+  from { color: #f00; }
+  to { color: inherit; font: inherit; }
+}
+.flash {
+  animation: flash 2s 1;
+}
+/*************
  * image protection
  */
 cover {
