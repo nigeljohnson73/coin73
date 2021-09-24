@@ -20,16 +20,16 @@
 				<div class="col-md-12">
 					<div class="shadow alert alert-secondary" role="alert">
 						<div class="row row-cols-2">
-							<div class="col-md-1">
-								<span title="Refresh balance now" class="form-check form-switch" data-ng-show="!getting">
+							<div class="col-2 text-start">
+								<span class="form-check form-switch" data-ng-show="!getting">
 									<input title="Auto refresh balance every minute" class="form-check-input" type="checkbox" data-ng-model="auto_refresh_balance" id="auto-upload-switch">
-									<i data-ng-show="!getting && !auto_refresh_balance" data-ng-click="loadUser(true)" class="bi bi-arrow-repeat"></i>
+									<i title="Refresh balance now" data-ng-show="!getting && !auto_refresh_balance" data-ng-click="loadUser(true)" class="bi bi-arrow-repeat"></i>
 								</span>
 							</div>
-							<div class="col-md-10">
+							<div class="col-8">
 								<h2>Your Balance</h2>
 							</div>
-							<div class="col-md-12">
+							<div class="col-12">
 								<h1 class="display-1">
 									<span data-highlight-on-change="{{user.balance}}">{{user.balance | number:4}}</span>
 								</h1>

@@ -14,25 +14,32 @@
 		<ul class="navbar-nav w-100 nav-justified">
 			<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 			<li class="nav-item"><a class="nav-link" href="/wiki">Wiki</a></li>
-			<li class="nav-item"><a class="nav-link" href="/supportus">Support us</a></li>
+			<li class="nav-item d-block d-md-none"><a class="nav-link" href="/supportus">Support</a></li>
+			<li class="nav-item d-none d-md-block"><a class="nav-link" href="/supportus">Support us</a></li>
 			<li class="nav-item"><a class="nav-link" href="/about">About us</a></li>
 		</ul>
 	</nav>
 	<div>
-		<p class="float-start">
+		<p class="float-start d-block d-md-none">
+			&nbsp;&nbsp;<a href="/terms">Terms</a>&nbsp;&nbsp;
+		</p>
+		<p class="float-start d-none d-md-block">
 			&nbsp;&nbsp;<a href="/terms">Terms of service</a>&nbsp;&nbsp;
 		</p>
 
 
-		<p class="float-end">
-			&nbsp;&nbsp;<a href="/privacy">Privacy policy</a>&nbsp;&nbsp;
+		<p class="float-end d-block d-md-none">
+			<a href="/privacy">Privacy</a>
+		</p>
+		<p class="float-end d-none d-md-block">
+			<a href="/privacy">Privacy policy</a>
 		</p>
 
 
-		<p class="d-block d-sm-none">
+		<p class="d-block d-md-none">
 			&copy; 2020 - {{nowDate | date : 'yyyy'}} Nigel Johnson<br />all rights reserved
 		</p>
-		<p class="d-none d-sm-block">&copy; 2020 - {{nowDate | date : 'yyyy'}} Nigel Johnson, all rights reserved.</p>
+		<p class="d-none d-md-block">&copy; 2020 - {{nowDate | date : 'yyyy'}} Nigel Johnson, all rights reserved.</p>
 
 		<!--	<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
  			<span class="glyphicon glyphicon-signal" data-ng-hide="!online"></span> <span class="glyphicon glyphicon-plane" data-ng-hide="online"></span>

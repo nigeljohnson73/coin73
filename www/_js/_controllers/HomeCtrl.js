@@ -52,7 +52,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	//	};
 
 	var loadUser = function(force = false) {
-		//console.log("loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "')");
+		console.log("loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "')");
 		if (!$scope.loading) {
 			if (!$scope.auto_refresh_balance) {
 				// Force seems to be a number when called through interval
