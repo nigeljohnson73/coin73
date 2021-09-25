@@ -16,43 +16,37 @@
 			<li class="nav-item"><a class="nav-link" href="/wiki">Wiki</a></li>
 			<li class="nav-item d-block d-md-none"><a class="nav-link" href="/supportus">Support</a></li>
 			<li class="nav-item d-none d-md-block"><a class="nav-link" href="/supportus">Support us</a></li>
-			<li class="nav-item"><a class="nav-link" href="/about">About us</a></li>
+			<li class="nav-item d-block d-md-none"><a class="nav-link" href="/about">About</a></li>
+			<li class="nav-item d-none d-md-block"><a class="nav-link" href="/about">About us</a></li>
 		</ul>
 	</nav>
-	<div>
-		<p class="float-start d-block d-md-none">
-			&nbsp;&nbsp;<a href="/terms">Terms</a>&nbsp;&nbsp;
-		</p>
-		<p class="float-start d-none d-md-block">
-			&nbsp;&nbsp;<a href="/terms">Terms of service</a>&nbsp;&nbsp;
-		</p>
 
+	<div class="row">
+		<div class="col-3">
+			<a class="d-none d-md-block" href="/terms">Terms of service</a>
+			<a class="d-block d-md-none" href="/terms">Terms</a>
+		</div>
+		<div class="col-6">
+			<p>&copy; 2020 - {{nowDate | date : 'yyyy'}} Nigel Johnson, all rights reserved.</p>
+		</div>
+		<div class="col-3">
+			<a class="d-none d-md-block" href="/privacy">Privacy policy</a>
+			<a class="d-block d-md-none" href="/privacy">Privacy</a>
+		</div>
+	</div>
 
-		<p class="float-end d-block d-md-none">
-			<a href="/privacy">Privacy</a>
-		</p>
-		<p class="float-end d-none d-md-block">
-			<a href="/privacy">Privacy policy</a>
-		</p>
-
-
-		<p class="d-block d-md-none">
-			&copy; 2020 - {{nowDate | date : 'yyyy'}} Nigel Johnson<br />all rights reserved
-		</p>
-		<p class="d-none d-md-block">&copy; 2020 - {{nowDate | date : 'yyyy'}} Nigel Johnson, all rights reserved.</p>
-
-		<!--	<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
+	<!--
+			<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
  			<span class="glyphicon glyphicon-signal" data-ng-hide="!online"></span> <span class="glyphicon glyphicon-plane" data-ng-hide="online"></span>
  		</div> 
  -->
-
-		<div style="height:75px;" id="padding_for_recaptcha"></div>
-		<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
-			<span class="size-indicator d-block d-sm-none">XS</span> <span class="size-indicator d-none d-sm-block d-md-none">SM</span> <span class="size-indicator d-none d-md-block d-lg-none">MD</span> <span class="size-indicator d-none d-lg-block d-xl-none">LG</span> <span class="size-indicator d-none d-xxl-none d-xl-block">XL</span>
-			<span class="size-indicator d-none d-xxl-block">XXL</span>
-		</div>
+	<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
+		<span class="size-indicator d-block d-sm-none">XS</span> <span class="size-indicator d-none d-sm-block d-md-none">SM</span> <span class="size-indicator d-none d-md-block d-lg-none">MD</span> <span class="size-indicator d-none d-lg-block d-xl-none">LG</span> <span class="size-indicator d-none d-xxl-none d-xl-block">XL</span>
+		<span class="size-indicator d-none d-xxl-block">XXL</span>
 	</div>
 </footer>
+
+<div style="height: 75px;" id="padding_for_recaptcha"></div>
 </div>
 <!-- Started in the header -->
 <script>
