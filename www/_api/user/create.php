@@ -11,6 +11,11 @@ logger ( LL_DBG, ob_print_r ( $_POST ) );
 $success = false;
 $message = "";
 
+// $ret->reason = "The world ended";
+
+// $success = true;
+// $ret->challenge = "Wibble";
+
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["email"] ) && isset ( $_POST ["password"] ) && isset ( $_POST ["accept_toc"] )) {
 	global $valid_password_regex;
 	if (! $_POST ["accept_toc"]) {

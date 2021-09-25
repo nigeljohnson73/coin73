@@ -89,6 +89,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			$interval.cancel($scope.recaptcha_progress_interval);
 			$scope.recaptcha_started = null;
 		}
+		$scope.recaptcha_progress = false;
 		$scope.recaptcha_timeout_call = null;
 		$scope.recaptcha_progress_interval = null;
 	};
