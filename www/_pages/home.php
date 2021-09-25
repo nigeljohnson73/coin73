@@ -10,22 +10,7 @@
 			<h1>Account details</h1>
 			<div class="row">
 				<div class="shadow alert alert-secondary" role="alert">
-					<h2>
-						Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span>
-					</h2>
-					<p class="user-details wallet-id text-truncate">{{user.public_key}}</p>
-					<div id="qr-walletid-holder">
-						<div id="qr-walletid"></div>
-					</div>
-				</div>
-			</div>
-
-
-
-
-			<div class="row">
-				<div class="shadow alert alert-secondary" role="alert">
-					<div class="row row-cols-2">
+					<div class="row row-cols-3">
 						<div class="col-2 text-start">
 							<span class="form-check form-switch" data-ng-show="!getting"> <input title="Auto refresh balance every minute" class="form-check-input" type="checkbox" data-ng-model="auto_refresh_balance" id="auto-upload-switch"> <i title="Refresh balance now" data-ng-show="!getting && !auto_refresh_balance"
 								data-ng-click="loadUser(true)" class="bi bi-arrow-repeat"></i>
@@ -47,6 +32,31 @@
 				<p>
 					You'll need a mining rig/script. <a href="/wiki/mining/script">Write your own</a> if you don't have access to the ones here.
 				</p>
+			</div>
+
+
+
+
+			<div class="row">
+				<div class="shadow alert alert-secondary wallet-details" role="alert">
+					<div class="row row-cols-3">
+						<div class="col-2 text-start">
+							<i title="Show wallet details" data-ng-show="!wallet_visible" class="bi bi-box-arrow-down" data-ng-click=" wallet_visible=true"></i>
+							<i title="Hide wallet details" data-ng-show="wallet_visible" class="bi bi-box-arrow-up" data-ng-click=" wallet_visible=false"></i>
+						</div>
+						<div class="col-8">
+							<h2>Your Wallet</h2>
+						</div>
+						<div class="col-12" data-ng-show="wallet_visible">
+							<div id="qr-walletid-holder">
+								<div id="qr-walletid"></div>
+							</div>
+						</div>
+						<div data-ng-show="wallet_visible" class="col-12">
+							<p class="user-details wallet-id text-truncate">{{user.public_key}}</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
 

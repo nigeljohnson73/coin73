@@ -127,12 +127,19 @@ footer.app-footer {
 /*************
  * Highlight on Change
  */
-@keyframes flash {
-  from { color: #f00; }
-  to { color: inherit; font: inherit; }
+@
+keyframes flash {from { color:#f00;
+	
+}
+
+to {
+	color: inherit;
+	font: inherit;
+}
+
 }
 .flash {
-  animation: flash 2s 1;
+	animation: flash 2s 1;
 }
 /*************
  * image protection
@@ -240,13 +247,18 @@ span.icon-popover {
 p.user-details {
 	font: 400 15px 'Space Mono', monospace;
 	margin: 0px;
+	margin-top: 10px;
+}
+
+.wallet-details h2 {
+	margin: 0;
 }
 
 #qr-walletid-holder {
-	background-color:#fff;
-	padding:20px;
-	padding-bottom:13px;
-	display:inline-block;
-	border-radius:10px;
-	margin-top:10px;
+	background-color: #fff;
+	padding: 20px;
+	padding-bottom: 13px;
+	display: inline-block;
+	border-radius: 10px;
+	margin-top: 10px;
 }

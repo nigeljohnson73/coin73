@@ -140,6 +140,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			pause();
 			$scope.user = data.user;
 
+			$("#qr-walletid canvas").remove();
 			if (data.success) {
 				$scope.retireCaptcha();
 				logger("HomeCtrl::loadUser() - success", "dbg");
@@ -152,7 +153,6 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 					background: null, // color or null for transparent
 					size: 256 // in pixels
 				}, document.querySelector('#qr-walletid'));
-
 				// Yay for us
 			} else {
 				// Since a user is not loaded, assume that's why we are here.
