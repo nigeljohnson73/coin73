@@ -46,6 +46,7 @@
  		</div> 
  -->
 
+		<div style="height:75px;" id="padding_for_recaptcha"></div>
 		<div style="position: fixed; bottom: 10px; left: 20px; font-size: 5pt; color: #ccc;">
 			<span class="size-indicator d-block d-sm-none">XS</span> <span class="size-indicator d-none d-sm-block d-md-none">SM</span> <span class="size-indicator d-none d-md-block d-lg-none">MD</span> <span class="size-indicator d-none d-lg-block d-xl-none">LG</span> <span class="size-indicator d-none d-xxl-none d-xl-block">XL</span>
 			<span class="size-indicator d-none d-xxl-block">XXL</span>

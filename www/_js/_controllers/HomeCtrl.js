@@ -3,56 +3,95 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.loading = true;
 	$scope.submitting = false;
 	$scope.login_failure = false;
+	$scope.txn_failure = false;
 	$scope.user = null;
 	$scope.reason = "";
 
-	var recaptcha_action = "login";
+	$scope.recaptcha_timeout_call = null;
+	$scope.recaptcha_timeout = 115;
+	$scope.recaptcha_timeout_reason = "A time out occurred, please press the button below to try again.";
+	var login_action = "login";
+	var txn_action = "transaction";
+
 	$scope.tx = {};
 	$scope.tx.email = "";
 	$scope.tx.password = "";
 	$scope.tx.accept_toc = "";
 	$scope.tx.token = "";
-	$scope.tx.action = recaptcha_action;
+	$scope.tx.action = login_action;
 	$scope.email_valid = false;
 	$scope.password_valid = false;
-	$scope.submittable = false;
+	$scope.login_submittable = false;
 
-	$scope.checkValidation = function() {
-		$scope.submittable = $scope.email_valid && $scope.password_valid && $scope.tx.accept_toc;
+	$scope.txn = {};
+	$scope.txn.recipient = "";
+	$scope.txn.amount = 0;
+	$scope.txn.message = "";
+	$scope.txn.token = "";
+	$scope.txn.action = txn_action;
+	$scope.recipient_valid = false;
+	$scope.amount_valid = false;
+	$scope.txn_submittable = false;
+
+	function pause() {
+		// Use this if you want to slow progress down cuz the API/GUI is being a pig and you want to debug it
+		//var start = new Date().getTime();
+		//while (new Date().getTime() < start + 1000);
+	}
+
+	$scope.checkLoginValidation = function() {
+		$scope.login_submittable = $scope.email_valid && $scope.password_valid && $scope.tx.accept_toc;
 		//console.log("************************************************************");
 		//console.log("Email valid     :", $scope.email_valid, $scope.tx.email);
 		//console.log("Password valid  :", $scope.password_valid, $scope.tx.password);
 		//console.log("TOC valid       :", $scope.tx.accept_toc, $scope.tx.accept_toc);
-		//console.log("Form submittable:", $scope.submittable);
+		//console.log("Form login_submittable:", $scope.login_submittable);
 	};
 	$scope.emailAddressValidate = function() {
 		$scope.email_valid = $scope.tx.email && ($scope.tx.email.length > 0);
-		$scope.checkValidation();
+		$scope.checkLoginValidation();
 	};
 	$scope.passwordValidate = function() {
 		var ok_password = new RegExp("{{VALID_PASSWORD_REGEX}}");
 		$scope.password_valid = $scope.tx.password && ok_password.test($scope.tx.password);
-		$scope.checkValidation();
+		$scope.checkLoginValidation();
 	};
 	$scope.tocValidate = function() {
-		$scope.checkValidation();
+		$scope.checkLoginValidation();
 	};
 
-	//	var ping = function() {
-	//		apiSvc.queuePublic("ping", {}, function(data) {
-	//			logger("HomeCtrl::ping()", "dbg");
-	//			logger(data, "inf");
-	//			if (data.success) {
-	//				// Yay for us
-	//			}
-	//			if (data.message.length) {
-	//				toast(data.message);
-	//			}
-	//		});
-	//	};
+	$scope.retireLoginCaptcha = function() {
+		if ($scope.recaptcha_timeout_call) {
+			$timeout.cancel($scope.recaptcha_timeout_call);
+		}
+		$scope.recaptcha_timeout_call = null;
+	};
 
-	var loadUser = function(force = false) {
-		console.log("loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "')");
+	$scope.requestLoginCaptcha = function() {
+		logger("HomeCtrl::requestLoginCaptcha() called", "dbg");
+		$scope.retireLoginCaptcha();
+		//console.trace();
+
+		$scope.submitting = true;
+		$scope.reason = null;
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: login_action }).then(function(token) {
+			logger("HomeCtrl::requestLoginCaptcha() - recieved a RECAPTCHA token", "dbg");
+			pause();
+			$scope.loading = false;
+			$scope.submitting = false;
+			$scope.tx.token = token;
+			$scope.recaptcha_timeout_call = $timeout(function() {
+				$scope.tx.token = null;
+				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
+			}, $scope.recaptcha_timeout * 1000);
+		});
+
+	};
+
+	$scope.loadUser = function(force = false) {
+		logger("HomeCtrl::loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "') called", "dbg");
+		$scope.retireLoginCaptcha();
+
 		if (!$scope.loading) {
 			if (!$scope.auto_refresh_balance) {
 				// Force seems to be a number when called through interval
@@ -67,20 +106,18 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		}
 		$scope.getting = true;
 		apiSvc.queueLocal("user", {}, function(data) {
-			logger("HomeCtrl::loadUser()", "dbg");
+			logger("HomeCtrl::loadUser() - API returned", "dbg");
 			logger(data, "inf");
+			pause();
 			$scope.user = data.user;
 
 			if (data.success) {
+				logger("HomeCtrl::loadUser() - success", "dbg");
 				// Yay for us
 			} else {
 				// Since a user is not loaded, assume that's why we are here.
-				grecaptcha.ready(function() {
-					grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function(token) {
-						logger("HomeCtrl::loadUser() - recieved a RECAPTCHA token", "inf");
-						$scope.tx.token = token;
-					});
-				});
+				logger("HomeCtrl::loadUser() - failed", "dbg");
+				$scope.requestLoginCaptcha();
 			}
 			$scope.disabled = data.disabled;
 			$scope.reason = $sce.trustAsHtml(data.reason);
@@ -93,35 +130,32 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		});
 	};
 
-	$scope.loadUser = loadUser;
-
 	$scope.login = function() {
+		logger("HomeCtrl::login() called", "dbg");
+		$scope.retireLoginCaptcha();
 		$scope.submitting = true;
 		$scope.login_failure = false;
 		apiSvc.callLocal("user/login", $scope.tx, function(data) {
-			logger("HomeCtrl::login()", "inf");
+			logger("HomeCtrl::login() API returned", "dbg");
 			logger(data, "inf");
+			pause();
 			$scope.user = data.user;
 			$scope.tx.email = "";
 			$scope.tx.password = "";
 			$scope.tx.accept_toc = "";
 			$scope.email_valid = false;
 			$scope.password_valid = false;
-			$scope.submittable = false;
+			$scope.login_submittable = false;
 			$scope.reason = "";
 
 
 			if (data.success) {
+				logger("HomeCtrl::login() success", "dbg");
 				// Yay for us
 			} else {
+				logger("HomeCtrl::login() failed", "dbg");
 				$scope.login_failure = true;
-				// Reset in case we trying again.
-				grecaptcha.ready(function() {
-					grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function(token) {
-						logger("HomeCtrl::loadUser() - recieved a RECAPTCHA token", "inf");
-						$scope.tx.token = token;
-					});
-				});
+				$scope.requestLoginCaptcha();
 			}
 			$scope.disabled = data.disabled;
 			$scope.reason = $sce.trustAsHtml(data.reason);
@@ -134,23 +168,108 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	};
 
 	$scope.logout = function() {
+		logger("HomeCtrl::logout() called", "dbg");
+		$scope.retireLoginCaptcha();
+
+		$scope.user = null;
+		$scope.loading = true;
 		$scope.submitting = true;
-		$scope.login_failure = false;
+		$scope.reason = null;
+		$scope.login_failure = null;
+		$scope.tx.token = null;
 		apiSvc.callLocal("user/logout", {}, function(data) {
-			logger("HomeCtrl::logout()", "inf");
+			logger("HomeCtrl::logout() API returned", "dbg");
 			logger(data, "inf");
+			pause();
 			$scope.user = data.user;
 
 			if (data.success) {
-				// Reset in case we trying again.
-				grecaptcha.ready(function() {
-					grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function(token) {
-						logger("HomeCtrl::loadUser() - recieved a RECAPTCHA token", "inf");
-						$scope.tx.token = token;
-					});
-				});
+				logger("HomeCtrl::logout() success", "dbg");
+				// Reset in case we want to login again.
+				$scope.requestLoginCaptcha();
+
 			} else {
+				logger("HomeCtrl::logout() failed", "dbg");
 				$scope.login_failure = true;
+			}
+			$scope.reason = $sce.trustAsHtml(data.reason);
+
+			if (data.message.length) {
+				toast(data.message);
+			}
+			//$scope.submitting = false;
+		});
+	};
+
+	$scope.retireTxnCaptcha = function() {
+		if ($scope.recaptcha_timeout_call) {
+			$timeout.cancel($scope.recaptcha_timeout_call);
+		}
+		$scope.recaptcha_timeout_call = null;
+	};
+
+	$scope.requestTxnCaptcha = function() {
+		logger("HomeCtrl::requestLoginCaptcha() called", "inf");
+		$scope.retireLoginCaptcha();
+		//console.trace();
+
+		$scope.submitting = true;
+		$scope.reason = null;
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: txn_action }).then(function(token) {
+			logger("HomeCtrl::requestTxnCaptcha() - recieved a RECAPTCHA token", "inf");
+			pause();
+			$scope.loading = false;
+			$scope.submitting = false;
+			$scope.tx.token = token;
+			$scope.recaptcha_timeout_call = $timeout(function() {
+				$scope.tx.token = null;
+				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
+			}, $scope.recaptcha_timeout * 1000);
+		});
+
+	};
+
+	$scope.prepareTxn = function() {
+		logger("HomeCtrl::prepareTxn()", "dbg");
+		logger(data, "inf");
+		$scope.txn_failure = false;
+		$scope.txn.recipient = "";
+		$scope.txn.amount = 0;
+		$scope.txn.message = "";
+		$scope.recipient_valid = false;
+		$scope.amount_valid = false;
+		$scope.txn_submittable = false;
+		$scope.reason = "";
+
+		$scope.requestTxnCaptcha();
+
+	};
+
+	$scope.sendTxn = function() {
+		logger("HomeCtrl::sendTxn() called", "inf");
+		$scope.retireTxnCaptcha();
+
+		$scope.submitting = true;
+		$scope.txn_failure = false;
+		apiSvc.callLocal("coin/send", $scope.txn, function(data) {
+			logger("HomeCtrl::sendTxn()", "inf");
+			logger(data, "inf");
+			pause();
+			$scope.txn.recipient = "";
+			$scope.txn.amount = 0;
+			$scope.txn.message = "";
+			$scope.recipient_valid = false;
+			$scope.amount_valid = false;
+			$scope.txn_submittable = false;
+			$scope.reason = "";
+
+
+			if (data.success) {
+				// Yay for us
+			} else {
+				$scope.txn_failure = true;
+				// Reset in case we trying again.
+				$scope.requestTxnCaptcha();
 			}
 			$scope.reason = $sce.trustAsHtml(data.reason);
 
@@ -162,9 +281,8 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	};
 
 	// Start the calling, but after a startup grace period
-	$scope.load_user_api_call = $timeout(loadUser, 100);
-	$scope.load_user_api_interval = $interval(loadUser, 60000);
-	//	$scope.ping_api_call = $timeout(ping, 500);
+	$scope.load_user_api_call = $timeout($scope.loadUser, 100);
+	$scope.load_user_api_interval = $interval($scope.loadUser, 60000);
 
 }]);
 
