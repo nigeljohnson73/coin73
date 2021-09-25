@@ -16,10 +16,6 @@
 	</div>
 	<div data-ng-show="!loading">
 		<h1>Sign up</h1>
-
-
-
-
 		<div data-ng-show="reason">
 			<div class="alert alert-danger" role="alert">
 				<p>Signup failed.</p>
@@ -30,20 +26,13 @@
 			<button class="btn btn-custom" data-ng-click="requestSignupCaptcha()" data-ng-hide="submitting">Retry</button>
 			<img src="/gfx/ajax-loader-bar.gif" alt="submitting" data-ng-show="submitting" />
 		</div>
-
-
-
-
-
-
-
 		<div data-ng-show="tx.token && !account_created">
 			<div class="alert alert-warning" role="alert">
 				<span>Account signups are currently enabled for testing</span>
 			</div>
 			<p>Thanks for wanting to join the alliance, however we are not accepting requests at this point. The interface below is just for testing purposes, but please check back again soon.</p>
-			<p>Passwords need to be strong: at least 8 charaters long, with at least 1 lower case letter, 1 upper case letter, 1 digit and one special character (!@#$%^&amp;*).</p>
-			<p>You will recieve an email at the address you provide to complete the sign-up process, so please ensure it is your email address.</p>
+			<!-- 			<p>Passwords need to be strong: at least 8 charaters long, with at least 1 lower case letter, 1 upper case letter, 1 digit and one special character (!@#$%^&amp;*).</p> -->
+			<p>You will receive an email at the address you provide to complete the sign-up process, so please ensure it is your email address.</p>
 			<br />
 
 			<form data-ng-show="!account_created && !account_not_created" novalidate>
@@ -81,8 +70,8 @@
 		</div>
 
 		<!-- RECAPTCHA progress -->
-		<br />
 		<div class="progress" data-ng-show="recaptcha_progress">
+			<br />
 			<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100"
 				data-ng-style="{'width': recaptcha_progress + '%'}"></div>
 		</div>
