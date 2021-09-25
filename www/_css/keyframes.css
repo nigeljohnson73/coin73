@@ -45,3 +45,12 @@
 	from {top: 30px; opacity: 1;}
 	to { top: -30px; opacity: 0;}
 }
+
+/* for hte highlight on change stuff */
+@keyframes flash {
+  from { color: #f00; }
+  to { color: inherit; font: inherit; }
+}
+.flash {
+  animation: flash 2s 1;
+}
