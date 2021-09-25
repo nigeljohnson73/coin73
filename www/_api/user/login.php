@@ -56,7 +56,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 						$ret->reason = "There is an outstanding validation request. Please complete that first.";
 					}
 				} else {
-					$message = "Unable to find user\n";
+					//$message = "Unable to authenticate user\n";
 					$ret->reason = "The request was invalid - your user details could not be authenticated";
 				}
 			} else {

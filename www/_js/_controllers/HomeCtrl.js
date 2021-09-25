@@ -7,9 +7,11 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.user = null;
 	$scope.reason = "";
 
+	$scope.recaptcha_progress = 0;
+	$scope.recaptcha_started = null;
 	$scope.recaptcha_timeout_call = null;
 	$scope.recaptcha_timeout = 115;
-	$scope.recaptcha_timeout_reason = "A time out occurred, please press the button below to try again.";
+	$scope.recaptcha_timeout_reason = "You took to long to complete the process. Please press the button below when you're ready to continue.";
 	var login_action = "login";
 	var txn_action = "transaction";
 
@@ -60,21 +62,49 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.checkLoginValidation();
 	};
 
-	$scope.retireLoginCaptcha = function() {
+	$scope.updateCaptchaProgress = function() {
+		if ($scope.recaptcha_progress_interval) {
+			var now = new Date().getTime();
+			var dif = (now - $scope.recaptcha_started) / 1000;
+			var pcnt = ($scope.recaptcha_timeout - dif) / ($scope.recaptcha_timeout);
+			$scope.recaptcha_progress = pcnt * 100;
+			//$scope.recaptcha_progress = Math.round($scope.recaptcha_progress);
+		}
+
+		if ($scope.recaptcha_progress <= 0) {
+			$interval.cancel($scope.recaptcha_progress_interval);
+			$scope.recaptcha_progress_interval = null;
+			$scope.recaptcha_progress = 0; // handle the bounce case when we are a smidge late.
+		}
+
+		//console.log("RECAPTCHA progress:", $scope.recaptcha_progress);
+	};
+
+	$scope.retireCaptcha = function() {
+		$scope.progress = 0;
 		if ($scope.recaptcha_timeout_call) {
 			$timeout.cancel($scope.recaptcha_timeout_call);
 		}
+		if ($scope.recaptcha_progress_interval) {
+			$interval.cancel($scope.recaptcha_progress_interval);
+			$scope.recaptcha_started = null;
+		}
 		$scope.recaptcha_timeout_call = null;
+		$scope.recaptcha_progress_interval = null;
 	};
 
 	$scope.requestLoginCaptcha = function() {
 		logger("HomeCtrl::requestLoginCaptcha() called", "dbg");
-		$scope.retireLoginCaptcha();
+		$scope.retireCaptcha();
 		//console.trace();
 
 		$scope.submitting = true;
 		$scope.reason = null;
 		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: login_action }).then(function(token) {
+			$scope.recaptcha_progress = 100;
+			$scope.recaptcha_started = new Date().getTime();
+			$scope.recaptcha_progress_interval = $interval($scope.updateCaptchaProgress, 1000);
+
 			logger("HomeCtrl::requestLoginCaptcha() - recieved a RECAPTCHA token", "dbg");
 			pause();
 			$scope.loading = false;
@@ -90,7 +120,6 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	$scope.loadUser = function(force = false) {
 		logger("HomeCtrl::loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "') called", "dbg");
-		$scope.retireLoginCaptcha();
 
 		if (!$scope.loading) {
 			if (!$scope.auto_refresh_balance) {
@@ -112,6 +141,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			$scope.user = data.user;
 
 			if (data.success) {
+				$scope.retireCaptcha();
 				logger("HomeCtrl::loadUser() - success", "dbg");
 				// Yay for us
 			} else {
@@ -132,9 +162,10 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	$scope.login = function() {
 		logger("HomeCtrl::login() called", "dbg");
-		$scope.retireLoginCaptcha();
+		$scope.retireCaptcha();
 		$scope.submitting = true;
 		$scope.login_failure = false;
+		$scope.reason = "";
 		apiSvc.callLocal("user/login", $scope.tx, function(data) {
 			logger("HomeCtrl::login() API returned", "dbg");
 			logger(data, "inf");
@@ -146,8 +177,6 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			$scope.email_valid = false;
 			$scope.password_valid = false;
 			$scope.login_submittable = false;
-			$scope.reason = "";
-
 
 			if (data.success) {
 				logger("HomeCtrl::login() success", "dbg");
@@ -169,7 +198,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	$scope.logout = function() {
 		logger("HomeCtrl::logout() called", "dbg");
-		$scope.retireLoginCaptcha();
+		$scope.retireCaptcha();
 
 		$scope.user = null;
 		$scope.loading = true;
@@ -210,7 +239,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	$scope.requestTxnCaptcha = function() {
 		logger("HomeCtrl::requestLoginCaptcha() called", "inf");
-		$scope.retireLoginCaptcha();
+		$scope.retireCaptcha();
 		//console.trace();
 
 		$scope.submitting = true;
