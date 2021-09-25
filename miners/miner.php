@@ -124,6 +124,7 @@ $spost ["chiptype"] = $chip_id;
 $shares = 0;
 
 output ( "MESSAGE", "", "Starting mining operation" );
+$job_c = 0;
 while ( 1 ) {
 	output ( "MESSAGE", "", "Requesting job" );
 	$data = jsonApi ( $api_host . "job/request/json", $rpost );
@@ -133,6 +134,9 @@ while ( 1 ) {
 		// Got an error.
 		sleep ( 1 );
 	} else {
+		// Increment total job count
+		$job_c += 1;
+
 		// Strip off the call wrapper
 		$data = $data->data;
 
@@ -158,7 +162,7 @@ while ( 1 ) {
 			// Check if the signature starts with the expected number of zeros
 			if (strpos ( $signed, $begins ) === 0) { // If it has, we found one
 				$duration = microtime ( true ) - $started;
-				$spost ["hashrate"] = ($cnonce+1) / $duration;
+				$spost ["hashrate"] = ($cnonce + 1) / $duration;
 				// Set the nonce so we can end this loop
 				$nonce = $cnonce;
 			}
@@ -175,7 +179,8 @@ while ( 1 ) {
 
 		if ($data && $data->success) {
 			$shares += 1;
-			output ( "ACCEPTED", $spost ["hashrate"], "Share " . number_format ( $shares ) );
+			$pcnt = number_format ( ($shares / $job_c) * 100, 2 );
+			output ( "ACCEPTED", $spost ["hashrate"], "Share " . number_format ( $shares ) . "; " . $pcnt . "% success" );
 		} else {
 			output ( "REJECTED", $spost ["hashrate"], isset ( $data->reason ) ? ($data->reason) : ("An API error occurred") );
 		}

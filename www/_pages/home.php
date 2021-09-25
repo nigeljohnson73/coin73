@@ -130,7 +130,8 @@
 			<!-- RECAPTCHA progress -->
 			<br />
 			<div class="progress" data-ng-show="recaptcha_progress">
-				<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{recaptcha_progress"></div>
+				<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100"
+					data-ng-style="{'width': recaptcha_progress + '%'}"></div>
 			</div>
 		</div>
 		<!-- End of login page -->
