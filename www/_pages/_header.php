@@ -26,6 +26,7 @@ startPage ();
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-cookies.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="//unpkg.com/@highlightjs/cdn-assets@11.2.0/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qr-creator/dist/qr-creator.min.js"></script>
 <script src="/js/app.min.js"></script>
 
 <title><?php echo getAppTitle() ?></title>
