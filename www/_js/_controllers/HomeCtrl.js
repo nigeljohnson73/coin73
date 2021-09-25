@@ -6,6 +6,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.txn_failure = false;
 	$scope.user = null;
 	$scope.reason = "";
+	$scope.qr_wallet = null;
 
 	$scope.recaptcha_progress = 0;
 	$scope.recaptcha_started = null;
@@ -143,6 +144,20 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			if (data.success) {
 				$scope.retireCaptcha();
 				logger("HomeCtrl::loadUser() - success", "dbg");
+
+				if ($scope.qr_wallet) {
+					$scope.qr_wallet.clear(); // clear the code.
+					$scope.qr_wallet.makeCode($scope.user.public_key); // make another code.
+				} else {
+					$scope.qr_wallet = new QRCode(document.getElementById("qr-walletid"), {
+						text: $scope.user.public_key,
+						width: 256,
+						height: 256,
+						colorDark: "#000000",
+						colorLight: "#ffffff",
+						correctLevel: QRCode.CorrectLevel.H
+					});
+				}
 				// Yay for us
 			} else {
 				// Since a user is not loaded, assume that's why we are here.

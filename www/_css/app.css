@@ -241,3 +241,11 @@ p.user-details {
 	font: 400 15px 'Space Mono', monospace;
 	margin: 0px;
 }
+
+#qr-walletid-holder {
+	background-color:#fff;
+	padding:20px;
+	display:inline-block;
+	border-radius:10px;
+	margin-top:10px;
+}

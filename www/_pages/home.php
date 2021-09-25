@@ -14,6 +14,9 @@
 						Your Wallet ID <span class="icon-popover"><i class="bi bi-info-circle-fill" data-bs-toggle="popover" title="Wallet ID" data-bs-content="You will use this in any miners you set up and where you can receive transactions."></i></span>
 					</h2>
 					<p class="user-details wallet-id text-truncate">{{user.public_key}}</p>
+					<div id="qr-walletid-holder">
+						<div id="qr-walletid"></div>
+					</div>
 				</div>
 			</div>
 
