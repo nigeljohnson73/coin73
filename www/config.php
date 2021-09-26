@@ -111,6 +111,7 @@ $switch_key_login = "switch_login";
 $switch_key_mining = "switch_mining";
 $switch_key_block_creation = "switch_block_creation";
 $switch_key_block_busy = "switch_block_busy";
+$switch_key_transactions = "switch_transactions";
 
 // This is used in the message of miner rewards so that mined shares can be attributed
 $miner_reward_tag = "-X- Miner Reward -X-";

@@ -140,11 +140,16 @@ class InfoStore extends DataStore {
 	}
 
 	public static function miningEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeymining (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyMining (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
 
 	public static function blockCreationEnabled() {
 		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyBlockCreation (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
+
+	public static function transactionsEnabled() {
+		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyTransactions (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+	}
+	
 }
 ?>

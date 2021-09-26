@@ -248,9 +248,14 @@ function switchKeyLogin() {
 	return $switch_key_login;
 }
 
-function switchKeymining() {
+function switchKeyMining() {
 	global $switch_key_mining;
 	return $switch_key_mining;
+}
+
+function switchKeyTransactions() {
+	global $switch_key_transactions;
+	return $switch_key_transactions;
 }
 
 function switchKeyBlockCreation() {

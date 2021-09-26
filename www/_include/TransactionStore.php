@@ -20,10 +20,16 @@ class TransactionStore extends DataStore {
 
 		$this->init ();
 		$this->active_transactions = array ();
+		$this->reason = "";
+	}
+
+	public function getReason() {
+		return $this->reason;
 	}
 
 	public function addTransaction($t) {
 		if (! $t->isServiceable ()) {
+			$this->reason = $t->getReason ();
 			logger ( LL_ERR, "TransactionStore::addTransaction(): transaction is not serviceable" );
 			logger ( LL_ERR, "    Reason: '" . $t->getReason () . "'" );
 			return null;
@@ -42,7 +48,11 @@ class TransactionStore extends DataStore {
 			$arr ["txn_id"] = $arr ["from"];
 		}
 
-		return parent::insert ( $arr );
+		$ret = parent::insert ( $arr );
+		if(!$ret) {
+			$this->reason = "Unable to submit transaction to this block";
+		}
+		return $ret;
 	}
 
 	public function getTransactions() {

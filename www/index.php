@@ -136,6 +136,7 @@ $apis ["/app/user/validate"] = __DIR__ . "/_api/user/validate.php";
 $apis ["/app/user/recover/request"] = __DIR__ . "/_api/user/recover_request.php";
 $apis ["/app/user/recover/prepare"] = __DIR__ . "/_api/user/recover_prepare.php";
 $apis ["/app/user/recover"] = __DIR__ . "/_api/user/recover.php";
+$apis ["/app/transaction/send"] = __DIR__ . "/_api/transaction/send.php";
 
 //$apis ["/app/test/execute"] = __DIR__ . "/_api/testDataStore/execute.php";
 foreach ( array_keys ( $apis ) as $p ) {

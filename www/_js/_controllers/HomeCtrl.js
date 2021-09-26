@@ -34,12 +34,96 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.recipient_valid = false;
 	$scope.amount_valid = false;
 	$scope.txn_submittable = false;
+	$scope.amount_enter = "You must enter an amount";
+	$scope.amount_reason = $scope.amount_enter;
+	$scope.recipient_enter = "Invalid wallet ID format";
+	$scope.recipient_reason = $scope.recipient_enter;
+	$scope.transaction_sent = false;
 
 	function pause() {
 		// Use this if you want to slow progress down cuz the API/GUI is being a pig and you want to debug it
 		//var start = new Date().getTime();
 		//while (new Date().getTime() < start + 1000);
 	}
+
+	$scope.checkTransactionValidation = function() {
+		$scope.txn_submittable = $scope.recipient_valid && $scope.amount_valid;
+		//console.log("************************************************************");
+		//console.log("Recipient valid :", $scope.recipient_valid);
+		//console.log("Amount valid    :", $scope.amount_valid, $scope.txn.amount);
+		//console.log("Message         :", $scope.txn.message);
+		//console.log("Form submittable:", $scope.txn_submittable);
+	};
+	$scope.recipientValidate = function() {
+		$scope.recipient_valid = $scope.txn.recipient && ($scope.txn.recipient.length == 130) && ($scope.txn.recipient != $scope.user.public_key);
+		if ($scope.txn.recipient == $scope.user.public_key) {
+			$scope.recipient_reason = "You can't send money to yourself";
+		} else {
+			$scope.recipient_reason = $scope.recipient_enter;
+		}
+		$scope.checkTransactionValidation();
+	};
+
+	$scope.amountValidate = function() {
+		$scope.amount_valid = $scope.txn.amount && ($scope.txn.amount > 0) && ($scope.txn.amount <= $scope.user.balance);
+		if (!$scope.txn.amount || $scope.txn.amount <= 0) {
+			$scope.amount_reason = $scope.amount_enter;
+		}
+		if ($scope.txn.amount > $scope.user.balance) {
+			$scope.amount_reason = "You can't spend what you don't have";
+		}
+		$scope.checkTransactionValidation();
+	};
+
+
+	$scope.prepareTransaction = function() {
+		$scope.requestTransactionCaptcha();
+		$scope.txn.recipient = "";
+		$scope.txn.amount = 0;
+		$scope.txn.message = "";
+		$scope.txn.token = "";
+		$scope.transaction_sent = false;
+		$scope.transaction_visible = true;
+		$scope.reason = null;
+		$scope.preparing = true;
+	};
+	$scope.cancelTransaction = function() {
+		$scope.preparing = false;
+		$scope.transaction_visible = false;
+		$scope.retireCaptcha();
+	};
+
+	$scope.sendTransaction = function() {
+		logger("HomeCtrl::sendTransaction() called", "dbg");
+		$scope.retireCaptcha();
+
+		$scope.sending = true;
+		apiSvc.callLocal("transaction/send", $scope.txn, function(data) {
+			logger("HomeCtrl::sendTransaction()", "dbg");
+			logger(data, "inf");
+			pause();
+			$scope.sending = false;
+
+
+			if (data.success) {
+				$scope.transaction_sent = true;
+				// Yay for us
+			} else {
+			}
+			$scope.reason = $sce.trustAsHtml(data.reason);
+
+			if (data.message.length) {
+				toast(data.message);
+			}
+			$scope.submitting = false;
+		});
+	};
+
+
+
+
+
+
 
 	$scope.checkLoginValidation = function() {
 		$scope.login_submittable = $scope.email_valid && $scope.password_valid && $scope.tx.accept_toc;
@@ -94,6 +178,31 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.recaptcha_progress_interval = null;
 	};
 
+	$scope.requestTransactionCaptcha = function() {
+		logger("HomeCtrl::requestTransactionCaptcha() called", "dbg");
+		$scope.retireCaptcha();
+		//console.trace();
+
+		$scope.preparing = true;
+		$scope.reason = null;
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: txn_action }).then(function(token) {
+			$scope.recaptcha_progress = 100;
+			$scope.recaptcha_started = new Date().getTime();
+			$scope.recaptcha_progress_interval = $interval($scope.updateCaptchaProgress, 1000);
+
+			logger("HomeCtrl::requestTransactionCaptcha() - recieved a RECAPTCHA token", "dbg");
+			pause();
+			$scope.loading = false;
+			$scope.preparing = false;
+			$scope.txn.token = token;
+			$scope.recaptcha_timeout_call = $timeout(function() {
+				$scope.txn.token = null;
+				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
+			}, $scope.recaptcha_timeout * 1000);
+		});
+
+	};
+
 	$scope.requestLoginCaptcha = function() {
 		logger("HomeCtrl::requestLoginCaptcha() called", "dbg");
 		$scope.retireCaptcha();
@@ -119,6 +228,20 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	};
 
+	$scope.renderwalletQr = function() {
+		$("#qr-walletid canvas").remove();
+
+		QrCreator.render({
+			text: $scope.user.public_key,
+			radius: 0.5, // 0.0 to 0.5
+			ecLevel: 'H', // L, M, Q, H
+			fill: '#3b0084', // foreground color
+			background: null, // color or null for transparent
+			size: 256 // in pixels
+		}, document.querySelector('#qr-walletid'));
+
+	};
+
 	$scope.loadUser = function(force = false) {
 		logger("HomeCtrl::loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "') called", "dbg");
 
@@ -141,19 +264,10 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			pause();
 			$scope.user = data.user;
 
-			$("#qr-walletid canvas").remove();
 			if (data.success) {
-				$scope.retireCaptcha();
 				logger("HomeCtrl::loadUser() - success", "dbg");
-
-				QrCreator.render({
-					text: $scope.user.public_key,
-					radius: 0.5, // 0.0 to 0.5
-					ecLevel: 'H', // L, M, Q, H
-					fill: '#3b0084', // foreground color
-					background: null, // color or null for transparent
-					size: 256 // in pixels
-				}, document.querySelector('#qr-walletid'));
+				$scope.retireCaptcha();
+				$scope.renderwalletQr();
 				// Yay for us
 			} else {
 				// Since a user is not loaded, assume that's why we are here.
@@ -191,6 +305,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 			if (data.success) {
 				logger("HomeCtrl::login() success", "dbg");
+				$scope.renderwalletQr();
 				// Yay for us
 			} else {
 				logger("HomeCtrl::login() failed", "dbg");
@@ -238,85 +353,6 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 				toast(data.message);
 			}
 			//$scope.submitting = false;
-		});
-	};
-
-	$scope.retireTxnCaptcha = function() {
-		if ($scope.recaptcha_timeout_call) {
-			$timeout.cancel($scope.recaptcha_timeout_call);
-		}
-		$scope.recaptcha_timeout_call = null;
-	};
-
-	$scope.requestTxnCaptcha = function() {
-		logger("HomeCtrl::requestLoginCaptcha() called", "inf");
-		$scope.retireCaptcha();
-		//console.trace();
-
-		$scope.submitting = true;
-		$scope.reason = null;
-		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: txn_action }).then(function(token) {
-			logger("HomeCtrl::requestTxnCaptcha() - recieved a RECAPTCHA token", "inf");
-			pause();
-			$scope.loading = false;
-			$scope.submitting = false;
-			$scope.tx.token = token;
-			$scope.recaptcha_timeout_call = $timeout(function() {
-				$scope.tx.token = null;
-				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
-			}, $scope.recaptcha_timeout * 1000);
-		});
-
-	};
-
-	$scope.prepareTxn = function() {
-		logger("HomeCtrl::prepareTxn()", "dbg");
-		logger(data, "inf");
-		$scope.txn_failure = false;
-		$scope.txn.recipient = "";
-		$scope.txn.amount = 0;
-		$scope.txn.message = "";
-		$scope.recipient_valid = false;
-		$scope.amount_valid = false;
-		$scope.txn_submittable = false;
-		$scope.reason = "";
-
-		$scope.requestTxnCaptcha();
-
-	};
-
-	$scope.sendTxn = function() {
-		logger("HomeCtrl::sendTxn() called", "inf");
-		$scope.retireTxnCaptcha();
-
-		$scope.submitting = true;
-		$scope.txn_failure = false;
-		apiSvc.callLocal("coin/send", $scope.txn, function(data) {
-			logger("HomeCtrl::sendTxn()", "inf");
-			logger(data, "inf");
-			pause();
-			$scope.txn.recipient = "";
-			$scope.txn.amount = 0;
-			$scope.txn.message = "";
-			$scope.recipient_valid = false;
-			$scope.amount_valid = false;
-			$scope.txn_submittable = false;
-			$scope.reason = "";
-
-
-			if (data.success) {
-				// Yay for us
-			} else {
-				$scope.txn_failure = true;
-				// Reset in case we trying again.
-				$scope.requestTxnCaptcha();
-			}
-			$scope.reason = $sce.trustAsHtml(data.reason);
-
-			if (data.message.length) {
-				toast(data.message);
-			}
-			$scope.submitting = false;
 		});
 	};
 

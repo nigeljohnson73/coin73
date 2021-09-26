@@ -237,6 +237,7 @@ function transactionToBlock() {
 			// logger ( LL_DBG, "validateTransactions()" );
 			$mined_shares = 0;
 			$ipt = new ProcessTimer ();
+			$audit = [ ];
 			foreach ( $txns as $k => $txn ) {
 				// logger ( LL_SYS, "Got transaction: " . ob_print_r ( $txn->unload () ) );
 				// Just do a simple check here, we make the assumption that the storage is secure.
@@ -244,6 +245,8 @@ function transactionToBlock() {
 				if ($txn->isValid ( false )) {
 					if (strpos ( $txn->message, minerRewardLabel () ) === 0) {
 						$mined_shares += 1;
+					} else {
+						$audit [] = $txn;
 					}
 					$payload = json_decode ( $txn->getPayload () );
 					// logger ( LL_DBG, "Processing transaction (" . $payload->amount . ")" );
@@ -291,6 +294,15 @@ function transactionToBlock() {
 				DebugStore::log ( "*** " . durationFormat ( $pt->duration () ) . ": " . number_format ( count ( $txns ) ) . " txns -> block" );
 				InfoStore::setBlockBusy ( "NO" );
 
+				foreach ( $audit as $t ) {
+					$arr = array ();
+					$arr ["from"] = $t->from;
+					$arr ["to"] = $t->to;
+					$arr ["amount"] = $t->amount;
+					$arr ["message"] = $t->message ?? "";
+					DebugStore::log ( "Txn: " . ob_print_r ( $arr ) );
+					AuditStore::getInstance ()->insert ( $arr );
+				}
 				// print_r($deltas);
 				// Get the wallet deltas applied
 				// DebugStore::log ( "Updating wallet deltas" );

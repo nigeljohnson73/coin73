@@ -124,6 +124,24 @@ footer.app-footer {
 }
 */
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Why must I di this :( */
+.transaction-screen .row {
+	margin-top:15px;
+}
+
+.transaction-screen .row:first-of-type {
+	margin-top: 0px;
+}
+
+.data-screen {
+	margin-bottom:40px;
+}
 /*************
  * image protection
  */
