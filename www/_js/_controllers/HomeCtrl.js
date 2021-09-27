@@ -1,4 +1,5 @@
 app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function($scope, $timeout, $interval, $sce, apiSvc) {
+	$scope.session_ended = false;
 	$scope.auto_refresh_balance = false;
 	$scope.loading = true;
 	$scope.submitting = false;
@@ -87,6 +88,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.reason = null;
 		$scope.preparing = true;
 	};
+
 	$scope.cancelTransaction = function() {
 		$scope.preparing = false;
 		$scope.transaction_visible = false;
@@ -96,6 +98,9 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.sendTransaction = function() {
 		logger("HomeCtrl::sendTransaction() called", "dbg");
 		$scope.retireCaptcha();
+		if ($scope.session_ended) {
+			return;
+		}
 
 		$scope.sending = true;
 		apiSvc.callLocal("transaction/send", $scope.txn, function(data) {
@@ -181,7 +186,9 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.requestTransactionCaptcha = function() {
 		logger("HomeCtrl::requestTransactionCaptcha() called", "dbg");
 		$scope.retireCaptcha();
-		//console.trace();
+		if ($scope.session_ended) {
+			return;
+		}
 
 		$scope.preparing = true;
 		$scope.reason = null;
@@ -206,7 +213,9 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.requestLoginCaptcha = function() {
 		logger("HomeCtrl::requestLoginCaptcha() called", "dbg");
 		$scope.retireCaptcha();
-		//console.trace();
+		if ($scope.session_ended) {
+			return;
+		}
 
 		$scope.submitting = true;
 		$scope.reason = null;
@@ -229,21 +238,29 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	};
 
 	$scope.renderwalletQr = function() {
-		$("#qr-walletid canvas").remove();
+		if ($scope.session_ended) {
+			return;
+		}
 
-		QrCreator.render({
-			text: $scope.user.public_key,
-			radius: 0.5, // 0.0 to 0.5
-			ecLevel: 'H', // L, M, Q, H
-			fill: '#3b0084', // foreground color
-			background: null, // color or null for transparent
-			size: 256 // in pixels
-		}, document.querySelector('#qr-walletid'));
+		$("#qr-walletid canvas").remove();
+		if ($scope.user) {
+			QrCreator.render({
+				text: $scope.user.public_key,
+				radius: 0.5, // 0.0 to 0.5
+				ecLevel: 'H', // L, M, Q, H
+				fill: '#3b0084', // foreground color
+				background: null, // color or null for transparent
+				size: 256 // in pixels
+			}, document.querySelector('#qr-walletid'));
+		}
 
 	};
 
 	$scope.loadUser = function(force = false) {
 		logger("HomeCtrl::loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "') called", "dbg");
+		if ($scope.session_ended) {
+			return;
+		}
 
 		if (!$scope.loading) {
 			if (!$scope.auto_refresh_balance) {
@@ -262,18 +279,23 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			logger("HomeCtrl::loadUser() - API returned", "dbg");
 			logger(data, "inf");
 			pause();
-			$scope.user = data.user;
 
-			if (data.success) {
-				logger("HomeCtrl::loadUser() - success", "dbg");
-				$scope.retireCaptcha();
-				$scope.renderwalletQr();
-				// Yay for us
+			if ($scope.user && !data.user) {
+				// If we were logged in, but not now...
+				$scope.session_ended = true;
 			} else {
-				// Since a user is not loaded, assume that's why we are here.
-				logger("HomeCtrl::loadUser() - failed", "dbg");
-				$scope.requestLoginCaptcha();
+				if (data.success) {
+					logger("HomeCtrl::loadUser() - success", "dbg");
+					$scope.retireCaptcha();
+					$scope.renderwalletQr();
+					// Yay for us
+				} else {
+					// Since a user is not loaded, assume that's why we are here.
+					logger("HomeCtrl::loadUser() - failed", "dbg");
+					$scope.requestLoginCaptcha();
+				}
 			}
+			$scope.user = data.user;
 			$scope.disabled = data.disabled;
 			$scope.reason = $sce.trustAsHtml(data.reason);
 
@@ -288,6 +310,10 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.login = function() {
 		logger("HomeCtrl::login() called", "dbg");
 		$scope.retireCaptcha();
+		if ($scope.session_ended) {
+			return;
+		}
+
 		$scope.submitting = true;
 		$scope.login_failure = false;
 		$scope.reason = "";
@@ -325,6 +351,9 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	$scope.logout = function() {
 		logger("HomeCtrl::logout() called", "dbg");
 		$scope.retireCaptcha();
+		if ($scope.session_ended) {
+			return;
+		}
 
 		$scope.user = null;
 		$scope.loading = true;
@@ -340,8 +369,9 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 			if (data.success) {
 				logger("HomeCtrl::logout() success", "dbg");
-				// Reset in case we want to login again.
-				$scope.requestLoginCaptcha();
+				$scope.session_ended = true;
+				//// Reset in case we want to login again.
+				//$scope.requestLoginCaptcha();
 
 			} else {
 				logger("HomeCtrl::logout() failed", "dbg");

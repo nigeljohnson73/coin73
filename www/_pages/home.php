@@ -2,6 +2,18 @@
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo getRecaptchaSiteKey(); ?>"></script>
 <div class="container-fluid text-center" data-ng-controller="HomeCtrl">
 
+	<div data-ng-show="session_ended">
+		<div class="shadow alert alert-secondary" role="alert">
+			<h2>Your session has ended</h2>
+			<span>For security reasons, please close your browser or refresh this page.</span>				
+		</div>
+	</div>
+
+	<div data-ng-show="!session_ended">
+
+
+
+
 	<img src="/gfx/ajax-loader-bar.gif" alt="submitting" data-ng-show="loading" />
 	<div data-ng-show="!loading">
 
@@ -199,9 +211,10 @@
 
 
 
+		</div> <!-- session -->
 
 
-	</div>
-</div>
+	</div> <!-- loading -->
+</div> <!-- container -->
 
 <?php include_once(__DIR__."/_footer.php")?>
