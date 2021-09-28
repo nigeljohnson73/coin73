@@ -62,12 +62,18 @@ class Transaction {
 			return false;
 		}
 
+		if ($this->from == $this->to) {
+			$this->invalid_reason = "Cannot send tranaction to yourself";
+			logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
+			return false;
+		}
+		
 		if (strlen ( $this->signature ) == 0) {
 			$this->invalid_reason = "Transaction is not signed";
 			logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
 			return false;
 		}
-
+		
 		if ($signature_check) {
 			$ec = new EC ( 'secp256k1' );
 			$vk = $ec->keyFromPublic ( $this->from, 'hex' );

@@ -45,7 +45,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		// Use this if you want to slow progress down cuz the API/GUI is being a pig and you want to debug it
 		//var start = new Date().getTime();
 		//while (new Date().getTime() < start + 1000);
-	}
+	};
 
 	$scope.checkTransactionValidation = function() {
 		$scope.txn_submittable = $scope.recipient_valid && $scope.amount_valid;
@@ -55,6 +55,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		//console.log("Message         :", $scope.txn.message);
 		//console.log("Form submittable:", $scope.txn_submittable);
 	};
+
 	$scope.recipientValidate = function() {
 		$scope.recipient_valid = $scope.txn.recipient && ($scope.txn.recipient.length == 130) && ($scope.txn.recipient != $scope.user.public_key);
 		if ($scope.txn.recipient == $scope.user.public_key) {
@@ -284,6 +285,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 				// If we were logged in, but not now...
 				$scope.session_ended = true;
 			} else {
+				$scope.user = data.user;
 				if (data.success) {
 					logger("HomeCtrl::loadUser() - success", "dbg");
 					$scope.retireCaptcha();
@@ -295,7 +297,6 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 					$scope.requestLoginCaptcha();
 				}
 			}
-			$scope.user = data.user;
 			$scope.disabled = data.disabled;
 			$scope.reason = $sce.trustAsHtml(data.reason);
 

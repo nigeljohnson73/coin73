@@ -1,4 +1,21 @@
 <?php
+//@formatter:off
+/*
+ _______        _______ _    _ _______ __   _ _______ __   __      _______ _____ _    _ _______
+ |______ |      |______  \  /  |______ | \  |    |      \_/        |______   |    \  /  |______
+ |______ |_____ |______   \/   |______ |  \_|    |       |         |       __|__   \/   |______
+ 
+ _____  _     _  _____       _______ _____ __   _ _______  ______
+ |_____] |_____| |_____]      |  |  |   |   | \  | |______ |_____/
+ |       |     | |            |  |  | __|__ |  \_| |______ |    \_                 Version 0.1a
+ 
+ (c) Nigel Johnson 2020
+ https://github.com/nigeljohnson73/coin73
+ https://coin73.appspot.com/
+*/
+// @formatter:on
+$VERSION = "0.1a";
+
 if (function_exists ( "curl_init" )) {
 
 	// Calls a $url and returns a wrapped object. Pass in $post arguments as key/value array pairs
@@ -31,7 +48,6 @@ function help() {
 	echo "    -c 'id' : Set the chip id for this miner (defaults to 'PHP Script')\n";
 	echo "    -d      : Use the development server\n";
 	echo "    -h      : This help message\n";
-	echo "    -q      : Shhhh!!, hide all the 'MESSAGE' output lines\n";
 	echo "    -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')\n";
 	echo "    -w 'id' : Set 130 character wallet ID for miner rewards\n";
 	echo "    -y      : Yes!! I got everything correct, just get on with it\n";
@@ -44,9 +60,8 @@ $rig_id = "PHP-Miner";
 $chip_id = "PHP Script";
 $wallet_id = "";
 $pause = true;
-$messages = true;
 
-$opts = getopt ( 'c:dhqr:w:y' );
+$opts = getopt ( 'c:dhr:w:y' );
 foreach ( $opts as $k => $v ) {
 	if ($k == "c") {
 		$chip_id = $v;
@@ -76,72 +91,64 @@ if (strlen ( $wallet_id ) == 0) {
 }
 
 if (strlen ( $wallet_id ) != 130) {
-	$wid = "04d329153bacfc18f8400b53904729fecbe44637e0b7902254f1a55d1f47b109b1e6d045d45b826234c04e35902eb5423f4b6d6104fde6a05ef3621a86a19f8171";
-	echo "Wallet ID doesn't look correct. It should look like this (but don't use this one):\n\n";
-	echo "    '" . $wid . "'\n";
+	echo "Wallet ID doesn't look correct. It should look like this (but obviously, don't use this one):\n\n";
+	echo "    '04d329153bacfc18f8400b53904729fecbe44637e0b7902254f1a55d1f47b109b1e6d045d45b826234c04e35902eb5423f4b6d6104fde6a05ef3621a86a19f8171'\n";
 	help ();
 }
 
 if ($pause) {
 	echo "#####################################################################################################################################################\n";
 	echo "#\n";
-	echo "# PHP Miner\n";
+	echo "# PHP Miner v" . $VERSION . "\n";
 	echo "#\n";
 	echo "#    Rig ID    : '" . $rig_id . "'\n";
 	echo "#    Wallet ID : '" . $wallet_id . "'\n";
 	echo "#    API host  : '" . $api_host . "'\n";
-	echo "#    Messages  : " . (($messages) ? ("Enabled") : ("Disabled")) . "\n";
 	echo "#\n";
 	echo "#####################################################################################################################################################\n";
 	echo "Press return to continue\n";
 	fgetc ( STDIN );
 }
 
-// the production server
-function output($are, $hr, $txt = "") {
-	global $messages;
-	if (strtoupper ( $are ) == "MESSAGE" && ! $messages) {
-		return;
-	}
+// Output messages with timestamp
+function output($txt = "") {
 	$d = date ( "Y/m/d H:i:s", time () );
 	echo $d . "; ";
-	echo str_pad ( strtoupper ( $are ), max ( strlen ( "MESSAGE" ), strlen ( "ERROR" ), strlen ( "ACCEPTED" ), strlen ( "REJECTED" ) ) ) . "; ";
-	echo str_pad ( (strlen ( $hr ) ? number_format ( $hr, 3 ) : ""), strlen ( "100,000,000.000" ), " ", STR_PAD_LEFT ) . (strlen ( $hr ) ? (" h/s") : ("    ")) . "; ";
-	// echo (strlen ( $shares )?("Share "):(" "));
-	// echo str_pad ( (strlen ( $shares ) ? number_format ( $shares ) : ""), strlen ( "100,000,000" ), " ", STR_PAD_LEFT ) . "; ";
 	echo $txt;
 	echo "\n";
 }
 
+// Set up the data for the request job API
 $rpost = array ();
 $rpost ["wallet_id"] = $wallet_id;
 $rpost ["rig_id"] = $rig_id;
 
+// Prepare the data for the submit job API (hashrate will be calulated and overwritten)
 $spost = array ();
 $spost ["hashrate"] = 0;
 $spost ["chiptype"] = $chip_id;
 
+// KEep track of how many jobs we received and how many were successful
+$job_c = 0;
 $shares = 0;
 
-output ( "MESSAGE", "", "Starting mining operation" );
-$job_c = 0;
-while ( 1 ) {
-	output ( "MESSAGE", "", "Requesting job" );
+// Loop forever (hopefully)
+while ( true ) {
+	// Request a job
 	$data = jsonApi ( $api_host . "job/request/json", $rpost );
-
 	if (! ($data && $data->success)) {
-		output ( "ERROR", "", isset ( $data->reason ) ? ($data->reason) : ("API call failed") );
-		// Got an error.
-		sleep ( 1 );
+		// Got an error. Pause in case the server is struggling
+		output ( "ERROR, " . isset ( $data->reason ) ? ($data->reason) : ("API call failed") );
+		sleep ( 5 );
 	} else {
-		// Increment total job count
-		$job_c += 1;
-
-		// Strip off the call wrapper
-		$data = $data->data;
-
 		// Log the start time so we can maximise profit :)
 		$started = microtime ( true );
+		
+		// Increment total job received count
+		$job_c += 1;
+
+		// Strip off the API call wrapper
+		$data = $data->data;
 
 		// Store the job id for sending back later
 		$job_id = $data->job_id;
@@ -150,39 +157,51 @@ while ( 1 ) {
 		$cnonce = 0;
 		$nonce = - 1;
 
-		// Calulate the beginning we need from the difficulty
+		// Calulate the beginning we need for a 'successful' job from the difficulty
 		$begins = str_pad ( "", $data->difficulty, "0" );
 
-		output ( "MESSAGE", "", "Processing job" );
+		// Output the job details in the Text API format
+		output ( "Received job: Y " . $job_id . " " . $data->hash . " " . str_pad ( $data->difficulty, 2, "0", STR_PAD_LEFT ) . " " . str_pad ( $data->target_seconds, 2, "0", STR_PAD_LEFT ) );
+
 		// Repeat the looping until we find a valid signature, or we run out of time (being twice the target)
 		while ( ($nonce < 0) && (microtime ( true ) < ($started + (2 * $data->target_seconds))) ) {
 			// Calculate the signature hash
 			$signed = hash ( "sha1", $data->hash . $cnonce );
 
 			// Check if the signature starts with the expected number of zeros
-			if (strpos ( $signed, $begins ) === 0) { // If it has, we found one
-				$duration = microtime ( true ) - $started;
-				$spost ["hashrate"] = ($cnonce + 1) / $duration;
+			if (strpos ( $signed, $begins ) === 0) {
 				// Set the nonce so we can end this loop
 				$nonce = $cnonce;
+				// calcuate the hashrate
+				$duration = microtime ( true ) - $started;
+				$spost ["hashrate"] = ($cnonce + 1) / $duration;
 			}
+
+			// Increment the counter so we can try again
 			$cnonce = $cnonce + 1;
 		}
 
-		output ( "MESSAGE", "", "Waiting for submission window" );
+		// If we calcuated a value, tell everyone
+		if ($nonce >= 0) {
+			output ( "Nonce: " . $nonce . ", duration: " . number_format ( $duration, 4 ) . ", hashrate: " . number_format ( $spost ["hashrate"], 2 ) . ", hash: " . $signed );
+		} else {
+			output ( "ERROR, Failed to calculate hash in time" );
+		}
+
+		// Wait for the submission window
 		while ( microtime ( true ) < ($started + $data->target_seconds) ) {
 			usleep ( 100 );
 		}
 
-		output ( "MESSAGE", "", "Submitting job" );
+		// Submit the job, even if we failed - it's ok to admit failure.
 		$data = jsonApi ( $api_host . "job/submit/json/" . $job_id . "/" . (($nonce < 0) ? (0) : ($nonce)), $spost );
-
 		if ($data && $data->success) {
 			$shares += 1;
 			$pcnt = number_format ( ($shares / $job_c) * 100, 2 );
-			output ( "ACCEPTED", $spost ["hashrate"], "Share " . number_format ( $shares ) . "; " . $pcnt . "% success" );
+			output ( "ACCEPTED, " . number_format ( $shares ) . "/" . number_format ( $job_c ) . ", " . $pcnt . "%" );
 		} else {
-			output ( "REJECTED", $spost ["hashrate"], isset ( $data->reason ) ? ($data->reason) : ("An API error occurred") );
+			output ( "REJECTED, " . isset ( $data->reason ) ? ($data->reason) : ("An API error occurred") );
+			sleep ( 1 );
 		}
 	}
 }

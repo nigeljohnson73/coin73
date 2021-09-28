@@ -58,7 +58,7 @@ $miner_max_count = 5;
 // the number of zeros at the beginning of the output from hash("sha1", $sig.$nonce) - defined by
 // the lowest powered device taking between $miner_submit_target_sec and
 // ($miner_submit_target_sec - 1) seconds to execute
-$miner_difficulty = 2;
+$miner_difficulty = 3;
 
 // How do we identify the coinbase in transactions for things like miner rewards etc.
 $coinbase = "SupremeOverlord";

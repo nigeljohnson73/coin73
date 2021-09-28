@@ -28,7 +28,7 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 				if ($delta >= minerSubmitMinSeconds ( $arr ["wallet_id"] ) && ($delta <= minerSubmitMaxSeconds ( $arr ["wallet_id"] ))) {
 
 					$hash = hash ( "sha1", $arr ["hash"] . $args ["nonce"] );
-					$starts = str_pad ( "", 2, "0" );
+					$starts = str_pad ( "", minerDifficulty(), "0" );
 					if (strpos ( $hash, $starts ) === 0) {
 						$expected_seconds = minerSubmitTargetSeconds ( $arr ["wallet_id"] );
 						$seconds_per_day = 60 * 60 * 24;
