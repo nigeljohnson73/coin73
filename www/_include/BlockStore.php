@@ -8,7 +8,7 @@ class BlockStore extends FileStore {
 
 		$options = array ();
 		$options ["defaultObjectAcl"] = "publicRead";
-		// $options ["storageClass"] = "ARCHIVE" // TODO: nce we go live do this in live
+		// $options ["storageClass"] = "ARCHIVE" // TODO: once we go live do this in live
 
 		parent::__construct ( "BlockStore", $options );
 	}

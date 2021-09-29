@@ -39,11 +39,11 @@ if (isset ( $_SESSION ["AUTHTOK"] ) && isset ( $_POST ["token"] ) && isset ( $_P
 					// if ($_POST ["amount"] <= $sender ["balance"]) {
 					$t = new Transaction ( $sender ["public_key"], $_POST ["recipient"], $_POST ["amount"], $_POST ["message"] ?? "");
 					if($t->sign($k->private)) {
-						if(TransactionStore::getInstance()->addTransaction($t)) {
+						if(TransactionStore::addTransaction($t)) {
 							//$ret->reason = "It worked";
 							$ret->success = true;
 						} else {
-							$ret->reason = TransactionStore::getInstance()->getReason();
+							$ret->reason = TransactionStore::getReason();
 						}
 					} else {
 						$ret->reason = "Unable to sign transaction";

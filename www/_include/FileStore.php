@@ -38,7 +38,7 @@ class FileStore {
 
 		try {
 			$this->storage = new StorageClient ( $s_options );
-			logger ( LL_DBG, "FileStore::FileStore(): Created StorageClient" );
+			//logger ( LL_DBG, "FileStore::FileStore(): Created StorageClient" );
 		} catch ( Exception $e ) {
 			$e = json_decode ( $e->getMessage () )->error;
 			logger ( LL_ERR, "FileStore::FileStore(): Cannot create StorageClient: " . $e->message );

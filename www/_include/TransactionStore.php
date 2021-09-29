@@ -23,21 +23,6 @@ class TransactionStore extends DataStore {
 		$this->reason = "";
 	}
 
-	public function getReason() {
-		return $this->reason;
-	}
-
-	public function addTransaction($t) {
-		if (! $t->isServiceable ()) {
-			$this->reason = $t->getReason ();
-			logger ( LL_ERR, "TransactionStore::addTransaction(): transaction is not serviceable" );
-			logger ( LL_ERR, "    Reason: '" . $t->getReason () . "'" );
-			return null;
-		}
-
-		return self::insert ( $t->unload () );
-	}
-
 	public function insert($arr) {
 		logger ( LL_DBG, "TransactionStore::insert()" );
 
@@ -49,13 +34,36 @@ class TransactionStore extends DataStore {
 		}
 
 		$ret = parent::insert ( $arr );
-		if(!$ret) {
+		if (! $ret) {
 			$this->reason = "Unable to submit transaction to this block";
 		}
 		return $ret;
 	}
 
-	public function getTransactions() {
+	protected function _getReason() {
+		return $this->reason;
+	}
+
+	public static function getReason() {
+		return TransactionStore::getInstance ()->_getReason ();
+	}
+
+	protected function _addTransaction($t) {
+		if (! $t->isServiceable ()) {
+			$this->reason = $t->getReason ();
+			logger ( LL_ERR, "TransactionStore::addTransaction(): transaction is not serviceable" );
+			logger ( LL_ERR, "    Reason: '" . $t->getReason () . "'" );
+			return null;
+		}
+
+		return self::insert ( $t->unload () );
+	}
+
+	public static function addTransaction($t) {
+		return TransactionStore::getInstance ()->_addTransactions ( $t );
+	}
+
+	protected function _getTransactions() {
 		$this->obj_store->query ( "SELECT * FROM " . $this->kind );
 		while ( count ( $this->active_transactions ) < transactionsPerBlock () && $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
 			logger ( LL_DBG, "Transactions::getTransactions(): pulled " . count ( $arr_page ) . " records" );
@@ -72,12 +80,20 @@ class TransactionStore extends DataStore {
 		return $ret;
 	}
 
-	public function clearTransactions() {
+	public static function getTransactions() {
+		return TransactionStore::getInstance ()->_getTransactions ();
+	}
+
+	protected function _clearTransactions() {
 		while ( count ( $this->active_transactions ) ) {
 			$arr_page = array_splice ( $this->active_transactions, 0, transactionsPerPage () );
 			logger ( LL_DBG, "Transactions::clearTransactions(): deleting " . count ( $arr_page ) . " records" );
 			$this->obj_store->delete ( $arr_page );
 		}
+	}
+
+	public static function clearTransactions() {
+		TransactionStore::getInstance ()->_clearTransactions ();
 	}
 }
 

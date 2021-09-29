@@ -26,7 +26,7 @@ class InfoStore extends DataStore {
 		return parent::update ( $arr );
 	}
 
-	public function getInfo($key, $fallback = null) {
+	protected function _getInfo($key, $fallback = null) {
 		if (isset ( $this->local [$key] )) {
 			logger ( LL_XDBG, "InfoStore::getInfo('$key') - locally cached" );
 			return $this->local [$key];
@@ -50,7 +50,7 @@ class InfoStore extends DataStore {
 		return $arr ["value"];
 	}
 
-	public function setInfo($key, $value) {
+	protected function _setInfo($key, $value) {
 		$this->local [$key] = $value;
 		$arr = [ 
 				"key" => $key,
@@ -87,69 +87,76 @@ class InfoStore extends DataStore {
 		return $ret;
 	}
 
+	public static function get($key, $fallback = null) {
+		return InfoStore::getInstance ()->_getInfo ( $key, $fallback );
+	}
+
+	public static function set($key, $value) {
+		return InfoStore::getInstance ()->_setInfo ( $key, $value );
+	}
+
 	public static function getAll() {
 		return InfoStore::getInstance ()->_getAll ();
 	}
 
 	public static function getCirculation() {
-		return InfoStore::getInstance ()->getInfo ( circulationInfoKey (), 0 );
+		return InfoStore::get ( circulationInfoKey (), 0 );
 	}
 
 	public static function setCirculation($v) {
-		return InfoStore::getInstance ()->setInfo ( circulationInfoKey (), $v );
+		return InfoStore::set ( circulationInfoKey (), $v );
 	}
 
 	public static function getMinedShares() {
-		return InfoStore::getInstance ()->getInfo ( minedSharesInfoKey (), 0 );
+		return InfoStore::get ( minedSharesInfoKey (), 0 );
 	}
 
 	public static function setMinedShares($v) {
-		return InfoStore::getInstance ()->setInfo ( minedSharesInfoKey (), $v );
+		return InfoStore::set ( minedSharesInfoKey (), $v );
 	}
 
 	public static function getLastBlockHash() {
-		return InfoStore::getInstance ()->getInfo ( lastBlockHashInfoKey (), "" );
+		return InfoStore::get ( lastBlockHashInfoKey (), "" );
 	}
 
 	public static function setLastBlockHash($v) {
-		return InfoStore::getInstance ()->setInfo ( lastBlockHashInfoKey (), $v );
+		return InfoStore::set ( lastBlockHashInfoKey (), $v );
 	}
 
 	public static function getBlockCount() {
-		return InfoStore::getInstance ()->getInfo ( blockCountInfoKey (), 0 );
+		return InfoStore::get ( blockCountInfoKey (), 0 );
 	}
 
 	public static function setBlockCount($v) {
-		return InfoStore::getInstance ()->setInfo ( blockCountInfoKey (), $v );
+		return InfoStore::set ( blockCountInfoKey (), $v );
 	}
 
 	public static function isBlockBusy() {
-		return InfoStore::getInstance ()->getInfo ( switchKeyBlockBusy (), "NO" ) == "YES";
+		return InfoStore::get ( switchKeyBlockBusy (), "NO" ) == "YES";
 	}
 
 	public static function setBlockBusy($v) {
-		return InfoStore::getInstance ()->setInfo ( switchKeyBlockBusy (), strtoupper ( $v ) );
+		return InfoStore::set ( switchKeyBlockBusy (), strtoupper ( $v ) );
 	}
 
 	public static function signupEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeySignup (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::get ( switchKeySignup (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
 
 	public static function loginEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyLogin (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::get ( switchKeyLogin (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
 
 	public static function miningEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyMining (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::get ( switchKeyMining (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
 
 	public static function blockCreationEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyBlockCreation (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::get ( switchKeyBlockCreation (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
 
 	public static function transactionsEnabled() {
-		return strtolower ( InfoStore::getInstance ()->getInfo ( switchKeyTransactions (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtolower ( InfoStore::get ( switchKeyTransactions (), switchEnabled () ) ) == strtolower ( switchEnabled () );
 	}
-	
 }
 ?>

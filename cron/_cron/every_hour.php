@@ -1,11 +1,15 @@
 <?php
 include_once (dirname ( __FILE__ ) . "/../functions.php");
 
-// TODO: re-enable these after fixing them
-UserStore::tidyUp ();
-UserStore::requestRevalidations ();
+if (InfoStore::get ( switchKeyBlockCreation (), switchEnabled () ) == "RESETTING") {
+	exit ();
+}
 
-InfoStore::getInstance ()->setInfo ( cronHourDebugInfoKey (), "Completed: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
+// TODO: re-enable these after fixing them
+UserStoreHouseKeeper::tidyUp ();
+UserStoreHouseKeeper::requestRevalidations ();
+
+InfoStore::set ( cronHourDebugInfoKey (), "Completed: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
 
 echo "Hourly Housekeeing complete\n";
 ?>

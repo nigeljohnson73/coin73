@@ -60,6 +60,7 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 						logger ( LL_XDBG, "--------" );
 						$t = new Transaction ( coinbaseWalletId (), $arr ["wallet_id"], $coin, minerRewardLabel () . " " . $arr ["rig_id"] );
 						if ($t->sign ( coinbasePrivateKey () )) {
+							// Bypass all the checked here, but this is trusted teratory
 							if (TransactionStore::getInstance ()->insert ( $t->unload () )) {
 								$success = true;
 							} else {

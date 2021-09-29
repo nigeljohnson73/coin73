@@ -79,6 +79,6 @@ echo "**************************************************************************
 
 logger ( LL_DEBUG, "tick(): completed" );
 
-InfoStore::getInstance ()->setInfo ( cronTickDebugInfoKey (), "Completed: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
+InfoStore::set ( cronTickDebugInfoKey (), "Completed: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
 
 ?>
