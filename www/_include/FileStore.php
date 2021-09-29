@@ -23,7 +23,7 @@ class FileStore {
 	protected function __construct($name, $options = [ ]) {
 		$this->storage = null;
 		$this->bucket = null;
-		$this->bucket_name = strtolower ( getDataNamespace() . "_" . $name );
+		$this->bucket_name = strtolower ( getDataNamespace () . "_" . $name );
 		$this->options = $options;
 		$this->init ();
 	}
@@ -38,7 +38,7 @@ class FileStore {
 
 		try {
 			$this->storage = new StorageClient ( $s_options );
-			//logger ( LL_DBG, "FileStore::FileStore(): Created StorageClient" );
+			// logger ( LL_DBG, "FileStore::FileStore(): Created StorageClient" );
 		} catch ( Exception $e ) {
 			$e = json_decode ( $e->getMessage () )->error;
 			logger ( LL_ERR, "FileStore::FileStore(): Cannot create StorageClient: " . $e->message );
@@ -141,113 +141,113 @@ class FileStore {
 	}
 }
 
-function __testFileStore() {
+// function __testFileStore() {
 
-	class TestFileStore extends FileStore {
+// class TestFileStore extends FileStore {
 
-		protected function __construct() {
-			logger ( LL_DBG, "TestFileStore::TestFileStore()" );
-			parent::__construct ( "TestFileStore" );
-		}
-	}
+// protected function __construct() {
+// logger ( LL_DBG, "TestFileStore::TestFileStore()" );
+// parent::__construct ( "TestFileStore" );
+// }
+// }
 
-	global $logger;
-	$ll = $logger->getLevel ();
-	$logger->setLevel ( LL_DBG );
+// global $logger;
+// $ll = $logger->getLevel ();
+// $logger->setLevel ( LL_DBG );
 
-	$store = TestFileStore::getInstance ();
-	$contents = "Welcome to the jungle!";
-	$filename = "welcome.txt";
+// $store = TestFileStore::getInstance ();
+// $contents = "Welcome to the jungle!";
+// $filename = "welcome.txt";
 
-	if (! $store->putContents ( $filename, $contents )) {
-		logger ( LL_ERR, "Unable to store file contents" );
-		return false;
-	}
-	logger ( LL_INF, "Stored file contents" );
+// if (! $store->putContents ( $filename, $contents )) {
+// logger ( LL_ERR, "Unable to store file contents" );
+// return false;
+// }
+// logger ( LL_INF, "Stored file contents" );
 
-	$c = $store->getContents ( $filename );
-	if ($c === false) {
-		logger ( LL_ERR, "Unable to retrieve file contents" );
-		return false;
-	}
-	logger ( LL_INF, "Retrieved file contents" );
+// $c = $store->getContents ( $filename );
+// if ($c === false) {
+// logger ( LL_ERR, "Unable to retrieve file contents" );
+// return false;
+// }
+// logger ( LL_INF, "Retrieved file contents" );
 
-	if ($c !== $contents) {
-		logger ( LL_ERR, "Retrieved file contents do not match put file contents" );
-		return false;
-	}
-	logger ( LL_INF, "File contents match expected" );
+// if ($c !== $contents) {
+// logger ( LL_ERR, "Retrieved file contents do not match put file contents" );
+// return false;
+// }
+// logger ( LL_INF, "File contents match expected" );
 
-	if (! $store->delete ( $filename )) {
-		logger ( LL_ERR, "Unable to delete file" );
-		return false;
-	}
-	logger ( LL_INF, "Deleted file" );
-	$logger->setLevel ( $ll );
-}
+// if (! $store->delete ( $filename )) {
+// logger ( LL_ERR, "Unable to delete file" );
+// return false;
+// }
+// logger ( LL_INF, "Deleted file" );
+// $logger->setLevel ( $ll );
+// }
 
-function __testFileStoreRaw() {
-	$cli_options = [ 
-			"suppressKeyFileNotice" => true,
-			"projectId" => getProjectId ()
-	];
-	$storage = null;
+// function __testFileStoreRaw() {
+// $cli_options = [
+// "suppressKeyFileNotice" => true,
+// "projectId" => getProjectId ()
+// ];
+// $storage = null;
 
-	try {
-		$storage = new StorageClient ( $cli_options );
-		logger ( LL_INF, "Created StorageClient" );
-	} catch ( Exception $e ) {
-		$e = json_decode ( $e->getMessage () )->error;
-		logger ( LL_ERR, "Cannot create StorageClient: " . $e->message );
-	}
+// try {
+// $storage = new StorageClient ( $cli_options );
+// logger ( LL_INF, "Created StorageClient" );
+// } catch ( Exception $e ) {
+// $e = json_decode ( $e->getMessage () )->error;
+// logger ( LL_ERR, "Cannot create StorageClient: " . $e->message );
+// }
 
-	if ($storage) {
+// if ($storage) {
 
-		$bucket_name = getDataNamespace () . '_public';
-		$bucket = null;
+// $bucket_name = getDataNamespace () . '_public';
+// $bucket = null;
 
-		try {
-			$bucket = $storage->bucket ( $bucket_name );
-			logger ( LL_INF, "Opened Bucket '" . $bucket_name . "'" );
-		} catch ( Exception $e ) {
-			$e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "Cannot open Bucket: " . $e->message );
-		}
+// try {
+// $bucket = $storage->bucket ( $bucket_name );
+// logger ( LL_INF, "Opened Bucket '" . $bucket_name . "'" );
+// } catch ( Exception $e ) {
+// $e = json_decode ( $e->getMessage () )->error;
+// logger ( LL_ERR, "Cannot open Bucket: " . $e->message );
+// }
 
-		if (! $bucket) {
-			try {
-				$bucket = $storage->createBucket ( $bucket_name );
-				logger ( LL_INF, "Created Bucket '" . $bucket_name . "'" );
-			} catch ( Exception $e ) {
-				$e = json_decode ( $e->getMessage () )->error;
-				logger ( LL_ERR, "Cannot create Bucket: " . $e->message );
-			}
-		}
+// if (! $bucket) {
+// try {
+// $bucket = $storage->createBucket ( $bucket_name );
+// logger ( LL_INF, "Created Bucket '" . $bucket_name . "'" );
+// } catch ( Exception $e ) {
+// $e = json_decode ( $e->getMessage () )->error;
+// logger ( LL_ERR, "Cannot create Bucket: " . $e->message );
+// }
+// }
 
-		if ($bucket) {
-			$file_name = "README.md";
-			try {
-				$bucket->upload ( file_get_contents ( __DIR__ . '/' . $file_name ), [ 
-						'name' => $file_name,
-						'predefinedAcl' => 'publicRead'
-				] );
-				logger ( LL_INF, "Uploaded '" . $file_name . "'" );
-			} catch ( Exception $e ) {
-				$e = json_decode ( $e->getMessage () )->error;
-				logger ( LL_ERR, "Cannot upload '" . $file_name . "': " . $e->message );
-			}
+// if ($bucket) {
+// $file_name = "README.md";
+// try {
+// $bucket->upload ( file_get_contents ( __DIR__ . '/' . $file_name ), [
+// 'name' => $file_name,
+// 'predefinedAcl' => 'publicRead'
+// ] );
+// logger ( LL_INF, "Uploaded '" . $file_name . "'" );
+// } catch ( Exception $e ) {
+// $e = json_decode ( $e->getMessage () )->error;
+// logger ( LL_ERR, "Cannot upload '" . $file_name . "': " . $e->message );
+// }
 
-			try {
-				$object = $bucket->object ( $file_name );
-				$object->downloadToFile ( __DIR__ . '/zzz_deleteme_' . $file_name );
-				logger ( LL_INF, "Downloaded '" . $file_name . "'" );
-			} catch ( Exception $e ) {
-				$e = json_decode ( $e->getMessage () )->error;
-				logger ( LL_ERR, "Cannot download '" . $file_name . "': " . $e->message );
-			}
-		} else {
-			logger ( LL_ERR, "Cannot access storage bucket" );
-		}
-	}
-}
+// try {
+// $object = $bucket->object ( $file_name );
+// $object->downloadToFile ( __DIR__ . '/zzz_deleteme_' . $file_name );
+// logger ( LL_INF, "Downloaded '" . $file_name . "'" );
+// } catch ( Exception $e ) {
+// $e = json_decode ( $e->getMessage () )->error;
+// logger ( LL_ERR, "Cannot download '" . $file_name . "': " . $e->message );
+// }
+// } else {
+// logger ( LL_ERR, "Cannot access storage bucket" );
+// }
+// }
+// }
 ?>
