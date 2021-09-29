@@ -18,7 +18,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 	//                                          |_|            |___/ 
 	// @formatter:on
 	public static function __reset() {
-		$store = self::getInstance();
+		$store = self::getInstance ();
 		$c = 0;
 		foreach ( $store->bucket->objects () as $object ) {
 			$c += 1;
@@ -59,7 +59,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 		// Start a timer for debugging later
 		$pt = new ProcessTimer ();
 
-		//$ipt = new ProcessTimer ();
+		// $ipt = new ProcessTimer ();
 		$txns = TransactionStore::getTransactions ();
 
 		if (count ( $txns ) > 0) {
@@ -71,7 +71,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 
 				// DebugStore::log ( "clearTransactions()" );
 				// logger ( LL_DBG, "clearTransactions()" );
-				//$ipt = new ProcessTimer ();
+				// $ipt = new ProcessTimer ();
 				TransactionStore::clearTransactions ();
 				// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " clearTransactions() (TS: " . durationFormat ( $pt->duration () ) . ")" );
 
@@ -79,7 +79,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 				// DebugStore::log ( "validateTransactions()" );
 				// logger ( LL_DBG, "validateTransactions()" );
 				$mined_shares = 0;
-				//$ipt = new ProcessTimer ();
+				// $ipt = new ProcessTimer ();
 				$audit = [ ];
 				foreach ( $txns as $k => $txn ) {
 					// logger ( LL_SYS, "Got transaction: " . ob_print_r ( $txn->unload () ) );
@@ -108,6 +108,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 					$b = new Block ( "Genesis block" );
 					$b->sign ();
 					BlockStore::putBlock ( $b );
+					InfoStore::setBlockCount ( 1 );
 				}
 
 				// DebugStore::log ( "Creating transaction block" );
@@ -115,16 +116,16 @@ class BlockStoreHouseKeeper extends BlockStore {
 				$b = new Block ();
 
 				// DebugStore::log ( "Adding transactions" );
-				//$ipt = new ProcessTimer ();
+				// $ipt = new ProcessTimer ();
 				$b->addTransactions ( $txns );
 				// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Block::addTransactions() (TS: " . durationFormat ( $pt->duration () ) . ")" );
 
 				// DebugStore::log ( "Signing block" );
 				$b->sign ();
 
-				//$ipt = new ProcessTimer ();
+				// $ipt = new ProcessTimer ();
 				// DebugStore::log ( "Validating block" );
-				//$ipt = new ProcessTimer ();
+				// $ipt = new ProcessTimer ();
 				if ($b->isValid ( false )) {
 					// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " Block::isValid() (TS: " . durationFormat ( $pt->duration () ) . ")" );
 
@@ -144,18 +145,18 @@ class BlockStoreHouseKeeper extends BlockStore {
 						$arr ["amount"] = $t->amount;
 						$arr ["message"] = $t->message ?? "";
 						DebugStore::log ( "Txn: " . ob_print_r ( $arr ) );
-						AuditStore::getInstance ()->insert ( $arr );
+						AuditStore::insert ( $arr );
 					}
 					// print_r($deltas);
 					// Get the wallet deltas applied
 					// DebugStore::log ( "Updating wallet deltas" );
 					// logger ( LL_DBG, "Updating wallet deltas" );
-					//$ipt = new ProcessTimer ();
+					// $ipt = new ProcessTimer ();
 					$suspect = UserStore::getInstance ()->updateWalletBalances ( $deltas );
 					// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " UserStore::updateWalletBalances()" );
 
 					// DebugStore::log ( "Adding block to the blockchain" );
-					//$ipt = new ProcessTimer ();
+					// $ipt = new ProcessTimer ();
 					if (BlockStore::putBlock ( $b )) {
 						// DebugStore::log ( "*** " . durationFormat ( $ipt->duration () ) . " BlockStore::putBlock()" );
 						// logger ( LL_INF, "Block stored :)" );

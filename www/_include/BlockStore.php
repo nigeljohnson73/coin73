@@ -18,7 +18,7 @@ class BlockStore extends FileStore {
 // 			logger ( LL_ERR, "BlockStore::putBlock(): Cannot add an invalid block" );
 // 			return false;
 // 		}
-		if (! self::getInstance ()->putContents ( $b->hash, $b->toPayload () )) {
+		if (! self::putContents ( $b->hash, $b->toPayload () )) {
 			logger ( LL_ERR, "BlockStore::putBlock(): put contents failed" );
 			return false;
 		}
@@ -30,7 +30,7 @@ class BlockStore extends FileStore {
 	}
 
 	public static function getBlock($id) {
-		$payload = self::getInstance ()->getContents ( $id );
+		$payload = self::getContents ( $id );
 		if (! $payload) {
 			logger ( LL_ERR, "BlockStore::getBlock(): block '" . $id . "' cannot be found" );
 			return false;

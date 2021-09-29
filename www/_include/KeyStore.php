@@ -10,47 +10,37 @@ class KeyStore extends FileStore {
 		parent::__construct ( "KeyStore" );
 	}
 
-	protected function genFilename($email) {
+	protected static function genFilename($email) {
 		return hash ( "sha1", strtolower ( getDataNamespace () . "_" . $email ) );
 	}
 
-	protected function _getKeys($email) {
+	public static function getKeys($email) {
+		//$store = self::getInstance ();
 		logger ( LL_DBG, "KeyStore::getKeys('" . $email . "')" );
-		$filename = $this->genFilename ( $email );
+		$filename = self::genFilename ( $email );
 		$json = parent::getContents ( $filename );
 		if (! $json || strlen ( $json ) == 0) {
 			logger ( LL_DBG, "KeyStore::getKeys('" . $email . "'): No keys exist, creating new set" );
-			$kp = $this->_genKeyPair ();
-			$this->_putKeys ( $email, $kp->public, $kp->private );
+			$kp = self::genKeyPair ();
+			self::putKeys ( $email, $kp->public, $kp->private );
 			return $kp;
 		}
 		return json_decode ( $json );
 	}
-
-	public static function getKeys($email) {
-		return KeyStore::getInstance ()->_getKeys ( $email );
-	}
-
-	protected function _putKeys($email, $public, $private) {
+	
+	public static function putKeys($email, $public, $private) {
+		//return KeyStore::getInstance ()->_putKeys ( $email, $public, $private );
 		logger ( LL_DBG, "KeyStore::putKeys('" . $email . "', ...)" );
-		$filename = $this->genFilename ( $email );
+		$filename = self::genFilename ( $email );
 		$value = self::genKeyPair ( $public, $private );
 		$contents = json_encode ( $value );
 		return parent::putContents ( $filename, $contents );
 	}
 
-	public static function putKeys($email, $public, $private) {
-		return KeyStore::getInstance ()->_putKeys ( $email, $public, $private );
-	}
-
-	protected function _deleteKeys($email) {
-		logger ( LL_DBG, "KeyStore::deleteKeys('" . $email . "')" );
-		$filename = $this->genFilename ( $email );
-		return parent::delete ( $filename );
-	}
-
 	public static function deleteKeys($email) {
-		return KeyStore::getInstance ()->_deleteKeys ( $email );
+		logger ( LL_DBG, "KeyStore::deleteKeys('" . $email . "')" );
+		$filename = self::genFilename ( $email );
+		return parent::delete ( $filename );
 	}
 
 	public static function genKeyPair($pubKey = null, $privKey = null) {
@@ -75,23 +65,23 @@ class KeyStore extends FileStore {
 	}
 }
 
-function __testKeyStore() {
-	global $logger;
-	$ll = $logger->getLevel ();
-	$logger->setLevel ( LL_DBG );
+// function __testKeyStore() {
+// 	global $logger;
+// 	$ll = $logger->getLevel ();
+// 	$logger->setLevel ( LL_DBG );
 
-	$store = KeyStore::getInstance ();
-	$email = "test@testy.com";
-	$pubKey = "publick_key";
-	$privKey = "privat_key";
-	$store->putKeys ( $email, $pubKey, $privKey );
+// 	$store = KeyStore::getInstance ();
+// 	$email = "test@testy.com";
+// 	$pubKey = "publick_key";
+// 	$privKey = "privat_key";
+// 	$store->putKeys ( $email, $pubKey, $privKey );
 
-	$keys = $store->getKeys ( $email );
-	print_r ( $keys );
-	$store->deleteKeys ( $email );
+// 	$keys = $store->getKeys ( $email );
+// 	print_r ( $keys );
+// 	$store->deleteKeys ( $email );
 
-	$logger->setLevel ( $ll );
-}
+// 	$logger->setLevel ( $ll );
+// }
 
 function __getOverlordKeys($namespace = null) {
 	if (! class_exists ( "OverrideKeyStore" )) {

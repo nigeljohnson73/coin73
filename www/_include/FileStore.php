@@ -11,15 +11,6 @@ class FileStore {
 		throw new \Exception ( "Cannot unserialize a singleton." );
 	}
 
-	public static function getInstance() {
-		$cls = static::class;
-		if (! isset ( self::$instances [$cls] )) {
-			self::$instances [$cls] = new static ();
-		}
-
-		return self::$instances [$cls];
-	}
-
 	protected function __construct($name, $options = [ ]) {
 		$this->storage = null;
 		$this->bucket = null;
@@ -28,6 +19,15 @@ class FileStore {
 		$this->init ();
 	}
 
+	public static function getInstance() {
+		$cls = static::class;
+		if (! isset ( self::$instances [$cls] )) {
+			self::$instances [$cls] = new static ();
+		}
+		
+		return self::$instances [$cls];
+	}
+	
 	protected function init() {
 		// $bucket_name = strtolower ( $this->namespace . "_" . $name );
 		// $bucket_name = getDataNamespace () . "_" . $name;
@@ -86,14 +86,15 @@ class FileStore {
 		}
 	}
 
-	public function putContents($filename, $contents) {
-		if (! $this->bucket) {
+	public static function putContents($filename, $contents) {
+		$store = self::getInstance();
+		if (! $store->bucket) {
 			return false;
 		}
 
 		$ret = false;
 		try {
-			$this->bucket->upload ( $contents, [ 
+			$store->bucket->upload ( $contents, [ 
 					"name" => $filename
 			] );
 			logger ( LL_DBG, "FileStore::putContents(): Uploaded '" . $filename . "'" );
@@ -105,14 +106,15 @@ class FileStore {
 		return $ret;
 	}
 
-	public function getContents($filename) {
-		if (! $this->bucket) {
+	public static function getContents($filename) {
+		$store = self::getInstance();
+		if (! $store->bucket) {
 			return false;
 		}
 
 		$ret = false;
 		try {
-			$object = $this->bucket->object ( $filename );
+			$object = $store->bucket->object ( $filename );
 			$ret = $object->downloadAsString ();
 			logger ( LL_DBG, "FileStore::getContents(): Downloaded '" . $filename . "'" );
 		} catch ( Exception $e ) {
@@ -122,14 +124,15 @@ class FileStore {
 		return $ret;
 	}
 
-	public function delete($filename) {
-		if (! $this->bucket) {
+	public static function delete($filename) {
+		$store = self::getInstance();
+		if (! $store->bucket) {
 			return false;
 		}
 
 		$ret = false;
 		try {
-			$object = $this->bucket->object ( $filename );
+			$object = $store->bucket->object ( $filename );
 			$object->delete ();
 			logger ( LL_DBG, "FileStore::delete(): Deleted '" . $filename . "'" );
 			$ret = true;
