@@ -16,25 +16,25 @@ class InfoStore extends DataStore {
 		$this->local = array ();
 	}
 
-	public function insert($arr) {
+	public static function insert($arr) {
 		$arr ["updated"] = microtime ( true );
 		return parent::insert ( $arr );
 	}
 
-	public function update($arr) {
+	public static function update($arr) {
 		$arr ["updated"] = microtime ( true );
 		return parent::update ( $arr );
 	}
 
-	protected function _getInfo($key, $fallback = null) {
+	protected function _get($key, $fallback = null) {
 		if (isset ( $this->local [$key] )) {
 			logger ( LL_XDBG, "InfoStore::getInfo('$key') - locally cached" );
 			return $this->local [$key];
 		}
 
-		$arr = $this->getItemById ( $key );
+		$arr = self::getItemById ( $key );
 		if (! $arr) {
-			if ($this->insert ( [ 
+			if (self::insert ( [ 
 					"key" => $key,
 					"value" => $fallback
 			] )) {
@@ -50,7 +50,11 @@ class InfoStore extends DataStore {
 		return $arr ["value"];
 	}
 
-	protected function _setInfo($key, $value) {
+	public static function get($key, $fallback = null) {
+		return InfoStore::getInstance ()->_get ( $key, $fallback );
+	}
+
+	protected function _set($key, $value) {
 		$this->local [$key] = $value;
 		$arr = [ 
 				"key" => $key,
@@ -64,6 +68,10 @@ class InfoStore extends DataStore {
 			}
 		}
 		return true;
+	}
+
+	public static function set($key, $value) {
+		return InfoStore::getInstance ()->_set ( $key, $value );
 	}
 
 	protected function _getAll() {
@@ -85,14 +93,6 @@ class InfoStore extends DataStore {
 		}
 
 		return $ret;
-	}
-
-	public static function get($key, $fallback = null) {
-		return InfoStore::getInstance ()->_getInfo ( $key, $fallback );
-	}
-
-	public static function set($key, $value) {
-		return InfoStore::getInstance ()->_setInfo ( $key, $value );
 	}
 
 	public static function getAll() {

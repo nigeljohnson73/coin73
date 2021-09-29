@@ -19,8 +19,8 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 	if ($resp->isSuccess ()) {
-		$store = UserStore::getInstance ();
-		$user = $store->getItemByGuid ( @$_POST ["guid"] );
+		//$store = UserStore::getInstance ();
+		$user = UserStore::getItemByGuid ( @$_POST ["guid"] );
 		if (is_array ( $user )) {
 			$expect = json_decode ( $user ["validation_data"] )->expect;
 			$success = $_POST ["challenge"] == $expect;
@@ -30,7 +30,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 			$user ["validation_reminded"] = 0;
 			$user ["validation_nonce"] = "";
 			$user ["validation_data"] = "";
-			$user = $store->update ( $user );
+			$user = UserStore::update ( $user );
 
 			if (is_array ( $user )) {
 				if ($success) {

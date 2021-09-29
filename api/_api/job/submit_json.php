@@ -18,17 +18,17 @@ if (isset ( $args ["job_id"] ) && isset ( $args ["nonce"] )) {
 	$chiptype = isset ( $_POST ["chiptype"] ) ? $_POST ["chiptype"] : "";
 
 	if (InfoStore::miningEnabled ()) {
-		$store = JobStore::getInstance ();
+		// $store = JobStore::getInstance ();
 
-		$arr = $store->getItemById ( $args ["job_id"] );
+		$arr = JobStore::getItemById ( $args ["job_id"] );
 		if (is_array ( $arr )) {
-			$arr = $store->delete ( $arr );
+			$arr = JobStore::getInstance ()->delete ( $arr );
 			if (is_array ( $arr )) {
 				$delta = (msTime () - $arr ["created"]);
 				if ($delta >= minerSubmitMinSeconds ( $arr ["wallet_id"] ) && ($delta <= minerSubmitMaxSeconds ( $arr ["wallet_id"] ))) {
 
 					$hash = hash ( "sha1", $arr ["hash"] . $args ["nonce"] );
-					$starts = str_pad ( "", minerDifficulty(), "0" );
+					$starts = str_pad ( "", minerDifficulty (), "0" );
 					if (strpos ( $hash, $starts ) === 0) {
 						$expected_seconds = minerSubmitTargetSeconds ( $arr ["wallet_id"] );
 						$seconds_per_day = 60 * 60 * 24;

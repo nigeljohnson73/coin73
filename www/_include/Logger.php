@@ -1,8 +1,4 @@
 <?php
-/**************************************************************************************
- * This work is licensed. Please see license.txt for more information on terms.
- * (C) 2007 Nigel Johnson
- */
 if (! defined ( "LL_NONE" )) {
 	define ( "LL_NONE", 0 );
 	define ( "LL_SYSTEM", 0 );
@@ -21,20 +17,6 @@ if (! defined ( "LL_NONE" )) {
 	define ( "LL_XDBG", 6 );
 	define ( "LL_XDEBUG", 6 );
 }
-
-// $log_literals = array ();
-// $log_literals [LL_SYS] = "LL_SYS";
-// $log_literals [LL_ERROR] = "LL_ERROR";
-// $log_literals [LL_WARNING] = "LL_WARNING";
-// $log_literals [LL_INFO] = "LL_INFO";
-// $log_literals [LL_DEBUG] = "LL_DEBUG";
-// $log_literals [LL_EDEBUG] = "LL_EDEBUG";
-// $log_literals [LL_XDEBUG] = "LL_XDEBUG";
-
-// $log_to_literal = array ();
-// foreach ( $log_literals as $level => $literal ) {
-// $log_to_literal [$literal] = $level;
-// }
 
 if (! function_exists ( "mkpath" )) {
 

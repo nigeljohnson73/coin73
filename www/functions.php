@@ -37,6 +37,35 @@ $mfa_words [] = "Slice";
 $mfa_words [] = "Email";
 $mfa_words [] = "Pencil";
 $mfa_words [] = "Ruler";
+$mfa_words [] = "Digital";
+$mfa_words [] = "Dream";
+$mfa_words [] = "Welder";
+$mfa_words [] = "Member";
+$mfa_words [] = "College";
+$mfa_words [] = "Event";
+$mfa_words [] = "Funding";
+$mfa_words [] = "Experience";
+$mfa_words [] = "Road";
+$mfa_words [] = "Voucher";
+$mfa_words [] = "Photo";
+$mfa_words [] = "Reward";
+$mfa_words [] = "Open";
+$mfa_words [] = "Subscribe";
+$mfa_words [] = "Coffee";
+$mfa_words [] = "Message";
+$mfa_words [] = "Laundry";
+$mfa_words [] = "Recent";
+$mfa_words [] = "Studio";
+$mfa_words [] = "Access";
+$mfa_words [] = "Tonight";
+$mfa_words [] = "Pulse";
+$mfa_words [] = "Survey";
+$mfa_words [] = "Product";
+$mfa_words [] = "Refund";
+$mfa_words [] = "Policy";
+$mfa_words [] = "Counting";
+$mfa_words [] = "Vector";
+$mfa_words [] = "Customer";
 
 function getProjectId() {
 	global $project_id;
@@ -304,14 +333,8 @@ function processSendableFile($str) {
 // The target reward calcuation
 function submissionReward($s, $wallet_id = null) {
 	$t = minerSubmitTargetSeconds ( $wallet_id );
-	// Tweak by going here: http://localhost:8080/gfx/submission_time.png
-	// $sc = 14; // t=15: 14, t=10: 8.5, t=5: 2; // Provides for some scaling of the S curve along the x-axis.
-	// $xd = 2.22; // t=15: 2.22, t=10: 1.5, t=5: 1; // Provides an x-shift
 	$sc = 1.140099116 * $t - 3.1;
 	$xd = 0.1644 * $t - 0.1;
-
-	// 15, 1.140099116
-	// 2,
 	return 1 / (1 + exp ( - ($t - $sc) * ($s - ($t - $xd)) ));
 }
 
@@ -326,11 +349,6 @@ function degradedMinerEfficiency($n) {
 
 function totalMinerEfficiency() {
 	return effectiveMinerEfficiency ( minerMaxCount () );
-	// $tot = 0;
-	// for($xx = 1; $xx <= minerMaxCount (); $xx ++) {
-	// $tot += degradedMinerEfficiency ( $xx );
-	// }
-	// return $tot;
 }
 
 function effectiveMinerEfficiency($n) {

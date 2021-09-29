@@ -17,17 +17,14 @@ class AuditStoreHouseKeeper extends AuditStore {
 	// |_| |_|\___/ \__,_|___/\___|_|\_\___|\___| .__/|_|_| |_|\__, |
 	//                                          |_|            |___/ 
 	// @formatter:on
-	protected function _reset() {
-		$gql = "SELECT * FROM " . $this->kind;
-		$this->obj_store->query ( $gql );
-		while ( $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
-			logger ( LL_DBG, $this->kind . "Store::reset(): deleting " . count ( $arr_page ) . " records" );
-			$this->obj_store->delete ( $arr_page );
-		}
-	}
-
 	public static function __reset() {
-		self::getInstance ()->_reset ();
+		$store = self::getInstance ();
+		$gql = "SELECT * FROM " . $store->kind;
+		$store->obj_store->query ( $gql );
+		while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
+			logger ( LL_DBG, $store->kind . "Store::reset(): deleting " . count ( $arr_page ) . " records" );
+			$store->obj_store->delete ( $arr_page );
+		}
 	}
 }
 ?>

@@ -35,8 +35,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
 
 			if ($resp->isSuccess ()) {
-				$store = UserStore::getInstance ();
-				$user = $store->authenticate ( @$_POST ["email"], @$_POST ["password"] );
+				$user = UserStore::authenticate ( @$_POST ["email"], @$_POST ["password"] );
 				if (is_array ( $user )) {
 					// if (strlen ( $user ["recovery_data"] )) {
 					// $ret->reason = "There is an outstanding recovery request. Please complete that first.";
@@ -44,7 +43,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 					if (strlen ( $user ["validation_data"] ) == 0) {
 						if (! $user ["locked"]) {
 							$user ["logged_in"] = timestampNow ();
-							$store->update ( $user );
+							UserStore::update ( $user );
 							$success = true;
 							$message = "User authenticated\n";
 							$_SESSION ["AUTHTOK"] = $user ["guid"];

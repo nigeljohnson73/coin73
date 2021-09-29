@@ -12,13 +12,13 @@ $ret->reason = "";
 $success = false;
 $message = "Unable to prepare recovery";
 
-$store = UserStore::getInstance ();
+// $store = UserStore::getInstance ();
 if (isset ( $_POST ["payload"] )) {
-	$user = $store->getItemByRecoveryNonce ( $_POST ["payload"] );
+	$user = UserStore::getItemByRecoveryNonce ( $_POST ["payload"] );
 	if ($user) {
 		// Invalidate this request
 		$user ["recovery_nonce"] = "";
-		$user = $store->replace ( $user );
+		$user = UserStore::update ( $user );
 
 		if (is_array ( $user )) {
 			global $token_timeout_hours;

@@ -12,13 +12,13 @@ $ret->reason = "";
 $success = false;
 $message = "Unable to prepare validation";
 
-$store = UserStore::getInstance ();
+//$store = UserStore::getInstance ();
 if (isset ( $_POST ["payload"] )) {
-	$user = $store->getItemByValidationNonce ( $_POST ["payload"] );
+	$user = UserStore::getItemByValidationNonce ( $_POST ["payload"] );
 	if ($user) {
 		// Invalidate this request
 		$user ["validation_nonce"] = "";
-		$user = $store->replace ( $user );
+		$user = UserStore::update ( $user );
 
 		if (is_array ( $user )) {
 			global $token_timeout_hours;

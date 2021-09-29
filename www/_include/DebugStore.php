@@ -15,7 +15,7 @@ class DebugStore extends DataStore {
 		$this->init ();
 	}
 
-	public function insert($arr) {
+	public static function insert($arr) {
 		$arr ["time"] = timestampFormat ( timestampNow (), "Y/m/d H:i:s" );
 		$arr ["created"] = microtime ( true );
 		return parent::insert ( $arr );

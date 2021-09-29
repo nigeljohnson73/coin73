@@ -31,25 +31,25 @@ if (isset ( $_SESSION ["AUTHTOK"] ) && isset ( $_POST ["token"] ) && isset ( $_P
 
 			// verify the response
 			if ($resp->isSuccess ()) {
-				$sender = UserStore::getInstance ()->getItemByGuid ( $_SESSION ["AUTHTOK"] );
+				$sender = UserStore::getItemByGuid ( $_SESSION ["AUTHTOK"] );
 				if ($sender) {
-					$k = KeyStore::getInstance()->getKeys($sender["email"]);
-					print_r($k);
-					if($k && $k->private) {
-					// if ($_POST ["amount"] <= $sender ["balance"]) {
-					$t = new Transaction ( $sender ["public_key"], $_POST ["recipient"], $_POST ["amount"], $_POST ["message"] ?? "");
-					if($t->sign($k->private)) {
-						if(TransactionStore::addTransaction($t)) {
-							//$ret->reason = "It worked";
-							$ret->success = true;
+					$k = KeyStore::getKeys ( $sender ["email"] );
+					print_r ( $k );
+					if ($k && $k->private) {
+						// if ($_POST ["amount"] <= $sender ["balance"]) {
+						$t = new Transaction ( $sender ["public_key"], $_POST ["recipient"], $_POST ["amount"], $_POST ["message"] ?? "");
+						if ($t->sign ( $k->private )) {
+							if (TransactionStore::addTransaction ( $t )) {
+								// $ret->reason = "It worked";
+								$ret->success = true;
+							} else {
+								$ret->reason = TransactionStore::getReason ();
+							}
 						} else {
-							$ret->reason = TransactionStore::getReason();
+							$ret->reason = "Unable to sign transaction";
 						}
-					} else {
-						$ret->reason = "Unable to sign transaction";
-					}
-					// } else {
-					// }
+						// } else {
+						// }
 					} else {
 						$ret->reason = "Sender keypair is not valid";
 					}
@@ -71,8 +71,8 @@ if (isset ( $_SESSION ["AUTHTOK"] ) && isset ( $_POST ["token"] ) && isset ( $_P
 }
 
 if (! $success) {
-global $api_failure_delay;
-sleep ( $api_failure_delay );
+	global $api_failure_delay;
+	sleep ( $api_failure_delay );
 }
 
 endJsonResponse ( $response, $ret, $success, $message );

@@ -19,14 +19,14 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 	if ($resp->isSuccess ()) {
-		$store = UserStore::getInstance ();
-		$user = $store->authenticate ( @$_POST ["email"], @$_POST ["password"] );
+		//$store = UserStore::getInstance ();
+		$user = UserStore::authenticate ( @$_POST ["email"], @$_POST ["password"] );
 		if (is_array ( $user )) {
-			$ret->challenge = $store->revalidateUser ( $user ["email"] );
+			$ret->challenge = UserStore::revalidateUser ( $user ["email"] );
 			$success = strlen ( $ret->challenge );
 			if ($success) {
 				if ($user ["validation_data"]) {
-					$ret->warning = "There is an outstanding validation request. If you did not receive the email, please check your spam folder, and only follow the link in the latest email. If you did not request these, you may want to <a href='/recover'>recover your account.";
+					$ret->warning = "There is an outstanding validation request. If you did not receive the email, please check your spam folder, and only follow the link in the latest email. If you did not request a previous validation, you may want to <a href='/recover'>recover your account.";
 				}
 
 				$message = "Validation request setup\n";

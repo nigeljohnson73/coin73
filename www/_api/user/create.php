@@ -38,18 +38,17 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 			if ($resp->isSuccess ()) {
 				logger ( LL_DBG, "Loading data into user array" );
 				$user = array ();
-				$store = UserStore::getInstance ();
-				$fields = $store->getDataFields ();
-				$fields [] = $store->getKeyField ();
+				$fields = UserStore::getDataFields ();
+				$fields [] = UserStore::getKeyField ();
 				foreach ( $fields as $k ) {
 					if (isset ( $_POST [$k] )) {
 						$user [$k] = $_POST [$k];
 					}
 				}
 
-				$user = $store->insert ( $user );
+				$user = UserStore::insert ( $user );
 				if (is_array ( $user )) {
-					$ret->challenge = $store->revalidateUser ( $user ["email"] );
+					$ret->challenge = UserStore::revalidateUser ( $user ["email"] );
 					ksort ( $user );
 					echo "Created user: \n";
 					print_r ( $user );

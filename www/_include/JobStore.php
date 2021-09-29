@@ -19,9 +19,9 @@ class JobStore extends DataStore {
 		$this->init ();
 	}
 
-	public function getItemsByWalletId($key) {
-		$gql = "SELECT * FROM " . $this->kind . " WHERE wallet_id = @key";
-		$arr = $this->obj_store->fetchAll ( $gql, [ 
+	public static function getItemsByWalletId($key) {
+		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE wallet_id = @key";
+		$arr = self::getInstance ()->obj_store->fetchAll ( $gql, [ 
 				'key' => $key
 		] );
 		// echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "')\n";
@@ -44,10 +44,10 @@ class JobStore extends DataStore {
 		return $arr;
 	}
 
-	public function insert($arr) {
+	public static function insert($arr) {
 		$oarr = $arr; // Save it in case the insert fails!!
 
-		$arr [$this->getKeyField ()] = GUIDv4 ();
+		$arr [self::getKeyField ()] = GUIDv4 ();
 		$arr ["created"] = msTime ();
 		$arr = parent::insert ( $arr );
 
@@ -55,7 +55,7 @@ class JobStore extends DataStore {
 			logger ( LL_ERR, "JobStore::insert() - failed - regenerating key" );
 			// Assume the key was broken and retry
 			$arr = $oarr;
-			$arr [$this->getKeyField ()] = GUIDv4 ();
+			$arr [self::getKeyField ()] = GUIDv4 ();
 			$arr ["created"] = msTime ();
 			$arr = parent::insert ( $arr );
 			if ($arr == false) {

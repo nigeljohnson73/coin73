@@ -17,23 +17,20 @@ class DebugStoreHouseKeeper extends DebugStore {
 	// |_| |_|\___/ \__,_|___/\___|_|\_\___|\___| .__/|_|_| |_|\__, |
 	//                                          |_|            |___/ 
 	// @formatter:on
-	protected function _tidyUp() {
+	public static function tidyUp() {
+		$store = self::getInstance ();
 		logger ( LL_DBG, "DebugStore::tidyUp(): started" );
 		$older = microtime ( true ) - (3 * 60 * 60);
-		$gql = "SELECT * FROM " . $this->kind . " WHERE created < @key";
-		$this->obj_store->query ( $gql, [ 
+		$gql = "SELECT * FROM " . $store->kind . " WHERE created < @key";
+		$store->obj_store->query ( $gql, [ 
 				'key' => $older
 		] );
-		while ( $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
+		while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
 			logger ( LL_DBG, "DebugStore::tidyUp(): pulled " . count ( $arr_page ) . " records" );
 			// $this->active_transactions = array_merge ( $this->active_transactions, $arr_page );
-			$this->obj_store->delete ( $arr_page );
+			$store->obj_store->delete ( $arr_page );
 		}
 		logger ( LL_DBG, "DebugStore::tidyUp(): complete" );
-	}
-
-	public static function tidyUp() {
-		self::getInstance ()->_tidyUp ();
 	}
 }
 ?>

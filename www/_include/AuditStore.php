@@ -18,7 +18,7 @@ class AuditStore extends DataStore {
 		$this->init ();
 	}
 
-	public function insert($arr) {
+	public static function insert($arr) {
 		logger ( LL_DBG, "AuditStore::insert()" );
 
 		$arr ["txn_id"] = GUIDv4 ();

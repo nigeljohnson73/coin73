@@ -10,7 +10,7 @@ logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = ""; // Used by the toaster pop-up
-$ret->reason = ""; // Used in the page alerts
+//$ret->reason = ""; // Used in the page alerts
 
 // verify the response
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["guid"] ) && isset ( $_POST ["challenge"] ) && isset ( $_POST ["password"] )) {
@@ -27,8 +27,8 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 		$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 		if ($resp->isSuccess ()) {
-			$store = UserStore::getInstance ();
-			$user = $store->getItemByGuid ( @$_POST ["guid"] );
+			//$store = UserStore::getInstance ();
+			$user = UserStore::getItemByGuid ( @$_POST ["guid"] );
 			if (is_array ( $user )) {
 				$expect = json_decode ( $user ["recovery_data"] )->expect;
 				$success = $_POST ["challenge"] == $expect;
@@ -43,10 +43,10 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$user ["validation_nonce"] = "";
 				$user ["validation_data"] = "";
 				
-				$user = $store->update ( $user );
+				$user = UserStore::update ( $user );
 
 				if (is_array ( $user )) {
-					$user = $store->setPassword ( $user ["email"], $_POST ["password"] );
+					$user = UserStore::setPassword ( $user ["email"], $_POST ["password"] );
 					if (is_array ( $user )) {
 						if ($success) {
 							$message = "Recovery complete";

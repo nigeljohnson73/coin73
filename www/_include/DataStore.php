@@ -10,30 +10,30 @@ class DataStore {
 		throw new \Exception ( "Cannot unserialize a singleton." );
 	}
 
+	protected function __construct($kind) {
+		logger ( LL_DBG, "DataStore::DataStore(" . getProjectId () . ", " . getDataNamespace () . ")" );
+
+		$this->kind = $kind;
+		$this->non_key_fields = array ();
+
+		$this->obj_gateway = new \GDS\Gateway\RESTv1 ( getProjectId (), getDataNamespace () );
+		$this->obj_schema = (new GDS\Schema ( $this->kind ));
+	}
+
+	protected function init() {
+		$this->obj_store = new GDS\Store ( $this->obj_schema, $this->obj_gateway );
+	}
+
 	public static function getInstance() {
 		$cls = static::class;
 		if (! isset ( self::$instances [$cls] )) {
 			self::$instances [$cls] = new static ();
 		}
-
+		
 		return self::$instances [$cls];
 	}
-
-	protected function __construct($kind) {
-		logger ( LL_DBG, "DataStore::DataStore(" . getProjectId () . ", " . getDataNamespace () . ")" );
-		
-		$this->kind = $kind;
-		$this->non_key_fields = array ();
-		
-		$this->obj_gateway = new \GDS\Gateway\RESTv1 ( getProjectId (), getDataNamespace () );
-		$this->obj_schema = (new GDS\Schema ( $this->kind ));
-	}
 	
-	protected function init() {
-		$this->obj_store = new GDS\Store ( $this->obj_schema, $this->obj_gateway );
-	}
-
-	public function addField($name, $type, $index = false, $key = false) {
+	protected function addField($name, $type, $index = false, $key = false) {
 		$cmd = "add" . ucFirst ( $type );
 		$this->obj_schema->$cmd ( $name, $index || $key ); // TODO: Work out why this is not being honoured - test it more
 		if ($key) {
@@ -43,44 +43,31 @@ class DataStore {
 		}
 	}
 
-	public function getDataFields() {
-		return $this->non_key_fields;
+	public static function getDataFields() {
+		return self::getInstance ()->non_key_fields;
 	}
 
-	public function getKeyField() {
-		return $this->key_field;
+	public static function getKeyField() {
+		return self::getInstance ()->key_field;
 	}
 
-	public function getItemById($key) {
-		$data = $this->_raw_getItemById ( $key );
-		return ($data) ? ($data->getData ()) : ($data);
-	}
-
-	private function _raw_getItemById($key) {
-		$gql = "SELECT * FROM " . $this->kind . " WHERE " . $this->key_field . " = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-		return $data;
-	}
-
-	public function insert($arr) {
+	public static function insert($arr) {
 		// echo "DataStore::insert()\n";
 		// echo "DataStore::insert() - passed aarray\n";
 		// print_r ( $arr );
-		if (! isset ( $arr [$this->getKeyField ()] )) {
+		if (! isset ( $arr [self::getKeyField ()] )) {
 			logger ( LL_ERR, "DataStore::insert() - No key field set in new entity" );
 			return false;
 		}
 		// echo "Key field is set in new data entity\n";
-		$key = $this->getKeyField ();
+		$key = self::getKeyField ();
 		// echo "DataStore::insert() - '" . $key . "' => '" . $arr [$key] . "'\n";
-		if ($this->getItemById ( $arr [$key] ) != null) {
+		if (self::getItemById ( $arr [$key] ) != null) {
 			logger ( LL_ERR, "DataStore::insert() - Entity key already exists" );
 			return false;
 		}
 		// echo "Entity doesn't exist\n";
-		$fields = $this->getDataFields ();
+		$fields = self::getDataFields ();
 		$obj = new GDS\Entity ();
 		$obj->$key = $arr [$key];
 
@@ -95,7 +82,7 @@ class DataStore {
 		}
 		// echo "DataStore::insert() - source object pre-insert\n";
 		// print_r ( $arr );
-		if ($this->obj_store->upsert ( $obj )) {
+		if (self::getInstance ()->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::insert() - Upsert failed" );
 		}
 		logger ( LL_XDBG, "DataStore::insert() - Entity inserted" );
@@ -106,17 +93,18 @@ class DataStore {
 		return $obj->getData ();
 	}
 
-	public function delete($arr) {
+	public static function delete($arr) {
+		$store = self::getInstance();
 		// echo "DataStore::delete()\n";
-		$key = $this->getKeyField ();
+		$key = $store->getKeyField ();
 		if (! isset ( $arr [$key] )) {
 			logger ( LL_ERR, "DataStore::delete() - No key field set in new entity" );
 			return false;
 		}
 		// echo "Key field is set in new data entity\n";
 
-		$gql = "SELECT * FROM " . $this->kind . " WHERE " . $this->key_field . " = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [ 
+		$gql = "SELECT * FROM " . $store->kind . " WHERE " . $store->key_field . " = @key";
+		$data = $store->obj_store->fetchOne ( $gql, [ 
 				'key' => $arr [$key]
 		] );
 
@@ -127,7 +115,7 @@ class DataStore {
 		// echo "Entity exists\n";
 		$odata = $data->getData ();
 		// usleep(10000);
-		if ($this->obj_store->delete ( $data )) {
+		if ($store->obj_store->delete ( $data )) {
 			logger ( LL_XDBG, "DataStore::delete() - Entity deleted" );
 			// echo "DataStore::delete() - Entity deleted\n";
 			return $odata;
@@ -136,21 +124,22 @@ class DataStore {
 		return false;
 	}
 
-	public function update($arr) {
-		$key = $this->getKeyField ();
+	public static function update($arr) {
+		$key = self::getKeyField ();
 		if (! isset ( $arr [$key] )) {
 			logger ( LL_ERR, "DataStore::update() - No key field set in new entity" );
 			return false;
 		}
 
-		$obj = $this->_raw_getItemById ( $arr [$key] );
+		$store = self::getInstance ();
+		$obj = $store->_raw_getItemById ( $arr [$key] );
 		if (! $obj) {
 			logger ( LL_ERR, "DataStore::update() - Cannot find existing entity" );
 			return false;
 		}
 
-		$fields = array_merge ( $this->getDataFields (), [ 
-				$this->getKeyField ()
+		$fields = array_merge ( self::getDataFields (), [ 
+				self::getKeyField ()
 		] );
 		// Overwrite any existing data
 		foreach ( $arr as $k => $v ) {
@@ -161,30 +150,30 @@ class DataStore {
 			}
 		}
 
-		if ($this->obj_store->upsert ( $obj )) {
+		if ($store->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::update() - Upsert failed" );
 		}
 		logger ( LL_XDBG, "DataStore::update() - Entity updated" );
 		return $obj->getData ();
 	}
 
-	public function replace($arr) {
+	public static function replace($arr) {
 		// echo "DataStore::replace()\n";
-		$key = $this->getKeyField ();
+		$key = self::getKeyField ();
 		if (! isset ( $arr [$key] )) {
 			logger ( LL_ERR, "DataStore::replace() - No key field set in new entity" );
 			return false;
 		}
 		// echo "DataStore::replace() - Key field is set in new data entity\n";
 
-		$odata = $this->delete ( $arr );
+		$odata = self::delete ( $arr );
 		if ($odata == false) {
 			logger ( LL_ERR, "DataStore::replace() - Delete failed" );
 			return false;
 		}
 		// echo "DataStore::replace() - Entity Deleted\n";
 
-		$fields = $this->getDataFields ();
+		$fields = self::getDataFields ();
 		$obj = new GDS\Entity ();
 		$obj->$key = $arr [$key];
 		foreach ( $fields as $f ) {
@@ -197,13 +186,26 @@ class DataStore {
 
 		// echo "DataStore::replace() - Entity about to be upserted:\n";
 		// print_r($obj->getData ());
-		if ($this->obj_store->upsert ( $obj )) {
+		if (self::getInstance ()->obj_store->upsert ( $obj )) {
 			logger ( LL_ERR, "DataStore::replace() - Upsert failed" );
 		}
 		logger ( LL_XDBG, "DataStore::replace() - Entity replaced" );
 
 		// echo "DataStore::replace() - Entity replaced\n";
 		return $obj->getData ();
+	}
+
+	private function _raw_getItemById($key) {
+		$gql = "SELECT * FROM " . $this->kind . " WHERE " . $this->key_field . " = @key";
+		$data = $this->obj_store->fetchOne ( $gql, [ 
+				'key' => $key
+		] );
+		return $data;
+	}
+
+	public static function getItemById($key) {
+		$data = self::getInstance ()->_raw_getItemById ( $key );
+		return ($data) ? ($data->getData ()) : ($data);
 	}
 }
 ?>

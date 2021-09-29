@@ -19,11 +19,10 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 	if ($resp->isSuccess ()) {
-		$store = UserStore::getInstance ();
-		$user = $store->getItemById ( @$_POST ["email"] );
+		$user = UserStore::getItemById ( @$_POST ["email"] );
 		if (is_array ( $user )) {
 			if (! $user ["recovery_nonce"]) {
-				$ret->challenge = $store->recoverUser ( $user ["email"] );
+				$ret->challenge = UserStore::recoverUser ( $user ["email"] );
 				$success = strlen ( $ret->challenge );
 				if ($success) {
 					$message = "Recovery request setup";

@@ -31,9 +31,86 @@ class UserStore extends DataStore {
 		$this->init ();
 	}
 
-	public function getItemByValidationNonce($key) {
-		$gql = "SELECT * FROM " . $this->kind . " WHERE validation_nonce = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [ 
+	public static function insert($arr) {
+		$arr ["email"] = strtolower ( $arr ["email"] );
+
+		$password = $arr ["password"];
+		$arr ["password"] = "";
+		logger ( LL_DBG, "UserStore::insert()" );
+		logger ( LL_DBG, "UserStore::insert() - email address: '" . $arr ["email"] . "'" );
+		// logger ( LL_DBG, "UserStore::insert() - passed password: '" . $password . "'" );
+		$arr ["guid"] = GUIDv4 ();
+		$arr ["created"] = ( int ) timestampNow ();
+		$arr ["locked"] = 0; // timestamp
+		$arr ["logged_in"] = 0; // timestamp
+		$arr ["public_key"] = "";
+		$arr ["balance"] = 0;
+		$arr ["validated"] = 0; // timestamp
+		$arr ["validation_requested"] = 0; // timestamp
+		$arr ["validation_reminded"] = 0; // timestamp
+		$arr ["validation_nonce"] = "";
+		$arr ["validation_data"] = "";
+		$arr ["recovery_requested"] = 0; // timestamp
+		$arr ["recovery_nonce"] = "";
+		$arr ["recovery_data"] = "";
+
+		$arr = parent::insert ( $arr );
+		if (! is_array ( $arr )) {
+			logger ( LL_ERR, "UserStore::insert() - insert of base user failed" );
+			return false;
+		}
+		echo "UserStore::insert() - base user created\n";
+
+		$arr = self::setPassword ( $arr ["email"], $password );
+		if (! is_array ( $arr )) {
+			logger ( LL_ERR, "UserStore::insert() - unable to set password" );
+			self::delete ( $arr );
+			return false;
+		}
+
+		if (! is_array ( self::authenticate ( $arr ["email"], $password ) )) {
+			logger ( LL_ERR, "UserStore::insert() - unable to authenticate user details" );
+			self::delete ( $arr );
+			return false;
+		}
+
+		logger ( LL_DBG, "UserStore::insert() - obtaining public/private key pair" );
+		$keys = KeyStore::getKeys ( $arr ["email"] );
+
+		if ($keys) {
+			logger ( LL_DBG, "Keystore provided key pair for '" . $arr ["email"] . "'" );
+			$arr ["public_key"] = $keys->public;
+			logger ( LL_DBG, "Public key: '" . $keys->public . "'" );
+			$user = self::update ( $arr );
+			if (! is_array ( $user )) {
+				logger ( LL_ERR, "UserStore::insert() - final update failed" );
+				self::delete ( $arr );
+				return false;
+			} else {
+				logger ( LL_DBG, "UserStore::insert() - User has been created" );
+			}
+		} else {
+			logger ( LL_DBG, "Keystore failed to provide keys for '" . $arr ["email"] . "'" );
+			self::delete ( $arr );
+			return false;
+		}
+
+		return $user;
+	}
+
+	public static function getItemByGuid($key) {
+		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE guid = @key";
+		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
+				'key' => $key
+		] );
+		// echo "UserStore::getItemByGuid('guid'=>'" . $key . "')\n";
+		// echo " '$gql'\n";
+		return ($data) ? ($data->getData ()) : ($data);
+	}
+
+	public static function getItemByValidationNonce($key) {
+		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE validation_nonce = @key";
+		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
 				'key' => $key
 		] );
 		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
@@ -41,14 +118,24 @@ class UserStore extends DataStore {
 		return ($data) ? ($data->getData ()) : ($data);
 	}
 
-	public function getItemByPublicKey($key) {
+	public static function getItemByRecoveryNonce($key) {
+		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE recovery_nonce = @key";
+		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
+				'key' => $key
+		] );
+		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
+		// echo " '$gql'\n";
+		return ($data) ? ($data->getData ()) : ($data);
+	}
+
+	public static function getItemByPublicKey($key) {
 		if (isset ( self::$_wallet [$key] )) {
 			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - returning cached values" );
 			return self::$_wallet [$key]->getData ();
 		}
 
-		$gql = "SELECT * FROM " . $this->kind . " WHERE public_key = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [ 
+		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE public_key = @key";
+		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
 				'key' => $key
 		] );
 
@@ -62,18 +149,17 @@ class UserStore extends DataStore {
 		return $data;
 	}
 
-	public function getItemByWalletId($key) {
-		return $this->getItemByPublicKey ( $key );
+	public static function getItemByWalletId($key) {
+		return self::getItemByPublicKey ( $key );
 	}
 
-	public function getWalletBalance($key) {
-		$data = $this->getItemByWalletId ( $key );
+	public static function getWalletBalance($key) {
+		$data = self::getItemByWalletId ( $key );
 		return $data ["balance"] ?? 0;
 	}
 
-	public function updateWalletBalances($arr) {
+	public static function updateWalletBalances($arr) {
 		$suspect = array ();
-		$users = [ ];
 
 		foreach ( $arr as $id => $delta ) {
 			if ($id == coinbaseWalletId ()) {
@@ -107,7 +193,7 @@ class UserStore extends DataStore {
 		while ( count ( self::$_updated_wallet ) ) {
 			$arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
 			logger ( LL_SYS, "UserStore::updateWalletBalances(): updating " . count ( $arr_page ) . " records" );
-			$this->obj_store->upsert ( $arr_page );
+			self::getInstance ()->obj_store->upsert ( $arr_page );
 		}
 
 		return (count ( $suspect ) > 0) ? $suspect : null;
@@ -124,94 +210,7 @@ class UserStore extends DataStore {
 	// }
 	// return true;
 	// }
-	public function getItemByRecoveryNonce($key) {
-		$gql = "SELECT * FROM " . $this->kind . " WHERE recovery_nonce = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		return ($data) ? ($data->getData ()) : ($data);
-	}
-
-	public function getItemByGuid($key) {
-		$gql = "SELECT * FROM " . $this->kind . " WHERE guid = @key";
-		$data = $this->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-		// echo "UserStore::getItemByGuid('guid'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		return ($data) ? ($data->getData ()) : ($data);
-	}
-
-	public function insert($arr) {
-		$arr ["email"] = strtolower ( $arr ["email"] );
-
-		$password = $arr ["password"];
-		$arr ["password"] = "";
-		logger ( LL_DBG, "UserStore::insert()" );
-		logger ( LL_DBG, "UserStore::insert() - email address: '" . $arr ["email"] . "'" );
-		// logger ( LL_DBG, "UserStore::insert() - passed password: '" . $password . "'" );
-		$arr ["guid"] = GUIDv4 ();
-		$arr ["created"] = ( int ) timestampNow ();
-		$arr ["locked"] = 0; // timestamp
-		$arr ["logged_in"] = 0; // timestamp
-		$arr ["public_key"] = "";
-		$arr ["balance"] = 0;
-		$arr ["validated"] = 0; // timestamp
-		$arr ["validation_requested"] = 0; // timestamp
-		$arr ["validation_reminded"] = 0; // timestamp
-		$arr ["validation_nonce"] = "";
-		$arr ["validation_data"] = "";
-		$arr ["recovery_requested"] = 0; // timestamp
-		$arr ["recovery_nonce"] = "";
-		$arr ["recovery_data"] = "";
-
-		$arr = parent::insert ( $arr );
-		if (! is_array ( $arr )) {
-			logger ( LL_ERR, "UserStore::insert() - insert of base user failed" );
-			return false;
-		}
-		echo "UserStore::insert() - base user created\n";
-
-		$arr = $this->setPassword ( $arr ["email"], $password );
-		if (! is_array ( $arr )) {
-			logger ( LL_ERR, "UserStore::insert() - unable to set password" );
-			$this->delete ( $arr );
-			return false;
-		}
-
-		if (! is_array ( $this->authenticate ( $arr ["email"], $password ) )) {
-			logger ( LL_ERR, "UserStore::insert() - unable to authenticate user details" );
-			$this->delete ( $arr );
-			return false;
-		}
-
-		logger ( LL_DBG, "UserStore::insert() - obtaining public/private key pair" );
-		$keys = KeyStore::getKeys ( $arr ["email"] );
-
-		if ($keys) {
-			logger ( LL_DBG, "Keystore provided key pair for '" . $arr ["email"] . "'" );
-			$arr ["public_key"] = $keys->public;
-			logger ( LL_DBG, "Public key: '" . $keys->public . "'" );
-			$user = $this->update ( $arr );
-			if (! is_array ( $user )) {
-				logger ( LL_ERR, "UserStore::insert() - final update failed" );
-				$this->delete ( $arr );
-				return false;
-			} else {
-				logger ( LL_DBG, "UserStore::insert() - User has been created" );
-			}
-		} else {
-			logger ( LL_DBG, "Keystore failed to provide keys for '" . $arr ["email"] . "'" );
-			$this->delete ( $arr );
-			return false;
-		}
-
-		return $user;
-	}
-
-	private function generateMfa() {
+	private static function generateMfa() {
 		global $mfa_words;
 		global $mfa_word_count;
 
@@ -229,10 +228,10 @@ class UserStore extends DataStore {
 		return $validation;
 	}
 
-	public function revalidateUser($email) {
+	public static function revalidateUser($email) {
 		global $www_host;
 
-		$user = $this->getItemById ( $email );
+		$user = self::getItemById ( $email );
 		if (! $user) {
 			logger ( LL_ERR, "UserStore::revalidateUser('$email'): Unable to find user" );
 			return false;
@@ -242,7 +241,7 @@ class UserStore extends DataStore {
 		// logger ( LL_ERR, "UserStore::revalidateUser('$email'): Already an email outstanding - don't spam" );
 		// return false;
 		// }
-		$validation = $this->generateMfa ();
+		$validation = self::generateMfa ();
 		print_r ( $validation );
 		$user ["validation_nonce"] = GUIDv4 ();
 		$user ["validation_reminded"] = 0;
@@ -259,7 +258,7 @@ class UserStore extends DataStore {
 		$body .= "If you did not make this request, then you should probably secure your account by [recovering your account](" . $recovery_url . ").";
 
 		if (sendEmail ( $user ["email"], $subject, $body )) {
-			if ($this->update ( $user )) {
+			if (self::update ( $user )) {
 				logger ( LL_DBG, "UserStore::revalidateUser('$email'): Sucessfully requested" );
 				return $validation->expect;
 			} else {
@@ -271,10 +270,10 @@ class UserStore extends DataStore {
 		return false;
 	}
 
-	public function recoverUser($email) {
+	public static function recoverUser($email) {
 		global $www_host;
 
-		$user = $this->getItemById ( $email );
+		$user = self::getItemById ( $email );
 		if (! $user) {
 			logger ( LL_ERR, "UserStore::recovereUser('$email'): Unable to find user" );
 			return false;
@@ -284,7 +283,7 @@ class UserStore extends DataStore {
 		// logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
 		// return false;
 		// }
-		$validation = $this->generateMfa ();
+		$validation = self::generateMfa ();
 		print_r ( $validation );
 		// $user ["locked"] = timestampNow ();
 		$user ["recovery_nonce"] = GUIDv4 ();
@@ -300,7 +299,7 @@ class UserStore extends DataStore {
 		$body .= "If you did not make this request, then you you can ignore this email, and apologies for interfering with your day.";
 
 		if (sendEmail ( $user ["email"], $subject, $body )) {
-			if ($this->update ( $user )) {
+			if (self::update ( $user )) {
 				logger ( LL_DBG, "UserStore::recovereUser('$email'): Sucessfully requested" );
 				return $validation->expect;
 			} else {
@@ -313,43 +312,47 @@ class UserStore extends DataStore {
 	}
 
 	// Called by the system
-	public function requestValidateUser($email) {
-		global $www_host;
+	public static function requestValidateUser($email) {
+		//global $www_host;
 
-		$user = $this->getItemById ( $email );
+		$user = self::getItemById ( $email );
 		if (! $user) {
 			logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Unable to find user" );
 			return false;
 		}
-		// Handled avove my paygrade
-		// if (strlen ( $user ["recovery_nonce"] )) {
-		// logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
-		// return false;
-		// }
-		$user ["validation_reminded"] = ( int ) timestampNow ();
+		/*
+		 * // Handled avove my paygrade
+		 * // if (strlen ( $user ["recovery_nonce"] )) {
+		 * // logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
+		 * // return false;
+		 * // }
+		 * // $user ["validation_reminded"] = ( int ) timestampNow ();
+		 */
 
-		$validation_url = $www_host . "validate";
-		$payload_url = $validation_url . "/"/*"?payload=" */. $user ["validation_nonce"];
-		$subject = "Account validation request";
-		$body = "";
-		$body .= "It has been " . revalidationPeriodDays () . " days since this account was last validated. Within the next " . actionGraceDays () . " days please head on over to [the validation page](" . $payload_url . ") and revalidate this account.\n\n";
-		$body .= "If you have not performed this process within the next" . actionGraceDays () . " days, your account will be locked and you will not be able to mine or login to your account.";
+		// $validation_url = $www_host . "validate";
+		// $payload_url = $validation_url . "/"/*"?payload=" */. $user ["validation_nonce"];
+		// $subject = "Account validation request";
+		// $body = "";
+		// $body .= "It has been " . revalidationPeriodDays () . " days since this account was last validated. Within the next " . actionGraceDays () . " days please head on over to [the validation page](" . $payload_url . ") and revalidate this account.\n\n";
+		// $body .= "If you have not performed this process within the next" . actionGraceDays () . " days, your account will be locked and you will not be able to mine or login to your account.";
 
-		// if (sendEmail ( $user ["email"], $subject, $body )) {
-		// if ($this->update ( $user )) {
-		// logger ( LL_DBG, "UserStore::requestValidateUser('$email'): Sucessfully requested" );
-		// return true;
-		// } else {
-		// logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to save challenge" );
-		// }
-		// } else {
-		// logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to send email" );
-		// }
+		/*
+		 * // if (sendEmail ( $user ["email"], $subject, $body )) {
+		 * // if (self::update ( $user )) {
+		 * // logger ( LL_DBG, "UserStore::requestValidateUser('$email'): Sucessfully requested" );
+		 * // return true;
+		 * // } else {
+		 * // logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to save challenge" );
+		 * // }
+		 * // } else {
+		 * // logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Failed to send email" );
+		 * // }
+		 */
 		return false;
 	}
 
-	public function setPassword($email, $password) {
-		$user = $this->getItemById ( $email );
+	public static function setPassword($email, $password) {
+		$user = self::getItemById ( $email );
 		if (! $user) {
 			return false;
 		}
@@ -358,11 +361,11 @@ class UserStore extends DataStore {
 		$user ["password"] = md5 ( $user ["password"] );
 		logger ( LL_DBG, "UserStore::setPassword() - final password: '" . $user ["password"] . "'" );
 
-		return $this->update ( $user );
+		return self::update ( $user );
 	}
 
-	public function authenticate($email, $password) {
-		$user = $this->getItemById ( $email );
+	public static function authenticate($email, $password) {
+		$user = self::getItemById ( $email );
 		if (! $user) {
 			logger ( LL_DBG, "UserStore::authenticate('$email'): User authentication failed: Unable to find user" );
 			return false;
@@ -371,7 +374,7 @@ class UserStore extends DataStore {
 		$password = md5 ( $user ["guid"] . "." . $email . "." . $password );
 		if ($password == $user ["password"]) {
 			logger ( LL_DBG, "UserStore::authenticate('$email'): User authenticated" );
-			//logger(LL_SYS, "UserStore::authenticate(): Got user: ".ob_print_r($user));
+			// logger(LL_SYS, "UserStore::authenticate(): Got user: ".ob_print_r($user));
 			return $user;
 		}
 		logger ( LL_DBG, "UserStore::authenticate('$email'): User authentication failed: Password does not match" );

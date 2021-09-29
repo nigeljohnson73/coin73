@@ -18,13 +18,13 @@ $ret->disabled = false;
 
 if (InfoStore::loginEnabled ()) {
 	if (isset ( $_SESSION ["AUTHTOK"] )) {
-		$store = UserStore::getInstance ();
-		$user = $store->getItemByGuid ( $_SESSION ["AUTHTOK"] );
+		//$store = UserStore::getInstance ();
+		$user = UserStore::getItemByGuid ( $_SESSION ["AUTHTOK"] );
 		if (is_array ( $user )) {
 			if (strlen ( $user ["validation_data"] ) == 0) {
 				if (! $user ["locked"]) {
 					$user ["logged_in"] = timestampNow ();
-					$store->update ( $user );
+					UserStore::update ( $user );
 					$success = true;
 					//$message = "User authenticated\n";
 					$_SESSION ["AUTHTOK"] = $user ["guid"];
