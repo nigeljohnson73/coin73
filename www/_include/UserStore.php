@@ -188,9 +188,7 @@ class UserStore extends DataStore {
 		}
 
 		logger ( LL_DBG, "UserStore::insert() - obtaining public/private key pair" );
-
-		$keystore = KeyStore::getInstance ();
-		$keys = $keystore->getKeys ( $arr ["email"] );
+		$keys = KeyStore::getKeys ( $arr ["email"] );
 
 		if ($keys) {
 			logger ( LL_DBG, "Keystore provided key pair for '" . $arr ["email"] . "'" );

@@ -14,35 +14,46 @@ class KeyStore extends FileStore {
 		return hash ( "sha1", strtolower ( getDataNamespace () . "_" . $email ) );
 	}
 
-	public function getKeys($email) {
+	protected function _getKeys($email) {
 		logger ( LL_DBG, "KeyStore::getKeys('" . $email . "')" );
 		$filename = $this->genFilename ( $email );
 		$json = parent::getContents ( $filename );
 		if (! $json || strlen ( $json ) == 0) {
 			logger ( LL_DBG, "KeyStore::getKeys('" . $email . "'): No keys exist, creating new set" );
-			$kp = $this->genKeyPair ();
-			$this->putKeys ( $email, $kp->public, $kp->private );
+			$kp = $this->_genKeyPair ();
+			$this->_putKeys ( $email, $kp->public, $kp->private );
 			return $kp;
 		}
 		return json_decode ( $json );
 	}
 
-	public function putKeys($email, $public, $private) {
+	public static function getKeys($email) {
+		return KeyStore::getInstance ()->_getKeys ( $email );
+	}
+
+	protected function _putKeys($email, $public, $private) {
 		logger ( LL_DBG, "KeyStore::putKeys('" . $email . "', ...)" );
 		$filename = $this->genFilename ( $email );
-		$value = $this->genKeyPair ( $public, $private );
+		$value = self::genKeyPair ( $public, $private );
 		$contents = json_encode ( $value );
 		return parent::putContents ( $filename, $contents );
 	}
 
-	public function deleteKeys($email) {
+	public static function putKeys($email, $public, $private) {
+		return KeyStore::getInstance ()->_putKeys ( $email, $public, $private );
+	}
+
+	protected function _deleteKeys($email) {
 		logger ( LL_DBG, "KeyStore::deleteKeys('" . $email . "')" );
 		$filename = $this->genFilename ( $email );
 		return parent::delete ( $filename );
 	}
 
-	// This function is used to ensure a keypiar is generated consistently
-	public function genKeyPair($pubKey = null, $privKey = null) {
+	public static function deleteKeys($email) {
+		return KeyStore::getInstance ()->_deleteKeys ( $email );
+	}
+
+	public static function genKeyPair($pubKey = null, $privKey = null) {
 		$value = new StdClass ();
 		if ($pubKey === null || $privKey === null) {
 			$ec = new EC ( 'secp256k1' );
@@ -57,7 +68,7 @@ class KeyStore extends FileStore {
 	}
 
 	// Returns the signature hash you cn validate with the public key
-	public function sign($hash, $privKey) {
+	public static function sign($hash, $privKey) {
 		$ec = new EC ( 'secp256k1' );
 		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
 		return $sk->sign ( $hash );
