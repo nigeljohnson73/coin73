@@ -103,8 +103,8 @@ sudo rpi-eeprom-update
 
 # Install core packages we need to do the core stuff later
 echo "## Install core pacakges" | tee -a $logfile
-sudo apt install -y lsb-release apt-transport-https ca-certificates git python3-dev python3-pip screen apache2 mariadb-server tor screen
-sudo phpenmod mysqli
+#sudo apt install -y apache2 php php-mbstring php-gd php-xml php-curl mariadb-server php-mysql lsb-release apt-transport-https ca-certificates git python3-dev python3-pip python3-pil tor screen automake autoconf pkg-config libcurl4-openssl-dev libjansson-dev libssl-dev libgmp-dev make g++ git tor screen
+sudo apt install -y lsb-release apt-transport-https ca-certificates git python3-dev python3-pip python3-pil tor screen automake autoconf pkg-config libcurl4-openssl-dev libjansson-dev libssl-dev libgmp-dev make g++ git tor screen
 
 ## Disable IPv6
 echo "## Disabling IPv6" | tee -a $logfile
@@ -172,9 +172,10 @@ Sudo apt upgrade -y
 echo "## Remove the latest PHP (v8)" | tee -a $logfile
 sudo apt remove -y --purge php8.0
 echo "## Install the required version of PHP for gcloud (v7.4)" | tee -a $logfile
-sudo apt install -y php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
+sudo apt install -y apache2 libapache2-mod-php7.4 php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
 echo "## Cleanup loose packages" | tee -a $logfile
 sudo apt autoremove -y
+#sudo phpenmod mysqli
 
 #echo "####################################################################"
 #echo ""
