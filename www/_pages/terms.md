@@ -7,6 +7,7 @@ There are no plans for there to be any real cash profit for quite some time;
 This is a platform of learning (well for the development team anyway);
 This application is under constant development and re-development;
 The blockchain that everything sits on will be reset to zero, a lot;
+By a lot, I mean every night so that I don't forget and things are too big;
 Expect spelling mistakes. It's one of the things I do well;
 Don't be a douche, nobody likes those.
 ```

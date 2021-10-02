@@ -6,6 +6,8 @@ if (InfoStore::get ( switchKeyBlockCreation (), switchEnabled () ) == "RESETTING
 }
 
 // TBD
+// Reset the blockchain overnight
+InfoStore::set ( "switch_reset_blockchain", switchEnabled () );
 
 InfoStore::set ( cronDayDebugInfoKey (), "Completed: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
 

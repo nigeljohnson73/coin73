@@ -11,6 +11,7 @@ function blockchainResetAbortHandler() {
 }
 
 if (strtoupper ( InfoStore::get ( "switch_reset_blockchain", "DISABLED" ) ) == strtoupper ( switchEnabled () )) {
+	InfoStore::set ( "blockchain_reset_circulation", InfoStore::getCirculation () . " : " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) );
 	InfoStore::set ( "switch_reset_blockchain", "DISABLED" );
 	register_shutdown_function ( 'blockchainResetAbortHandler' );
 
