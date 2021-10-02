@@ -2,9 +2,6 @@
 appengine-generated/
 /.project
 /.buildpath
-/vendor/
 /service-account.json
 /test.php
-/composer.json
-/composer.lock
 /.pydevproject
