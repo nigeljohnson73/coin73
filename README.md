@@ -2,6 +2,12 @@
 
 The codename for Nigels new Blockchain. The name might change. but it's core will not.
 
+## Before we begin
+
+TOR: yes, Blockchain: yes, Uber super anonymity so the fuzz can never find you laundering your filtyh milions with only a small ~~kickback~~ service fee - No. This runs on TOR simply because I want to run a public service on a Raspberry PI in my Lair without having to pay hosting charges. Someday I'll be able to afford google cloud hosting with full scalabiltiy, but at nearly £50 a month just to host a testing server with a miner, this is not practical.
+
+Right, on with the show.
+
 ## Overview
 
 COIN73 is a ground up implementation of a secure centralised block chain, supporting a crypto currency and some useful stuff in the chain (to be developed later - maybe NFT, maybe research data, don't know yet). I was originally inspired in part by [Duino-Coin](https://github.com/revoxhere/duino-coin), and I have also tried to build on some of the more mainstream ideas from Bitcoin and other 'regular' Blockchains. In summary this is the direction I am hoping to take:

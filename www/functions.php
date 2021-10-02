@@ -1215,4 +1215,8 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
 }
 
+// Start session handling so there is no excuse for it.
+session_id ( getDataNamespace () );
+session_start ();
+
 ?>

@@ -1,6 +1,6 @@
 <?php
-session_id ( getDataNamespace () );
-session_start ();
+// session_id ( getDataNamespace () );
+// session_start ();
 startPage ();
 ?>
 <!doctype html>

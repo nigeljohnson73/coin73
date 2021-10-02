@@ -1,8 +1,8 @@
 <?php
 // This api is called when the the user has requested a user creation providing username/password, toc approval as well as recaptcha details in $_POST
 //
-session_id ( getDataNamespace () );
-session_start ();
+// session_id ( getDataNamespace () );
+// session_start ();
 $ret = startJsonResponse ();
 
 logger ( LL_DBG, "ARGS:" );

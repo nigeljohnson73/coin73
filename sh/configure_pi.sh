@@ -248,7 +248,7 @@ composer install
 
 ## Install crontab entries to start the services
 echo "## Installing service management startup in crontab" | tee -a $logfile
-sudo bash -c 'cat' << EOF
+echo "# coin73 Miner configuration" | { cat; sudo bash -c 'cat' << EOF
 #@reboot sleep 30 && screen -S api -L -Logfile /tmp/api.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8085 -t api api/index.php"
 #@reboot sleep 30 && screen -S www -L -Logfile /tmp/www.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8080 -t www www/index.php"
 ##* * * * * curl -o /tmp/coin73_tick.log http://localhost:/cron/tick >/dev/null 2>&1
@@ -297,6 +297,15 @@ echo "## Redeploying Apache" | tee -a $logfile
 cd /var/www/
 sudo mv html html_orig
 sudo ln -s /webroot/coin73 html
+sudo a2enmod rewrite
+sudo a2enmod actions
+sudo bash -c 'cat >> /etc/apache2/apache2.conf' << EOF
+<Directory /var/www/>
+	Options Indexes FollowSymLinks
+	AllowOverride All
+	Require all granted
+</Directory>
+EOF
 sudo /etc/init.d/apache2 restart
 
 
@@ -349,14 +358,14 @@ echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
 echo "" | tee -a $logfile
 echo "We are all done. Thanks for flying with us today and we value your" | tee -a $logfile
-echo "custom as we know you have choices, The next steps for you are:" | tee -a $logfile
+echo "custom as we know you have choices. The next steps for you are:" | tee -a $logfile
 echo "" | tee -a $logfile
 echo " * Reboot this raspberry pi" | tee -a $logfile
 #echo " * VNC onto the desktop"
 echo "" | tee -a $logfile
-echo "Here are some useful commands you can run from a terminal:" | tee -a $logfile
-echo "" | tee -a $logfile
-echo " * 11t5-pull.sh   - Will update the codebase from git" | tee -a $logfile
-#echo " * 11t5-deploy.sh - Will deploy the application to appspot"
-echo "" | tee -a $logfile
+#echo "Here are some useful commands you can run from a terminal:" | tee -a $logfile
+#echo "" | tee -a $logfile
+#echo " * coin73-pull.sh   - Will update the codebase from git" | tee -a $logfile
+#echo " * coin73-deploy.sh - Will deploy the application to appspot"
+#echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
