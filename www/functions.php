@@ -1206,7 +1206,7 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 		$api_CORS_origin = "http://localhost:8080";
 	}
 
-	file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
+	@file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
 
 	$config->title .= $local_monika;
 	$smtp_from_name .= $local_monika;

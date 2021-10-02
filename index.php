@@ -121,12 +121,6 @@ foreach ( array_keys ( $images ) as $p ) {
 }
 
 $apis = array ();
-// // BookStore testing
-// $apis ["/app/book/create"] = __DIR__ . "/_api/book/create.php";
-// $apis ["/app/book/{id}"] = __DIR__ . "/_api/book/read.php";
-// $apis ["/app/book/{id}/update"] = __DIR__ . "/_api/book/update.php";
-// $apis ["/app/book/{id}/delete"] = __DIR__ . "/_api/book/delete.php";
-// User management
 $apis ["/app/user"] = __DIR__ . "/www/_api/user/read.php";
 $apis ["/app/user/login"] = __DIR__ . "/www/_api/user/login.php";
 $apis ["/app/user/logout"] = __DIR__ . "/www/_api/user/logout.php";
@@ -138,8 +132,6 @@ $apis ["/app/user/recover/request"] = __DIR__ . "/www/_api/user/recover_request.
 $apis ["/app/user/recover/prepare"] = __DIR__ . "/www/_api/user/recover_prepare.php";
 $apis ["/app/user/recover"] = __DIR__ . "/www/_api/user/recover.php";
 $apis ["/app/transaction/send"] = __DIR__ . "/www/_api/transaction/send.php";
-
-//$apis ["/app/test/execute"] = __DIR__ . "/_api/testDataStore/execute.php";
 foreach ( array_keys ( $apis ) as $p ) {
 	$app->post ( $p, function (Request $request, Response $response, $args) {
 		global $apis;

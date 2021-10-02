@@ -168,11 +168,11 @@ echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /et
 echo "## Ensure we are up to date with that repository" | tee -a $logfile
 sudo apt update -y
 echo "## Install out-of-date packages" | tee -a $logfile
-Sudo apt upgrade -y
+sudo apt upgrade -y
 echo "## Remove the latest PHP (v8)" | tee -a $logfile
 sudo apt remove -y --purge php8.0
 echo "## Install the required version of PHP for gcloud (v7.4)" | tee -a $logfile
-sudo apt install -y apache2 libapache2-mod-php7.4 php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
+sudo apt install -y apache2 mariadb-server libapache2-mod-php7.4 php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
 echo "## Cleanup loose packages" | tee -a $logfile
 sudo apt autoremove -y
 #sudo phpenmod mysqli
@@ -238,9 +238,6 @@ sudo mysql --user=root < res/setup_root.sql
 sudo mysql -uroot -pEarl1er2day < res/setup_db.sql
 cp res/install/config_localhost.php www/config_localhost.php
 cp res/install/config_override.php www/config_override.php
-cd api
-ln -s ../www/config_override.php config_override.php
-ln -s ../www/config_localhost.php config_localhost.php
 
 ## install the composer dependancies
 echo "## Installing composer dependancies" | tee -a $logfile
@@ -251,7 +248,7 @@ composer install
 
 ## Install crontab entries to start the services
 echo "## Installing service management startup in crontab" | tee -a $logfile
-crontab -l | { cat; sudo bash -c 'cat' << EOF
+sudo bash -c 'cat' << EOF
 #@reboot sleep 30 && screen -S api -L -Logfile /tmp/api.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8085 -t api api/index.php"
 #@reboot sleep 30 && screen -S www -L -Logfile /tmp/www.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8080 -t www www/index.php"
 ##* * * * * curl -o /tmp/coin73_tick.log http://localhost:/cron/tick >/dev/null 2>&1
