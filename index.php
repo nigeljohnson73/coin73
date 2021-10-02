@@ -43,6 +43,7 @@ foreach ( array_keys ( $routes ) as $p ) {
 		if (strlen ( $uri ) > 1) {
 			$uri = rtrim ( $request->getUri ()->getPath (), "/" );
 		}
+		$include = "";
 		// See if any of the api keys expand into the URI I got passed as
 		foreach ( $routes as $k => $v ) {
 			foreach ( $args as $ak => $av ) {
@@ -143,6 +144,7 @@ foreach ( array_keys ( $apis ) as $p ) {
 	$app->post ( $p, function (Request $request, Response $response, $args) {
 		global $apis;
 		$uri = $request->getUri ()->getPath ();
+		$include = "";
 		// See if any of the api keys expand into the URI I got passed as
 		foreach ( $apis as $k => $v ) {
 			foreach ( $args as $ak => $av ) {
