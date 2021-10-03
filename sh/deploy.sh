@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 cd /webroot/coin73
 gcloud app deploy dispatch.yaml www api cron cron.yaml

@@ -24,9 +24,9 @@ const String VERSION = "v0.1a";
 // https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
 #include "sha/sha_parallel_engine.h"
 
-const char* wifi_ssid = "WIFISSID";  // You WiFi SSID on your router
-const char* wifi_pass = "PASSWORD";  // The password/phrase you access the router with
-const char* wallet_id = "WALLETID";  // The really long string found on the account
+//const char* wifi_ssid = "WIFISSID";  // You WiFi SSID on your router
+//const char* wifi_pass = "PASSWORD";  // The password/phrase you access the router with
+//const char* wallet_id = "WALLETID";  // The really long string found on the account
 const char* rig_id  = "ESP32-Miner"; // This must be unique on your account
 
 /************************************************************************************************
@@ -37,6 +37,12 @@ const char* rig_id  = "ESP32-Miner"; // This must be unique on your account
                                                                           |__|   
 You shouldn't need to tinker below here
 */
+// Define the API end points we will need as per the specs:
+//   http://mnrtor.local/wiki/api/job/request
+//   http://mnrtor.local/wiki/api/job/submit
+const char* get_api = "http://mnrtor.local/api/job/request/text";
+const char* put_api = "http://mnrtor.local/api/job/submit/text";
+
 // The watchdog timer is used to reboot the board if it gets stuck after this many seconds of silence
 #define WDT_TIMEOUT 60
 
@@ -312,12 +318,6 @@ void minerWait(const unsigned long ms) {
 
 // The main loop for mining
 void processMining(void *pvParameters) {
-	// Define the API end points we will need as per the specs:
-	//     https://coin73.appspot.com/wiki/api/job/request
-	//     https://coin73.appspot.com/wiki/api/job/submit
-	const char* get_api = "http://coin73.appspot.com/api/job/request/text";
-	const char* put_api = "http://coin73.appspot.com/api/job/submit/text";
-
 	// If there is an error on the API, don't flood it with more requests, pause a bit
 	const unsigned long error_wait = 5000;
 

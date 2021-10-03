@@ -164,14 +164,14 @@ class UserStore extends DataStore {
 				if (usingGae ()) {
 					$data = $data->getData ();
 				}
-				
-				echo "B: Storing data array from ".ob_print_r($data)."\n";
-				echo "B: Storing data array orig ".ob_print_r($sdata)."\n";
+
+				echo "B: Storing data array from " . ob_print_r ( $data ) . "\n";
+				echo "B: Storing data array orig " . ob_print_r ( $sdata ) . "\n";
 				if ($data) {
 					if (usingGae ()) {
-						$data->balance = $data ["balance"] + $delta;
+						$sdata->balance = $data ["balance"] + $delta;
 					} else {
-						$data ["balance"] = $data ["balance"] + $delta;
+						$sdata ["balance"] = $data ["balance"] + $delta;
 					}
 					self::$_updated_wallet [] = $sdata;
 					logger ( LL_SYS, "UserStore::updateWalletBalances() - Updating wallet balance for '" . $data ["email"] . "' by '" . number_format ( $delta, 6 ) . "'" );
@@ -186,9 +186,10 @@ class UserStore extends DataStore {
 				self::getInstance ()->obj_store->upsert ( $arr_page );
 			}
 		} else {
-			//print_r(self::$_updated_wallet);
+			// print_r(self::$_updated_wallet);
 			// TODO: This will be really slow, make this work in paged mode so it's faster
 			foreach ( self::$_updated_wallet as $row ) {
+				//logger ( LL_SYS, "UserStore::updateWalletBalances() - '" . $row ["email"] . "' by '" . number_format ( $row ["balance"], 6 ) . "'" );
 				$arr = array ();
 				$arr [self::getKeyField ()] = $row [self::getKeyField ()];
 				$arr ["balance"] = $row ["balance"];
