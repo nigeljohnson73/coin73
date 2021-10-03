@@ -1,25 +1,11 @@
 <?php
 // Override this in config_[hostname].php for a competely blank DataStore area of your own.
+// This is irellevant if you are using MySQL locally
 $localdev_namespace = "localdev";
 
 // The project id is the google application project short code. Change this and the world is a
 // different place as this is where all the management and identity stuff happend operationally.
 $project_id = "coin73";
-
-// The CORS origin is used by the API so that other websites cannot host links to it.
-// This value will by the server domain that the application will be served from.
-// It is overwritten for localhost to support local testing.
-$api_CORS_origin = "https://" . $project_id . ".appspot.com";
-
-// This is the public API server so that 'remote' calls in the application can be handled.
-// Local API calls are managed through the local application, but remote ones are run through
-// a separate service to allow for sideways scaling.
-// It is overwritten for localhost to support local testing.
-$api_host = $api_CORS_origin . "/api/";
-
-// This is the main host used in the application. It is used in emails and texts etc. It is
-// Overwritten in we are on localhost dev server
-$www_host = $api_CORS_origin . "/";
 
 // When re/validating user accounts a Multifactor authentication mechanism is used, a bit like the
 // Microsoft one. When you perfrom the action you are told a word, and in the authentication stage
@@ -49,7 +35,7 @@ $miner_submit_target_sec = 15;
 // If you are being a douche, the API will block for this long. Be less of a douche
 $miner_submit_punish_sec = 15;
 
-// how much should every subsequet miner degrade (0-1 as a percent);
+// how much should every subsequent miner degrade (0-1 as a percent);
 $miner_efficiency_degrade = 0.2;
 
 // how many miners are allowed on a generic account
@@ -60,6 +46,14 @@ $miner_max_count = 5;
 // ($miner_submit_target_sec - 1) seconds to execute
 $miner_difficulty = 3;
 
+// Manage the limits for processing transactions into blocks
+$transactions_per_block = 3000;
+$transactions_per_page = 500;
+
+// Used to validate passwrods for users of the site. This says at least 8 chars long, at least
+// 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
+$valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";
+
 // How do we identify the coinbase in transactions for things like miner rewards etc.
 $coinbase = "SupremeOverlord";
 
@@ -68,14 +62,6 @@ $coinbase = "SupremeOverlord";
 // Override them in the config_override.php
 $coinbase_pubKey = "";
 $coinbase_privKey = "";
-
-// Manage the limits for processing transactions into blocks
-$transactions_per_block = 3000;
-$transactions_per_page = 500;
-
-// Used to validate passwrods for users of the site. This says at least 8 chars long, at least
-// 1 upper case character, 1 lower case character, 1 digit, and one of !@#$%^&*
-$valid_password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})";
 
 // This is storage for the RECAPTCHA keys that are set up to the live domain, as well as localhost.
 // Expected to be in config_override.php
@@ -131,7 +117,6 @@ $db_name = "cc";
 $db_user = "cc_user";
 $db_pass = "cc_passwd";
 
-
 // Configure the logging variables
 define ( "LL_NONE", 0 );
 define ( "LL_SYSTEM", 0 );
@@ -152,5 +137,4 @@ define ( "LL_XDEBUG", 6 );
 
 // Fundamentally disable logging in the system - can be overriden in config_[hostname].php;
 $log_level = LL_SYS;
-
 ?>

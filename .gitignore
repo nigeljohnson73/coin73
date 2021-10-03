@@ -5,3 +5,4 @@ appengine-generated/
 /service-account.json
 /test.php
 /.pydevproject
+/bundle.json

@@ -1152,6 +1152,24 @@ function jsonApi($url, $post = null, $timeout = null) {
 	return $ret;
 }
 
+function urlOrigin($s, $use_forwarded_host = false) {
+	$ssl = (! empty ( $s ['HTTPS'] ) && $s ['HTTPS'] == 'on');
+	$sp = strtolower ( $s ['SERVER_PROTOCOL'] );
+	$protocol = substr ( $sp, 0, strpos ( $sp, '/' ) ) . (($ssl) ? 's' : '');
+	$port = $s ['SERVER_PORT'];
+	$port = ((! $ssl && $port == '80') || ($ssl && $port == '443')) ? '' : ':' . $port;
+	$host = ($use_forwarded_host && isset ( $s ['HTTP_X_FORWARDED_HOST'] )) ? $s ['HTTP_X_FORWARDED_HOST'] : (isset ( $s ['HTTP_HOST'] ) ? $s ['HTTP_HOST'] : null);
+	$host = isset ( $host ) ? $host : $s ['SERVER_NAME'] . $port;
+	return $protocol . '://' . $host;
+}
+
+function fullUrl($use_forwarded_host = false) {
+	return urlOrigin ( $_SERVER, $use_forwarded_host ) . $_SERVER ['REQUEST_URI'];
+}
+
+// $absolute_url = fullUrl ( );
+// echo "<!-- $absolute_url -->\n";
+
 // Used to send only useful stuff t othe front end of the application.
 function sanitiseUser($user) {
 	$ret = new StdClass ();
@@ -1182,7 +1200,13 @@ function is_cli() {
 if (is_cli ()) {
 	// Force local configuration if we are running off the command line
 	$_SERVER ["SERVER_NAME"] = "localhost";
+	$_SERVER['SERVER_PROTOCOL'] = "http";
+	$_SERVER['SERVER_PORT'] = 80;
 }
+
+$api_CORS_origin = urlOrigin ( $_SERVER );
+$api_host = $api_CORS_origin . "/api/";
+$www_host = $api_CORS_origin . "/";
 
 $inc = array ();
 $inc [] = dirname ( __FILE__ ) . "/config.php";
@@ -1210,14 +1234,14 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
 	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
 
-// 	$api_host = "http://localhost:8085/api/";
-// 	$www_host = "http://localhost:8080/";
-	$api_host = "http://localhost/api/";
-	$www_host = "http://localhost/";
-	if ($api_CORS_origin != "*") {
-// 		$api_CORS_origin = "http://localhost:8080";
-		$api_CORS_origin = "http://localhost";
-	}
+	// $api_host = "http://localhost:8085/api/";
+	// $www_host = "http://localhost:8080/";
+// 	$api_host = "http://localhost/api/";
+// 	$www_host = "http://localhost/";
+// 	if ($api_CORS_origin != "*") {
+// 		// $api_CORS_origin = "http://localhost:8080";
+// 		$api_CORS_origin = "http://localhost";
+// 	}
 
 	@file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
 
@@ -1225,6 +1249,9 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$smtp_from_name .= $local_monika;
 	$data_namespace = $localdev_namespace;
 } else {
+	$api_CORS_origin = "TBD";
+	$api_host = $api_CORS_origin . "/api/";
+	$www_host = $api_CORS_origin . "/";
 	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
 }
 

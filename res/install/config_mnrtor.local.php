@@ -10,5 +10,8 @@ include_once (__DIR__ . "/config_localhost.php");
 // * config.php
 // * config_override.php
 // * config.[[HOSTNAME]].php
-$local_monika = " (MDev)";
+
+// This is probaly the PI server in local model
+$log_level = LL_INF;
+$use_gae = false;
 ?>
