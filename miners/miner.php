@@ -21,26 +21,15 @@ if (function_exists ( "curl_init" )) {
 
 	// Calls a $url and returns a wrapped object. Pass in $post arguments as key/value array pairs
 	function jsonApi($url, $post) {
-		global $use_tor;
-		// if ($use_tor) {
-		// $url = 'http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion/'; // Note the addition of a semicolon.
-		// $ch = curl_init ();
-		// curl_setopt ( $ch, CURLOPT_URL, $url );
-		// curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-		// curl_setopt ( $ch, CURLOPT_PROXY, "127.0.0.1:9050" ); // Note the address here is just `IP:port`, not an HTTP URL.
-		// curl_setopt ( $ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME ); // Note use of `CURLPROXY_SOCKS5_HOSTNAME`.
-		// $output = curl_exec ( $ch );
-		// $curl_error = curl_error ( $ch );
-		// curl_close ( $ch );
-		// } else {
+		global $use_tor, $tor_proxy;
 		$ch = curl_init ( $url );
 		curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, 0 );
 		curl_setopt ( $ch, CURLOPT_TIMEOUT, 60 );
 		curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt ( $ch, CURLOPT_POSTFIELDS, $post );
 		if ($use_tor) {
-			curl_setopt ( $ch, CURLOPT_PROXY, "127.0.0.1:9050" ); // Note the address here is just `IP:port`, not an HTTP URL.
-			curl_setopt ( $ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME ); // Note use of `CURLPROXY_SOCKS5_HOSTNAME`.
+			curl_setopt ( $ch, CURLOPT_PROXY, $tor_proxy );
+			curl_setopt ( $ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME );
 		}
 		$data = curl_exec ( $ch );
 		$response = curl_getinfo ( $ch, CURLINFO_HTTP_CODE );
@@ -61,13 +50,14 @@ if (function_exists ( "curl_init" )) {
 
 function help() {
 	global $argv;
-	echo "\nUsage:- " . basename ( $argv [0] ) . " [-c 'chip-id'] [-d] [-h] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]\n\n";
-	echo "    -c 'id' : Set the chip id for this miner (defaults to 'PHP Script')\n";
-	echo "    -d      : Use the development server\n";
-	echo "    -h      : This help message\n";
-	echo "    -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')\n";
-	echo "    -w 'id' : Set 130 character wallet ID for miner rewards\n";
-	echo "    -y      : Yes!! I got everything correct, just get on with it\n";
+	echo "\nUsage:- " . basename ( $argv [0] ) . " [-c 'chip-id'] [-d] [-h] [-p 'tor-proxy'] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]\n\n";
+	echo "    -c 'id'  : Set the chip id for this miner (defaults to 'PHP Script')\n";
+	echo "    -d       : Use the development server (mnrtor.local)\n";
+	echo "    -h       : This help message\n";
+	echo "    -p 'url' : Set the TOR proxy (defaults to '127.0.0.1:9050')\n";
+	echo "    -r 'id'  : Set the rig name for this miner (defaults to 'PHP-Miner')\n";
+	echo "    -w 'id'  : Set 130 character wallet ID for miner rewards\n";
+	echo "    -y       : Yes!! I got everything correct, just get on with it\n";
 	echo "\n";
 	exit ();
 }
@@ -76,19 +66,22 @@ function help() {
 $api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion/api/";
 $rig_id = "PHP-Miner";
 $chip_id = "PHP Script";
+$tor_proxy = "127.0.0.1:9050";
 $wallet_id = "";
 $pause = true;
 
-$opts = getopt ( 'c:dhr:w:y' );
+$opts = getopt ( 'c:dhp:r:w:y' );
 foreach ( $opts as $k => $v ) {
 	if ($k == "c") {
 		$chip_id = $v;
 	} else if ($k == "d") {
-		$api_host = "http://localhost:8085/api/";
+		$api_host = "http://mnrtor.local/api/";
 	} else if ($k == "h") {
 		help ();
 	} else if ($k == "q") {
 		$messages = false;
+	} else if ($k == "p") {
+		$tor_proxy = $v;
 	} else if ($k == "r") {
 		$rig_id = $v;
 	} else if ($k == "w") {
@@ -122,6 +115,7 @@ if ($pause) {
 	echo "#    Rig ID    : '" . $rig_id . "'\n";
 	echo "#    Wallet ID : '" . $wallet_id . "'\n";
 	echo "#    API host  : '" . $api_host . "'\n";
+	echo "#    TOR proxy : '" . $tor_proxy . "'\n";
 	echo "#\n";
 	echo "#####################################################################################################################################################\n";
 	echo "Press return to continue\n";

@@ -165,8 +165,8 @@ class UserStore extends DataStore {
 					$data = $data->getData ();
 				}
 
-				echo "B: Storing data array from " . ob_print_r ( $data ) . "\n";
-				echo "B: Storing data array orig " . ob_print_r ( $sdata ) . "\n";
+				// echo "B: Storing data array from " . ob_print_r ( $data ) . "\n";
+				// echo "B: Storing data array orig " . ob_print_r ( $sdata ) . "\n";
 				if ($data) {
 					if (usingGae ()) {
 						$sdata->balance = $data ["balance"] + $delta;
@@ -189,7 +189,7 @@ class UserStore extends DataStore {
 			// print_r(self::$_updated_wallet);
 			// TODO: This will be really slow, make this work in paged mode so it's faster
 			foreach ( self::$_updated_wallet as $row ) {
-				//logger ( LL_SYS, "UserStore::updateWalletBalances() - '" . $row ["email"] . "' by '" . number_format ( $row ["balance"], 6 ) . "'" );
+				// logger ( LL_SYS, "UserStore::updateWalletBalances() - '" . $row ["email"] . "' by '" . number_format ( $row ["balance"], 6 ) . "'" );
 				$arr = array ();
 				$arr [self::getKeyField ()] = $row [self::getKeyField ()];
 				$arr ["balance"] = $row ["balance"];
