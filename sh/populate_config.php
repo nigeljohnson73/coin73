@@ -20,7 +20,7 @@ foreach ( $files as $filename ) {
 		$ndata = $data;
 
 		foreach ( $rep as $k => $v ) {
-			$ndata = str_replace ( "{" . strtoupper ( $k ) . "}", $v, $data );
+			$data = str_replace ( "{" . strtoupper ( $k ) . "}", $v, $data );
 		}
 
 		if ($data == $ndata) {
@@ -30,7 +30,8 @@ foreach ( $files as $filename ) {
 			echo " * \n";
 			echo " * " . basename ( $filename ) . "\n";
 			echo " * \n";
-			echo $data;
+			//echo $data;
+			file_put_contents ( $filename, $data );
 		}
 	}
 }
