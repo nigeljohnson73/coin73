@@ -101,7 +101,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 						}
 						$payload = json_decode ( $txn->getPayload () );
 						// logger ( LL_DBG, "Processing transaction (" . $payload->amount . ")" );
-						$deltas [$payload->sender] = ($deltas [$payload->frsenderom] ?? 0) - $payload->amount;
+						$deltas [$payload->sender] = ($deltas [$payload->sender] ?? 0) - $payload->amount;
 						$deltas [$payload->recipient] = ($deltas [$payload->recipient] ?? 0) + $payload->amount;
 					} else {
 						logger ( LL_ERR, "Invalid transaction (" . $txn->getReason () . ")" );
