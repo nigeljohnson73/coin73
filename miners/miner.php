@@ -200,7 +200,7 @@ while ( true ) {
 			$pcnt = number_format ( ($shares / $job_c) * 100, 2 );
 			output ( "ACCEPTED, " . number_format ( $shares ) . "/" . number_format ( $job_c ) . ", " . $pcnt . "%" );
 		} else {
-			output ( "REJECTED, " . isset ( $data->reason ) ? ($data->reason) : ("An API error occurred") );
+			output ( "REJECTED, " . (isset ( $data->reason ) ? ($data->reason) : ("An API error occurred")) );
 			sleep ( 1 );
 		}
 	}

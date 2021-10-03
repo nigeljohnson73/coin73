@@ -19,31 +19,6 @@ class JobStore extends DataStore {
 		$this->init ();
 	}
 
-	public static function getItemsByWalletId($key) {
-		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE wallet_id = @key";
-		$arr = self::getInstance ()->obj_store->fetchAll ( $gql, [ 
-				'key' => $key
-		] );
-		// echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		if ($arr) {
-			$ret = array ();
-			if (is_array ( $arr )) {
-				// Assume an array of GDS objects;
-				foreach ( $arr as $item ) {
-					logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (arr) 'job_id' => '" . ($item->getData () ["job_id"]) . "'" );
-					$ret [] = $item->getData ();
-				}
-			} else {
-				logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (obj) 'job_id' => '" . ($arr->getData () ["job_id"]) . "'" );
-				// Assume a single GDS object;
-				$ret [] = $arr->getData ();
-			}
-			$arr = $ret;
-		}
-		return $arr;
-	}
-
 	public static function insert($arr) {
 		$oarr = $arr; // Save it in case the insert fails!!
 
@@ -65,6 +40,32 @@ class JobStore extends DataStore {
 		}
 		// Nothing else to do...
 		return $arr;
+	}
+
+	public static function getItemsByWalletId($key) {
+		return self::_getAllItemsByKeyField("wallet_id", $key);
+// 		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE wallet_id = @key";
+// 		$arr = self::getInstance ()->obj_store->fetchAll ( $gql, [ 
+// 				'key' => $key
+// 		] );
+// 		// echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "')\n";
+// 		// echo " '$gql'\n";
+// 		if ($arr) {
+// 			$ret = array ();
+// 			if (is_array ( $arr )) {
+// 				// Assume an array of GDS objects;
+// 				foreach ( $arr as $item ) {
+// 					logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (arr) 'job_id' => '" . ($item->getData () ["job_id"]) . "'" );
+// 					$ret [] = $item->getData ();
+// 				}
+// 			} else {
+// 				logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (obj) 'job_id' => '" . ($arr->getData () ["job_id"]) . "'" );
+// 				// Assume a single GDS object;
+// 				$ret [] = $arr->getData ();
+// 			}
+// 			$arr = $ret;
+// 		}
+// 		return $arr;
 	}
 }
 ?>

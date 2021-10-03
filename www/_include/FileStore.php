@@ -12,10 +12,14 @@ class FileStore {
 	}
 
 	protected function __construct($name, $options = [ ]) {
-		$this->storage = null;
-		$this->bucket = null;
-		$this->bucket_name = strtolower ( getDataNamespace () . "_" . $name );
-		$this->options = $options;
+		if (usingGae ()) {
+			$this->options = $options;
+			$this->storage = null;
+			$this->bucket = null;
+			$this->bucket_name = strtolower ( getDataNamespace () . "_" . $name );
+		} else {
+			$this->bucket_name = "/var/" . getProjectId () . "/" . strtolower ( $name );
+		}
 		$this->init ();
 	}
 
@@ -24,123 +28,148 @@ class FileStore {
 		if (! isset ( self::$instances [$cls] )) {
 			self::$instances [$cls] = new static ();
 		}
-		
+
 		return self::$instances [$cls];
 	}
-	
+
 	protected function init() {
-		// $bucket_name = strtolower ( $this->namespace . "_" . $name );
-		// $bucket_name = getDataNamespace () . "_" . $name;
-		$s_options = [ 
-				"suppressKeyFileNotice" => true,
-				"projectId" => getProjectId ()
-		];
-
-		try {
-			$this->storage = new StorageClient ( $s_options );
-			// logger ( LL_DBG, "FileStore::FileStore(): Created StorageClient" );
-		} catch ( Exception $e ) {
-			$e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "FileStore::FileStore(): Cannot create StorageClient: " . $e->message );
-		}
-
-		if ($this->storage) {
-			$b_options = [ ];
-
-			// What type of storage: "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE"
-			// https://cloud.google.com/storage/docs/storage-classes
-			$b_options ["storageClass"] = $this->options ["storageClass"] ?? ("STANDARD");
-
-			// Default access: "authenticatedRead", <<"bucketOwnerFullControl">>, "bucketOwnerRead", "private", "projectPrivate", "publicRead"
-			$b_options ["defaultObjectAcl"] = $this->options ["defaultObjectAcl"] ?? "projectPrivate";
-			$b_options ["predefinedAcl"] = $b_options ["defaultObjectAcl"];
-			// Defaults to US
-			$b_options ["location"] = "EU"; // TODO: store this in a config field???
+		if (usingGae ()) {
+			// $bucket_name = strtolower ( $this->namespace . "_" . $name );
+			// $bucket_name = getDataNamespace () . "_" . $name;
+			$s_options = [ 
+					"suppressKeyFileNotice" => true,
+					"projectId" => getProjectId ()
+			];
 
 			try {
-				$this->bucket = $this->storage->bucket ( $this->bucket_name );
-			} catch ( Exception $e ) {
-				logger ( LL_ERR, "FileStore::FileStore(): Cannot open Bucket: " . $e->getMessage () );
-				$this->bucket = null;
-			}
-
-			try {
-				if (! ($this->bucket && $this->bucket->exists ())) {
-					logger ( LL_WRN, "FileStore::FileStore(): Attempting to create Bucket: '" . $this->bucket_name . "'" );
-					try {
-						$this->bucket = $this->storage->createBucket ( $this->bucket_name, $b_options );
-						logger ( LL_DBG, "FileStore::FileStore(): Created Bucket '" . $this->bucket_name . "'" );
-					} catch ( Exception $e ) {
-						$e = json_decode ( $e->getMessage () )->error;
-						logger ( LL_ERR, "FileStore::FileStore(): Cannot create Bucket: " . $e->message );
-						$this->bucket = null;
-					}
-				} else {
-					logger ( LL_DBG, "FileStore::FileStore(): Opened Bucket '" . $this->bucket_name . "'" );
-				}
+				$this->storage = new StorageClient ( $s_options );
+				// logger ( LL_DBG, "FileStore::FileStore(): Created StorageClient" );
 			} catch ( Exception $e ) {
 				$e = json_decode ( $e->getMessage () )->error;
-				logger ( LL_ERR, "FileStore::FileStore(): bucket is broken: " . $e->message );
-				$this->bucket = null;
+				logger ( LL_ERR, "FileStore::FileStore(): Cannot create StorageClient: " . $e->message );
 			}
+
+			if ($this->storage) {
+				$b_options = [ ];
+
+				// What type of storage: "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE"
+				// https://cloud.google.com/storage/docs/storage-classes
+				$b_options ["storageClass"] = $this->options ["storageClass"] ?? ("STANDARD");
+
+				// Default access: "authenticatedRead", <<"bucketOwnerFullControl">>, "bucketOwnerRead", "private", "projectPrivate", "publicRead"
+				$b_options ["defaultObjectAcl"] = $this->options ["defaultObjectAcl"] ?? "projectPrivate";
+				$b_options ["predefinedAcl"] = $b_options ["defaultObjectAcl"];
+				// Defaults to US
+				$b_options ["location"] = "EU"; // TODO: store this in a config field???
+
+				try {
+					$this->bucket = $this->storage->bucket ( $this->bucket_name );
+				} catch ( Exception $e ) {
+					logger ( LL_ERR, "FileStore::FileStore(): Cannot open Bucket: " . $e->getMessage () );
+					$this->bucket = null;
+				}
+
+				try {
+					if (! ($this->bucket && $this->bucket->exists ())) {
+						logger ( LL_WRN, "FileStore::FileStore(): Attempting to create Bucket: '" . $this->bucket_name . "'" );
+						try {
+							$this->bucket = $this->storage->createBucket ( $this->bucket_name, $b_options );
+							logger ( LL_DBG, "FileStore::FileStore(): Created Bucket '" . $this->bucket_name . "'" );
+						} catch ( Exception $e ) {
+							$e = json_decode ( $e->getMessage () )->error;
+							logger ( LL_ERR, "FileStore::FileStore(): Cannot create Bucket: " . $e->message );
+							$this->bucket = null;
+						}
+					} else {
+						logger ( LL_DBG, "FileStore::FileStore(): Opened Bucket '" . $this->bucket_name . "'" );
+					}
+				} catch ( Exception $e ) {
+					$e = json_decode ( $e->getMessage () )->error;
+					logger ( LL_ERR, "FileStore::FileStore(): bucket is broken: " . $e->message );
+					$this->bucket = null;
+				}
+			}
+		} else {
+			@mkdir ( $this->bucket_name, 0777, true );
+			// Using root file system. nothing to do
 		}
 	}
 
 	public static function putContents($filename, $contents) {
-		$store = self::getInstance();
-		if (! $store->bucket) {
-			return false;
-		}
+		$store = self::getInstance ();
+		if (usingGae ()) {
+			if (! $store->bucket) {
+				return false;
+			}
 
-		$ret = false;
-		try {
-			$store->bucket->upload ( $contents, [ 
-					"name" => $filename
-			] );
-			logger ( LL_DBG, "FileStore::putContents(): Uploaded '" . $filename . "'" );
-			$ret = true;
-		} catch ( Exception $e ) {
-			$e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "FileStore::putContents(): Cannot upload '" . $filename . "': " . $e->message );
+			$ret = false;
+			try {
+				$store->bucket->upload ( $contents, [ 
+						"name" => $filename
+				] );
+				logger ( LL_DBG, "FileStore::putContents(): Uploaded '" . $filename . "'" );
+				$ret = true;
+			} catch ( Exception $e ) {
+				$e = json_decode ( $e->getMessage () )->error;
+				logger ( LL_ERR, "FileStore::putContents(): Cannot upload '" . $filename . "': " . $e->message );
+			}
+			return $ret;
+		} else {
+			file_put_contents ( $store->bucket_name . "/" . $filename, $contents );
+			return true;
 		}
-		return $ret;
 	}
 
 	public static function getContents($filename) {
-		$store = self::getInstance();
-		if (! $store->bucket) {
-			return false;
-		}
+		$store = self::getInstance ();
+		if (usingGae ()) {
+			if (! $store->bucket) {
+				return false;
+			}
 
-		$ret = false;
-		try {
-			$object = $store->bucket->object ( $filename );
-			$ret = $object->downloadAsString ();
-			logger ( LL_DBG, "FileStore::getContents(): Downloaded '" . $filename . "'" );
-		} catch ( Exception $e ) {
-			// $e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "FileStore::putContents(): Cannot download '" . $filename . "': " . $e->getMessage () );
+			$ret = false;
+			try {
+				$object = $store->bucket->object ( $filename );
+				$ret = $object->downloadAsString ();
+				logger ( LL_DBG, "FileStore::getContents(): Downloaded '" . $filename . "'" );
+			} catch ( Exception $e ) {
+				// $e = json_decode ( $e->getMessage () )->error;
+				logger ( LL_ERR, "FileStore::putContents(): Cannot download '" . $filename . "': " . $e->getMessage () );
+			}
+			return $ret;
+		} else {
+			return @file_get_contents ( $store->bucket_name . "/" . $filename );
 		}
-		return $ret;
 	}
 
 	public static function delete($filename) {
-		$store = self::getInstance();
-		if (! $store->bucket) {
-			return false;
-		}
+		$store = self::getInstance ();
+		if (usingGae ()) {
+			if (! $store->bucket) {
+				return false;
+			}
 
-		$ret = false;
-		try {
-			$object = $store->bucket->object ( $filename );
-			$object->delete ();
-			logger ( LL_DBG, "FileStore::delete(): Deleted '" . $filename . "'" );
-			$ret = true;
-		} catch ( Exception $e ) {
-			// $e = json_decode ( $e->getMessage () )->error;
-			logger ( LL_ERR, "FileStore::delete(): Cannot delete '" . $filename . "': " . $e->getMessage () );
+			$ret = false;
+			try {
+				$object = $store->bucket->object ( $filename );
+				$object->delete ();
+				logger ( LL_DBG, "FileStore::delete(): Deleted '" . $filename . "'" );
+				$ret = true;
+			} catch ( Exception $e ) {
+				// $e = json_decode ( $e->getMessage () )->error;
+				logger ( LL_ERR, "FileStore::delete(): Cannot delete '" . $filename . "': " . $e->getMessage () );
+			}
+			return $ret;
+		} else {
+			$filename = $store->bucket_name . "/" . $filename;
+			if (file_exists ( $filename )) {
+				logger(LL_XDBG, "FileStore::delete(): Unlinking '".$filename."'");
+				unlink ($filename);
+			} else {
+				logger(LL_ERR, "FileStore::delete(): File does not exist '".$filename."'");
+			}
+			return ! file_exists ( $filename );
 		}
-		return $ret;
 	}
 }
 

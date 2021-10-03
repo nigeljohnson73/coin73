@@ -10,8 +10,8 @@ class TransactionStore extends DataStore {
 
 		$this->addField ( "txn_id", "String", true, true ); // indexed and key
 		$this->addField ( "created", "Float", true );
-		$this->addField ( "from", "String" );
-		$this->addField ( "to", "String" );
+		$this->addField ( "sender", "String" );
+		$this->addField ( "recipient", "String" );
 		$this->addField ( "amount", "Float" );
 		$this->addField ( "message", "String" );
 		$this->addField ( "payload", "String" );
@@ -27,10 +27,10 @@ class TransactionStore extends DataStore {
 		logger ( LL_DBG, "TransactionStore::insert()" );
 
 		// Allow the coinbase to insert as many transctions as it likes.
-		if ($arr ["from"] == coinbaseWalletId ()) {
+		if ($arr ["sender"] == coinbaseWalletId ()) {
 			$arr ["txn_id"] = GUIDv4 () . "-" . timestampNow ();
 		} else {
-			$arr ["txn_id"] = $arr ["from"];
+			$arr ["txn_id"] = $arr ["sender"];
 		}
 
 		$ret = parent::insert ( $arr );
@@ -57,17 +57,26 @@ class TransactionStore extends DataStore {
 
 	public static function getTransactions() {
 		$store = self::getInstance ();
-		$store->obj_store->query ( "SELECT * FROM " . $store->kind );
-		while ( count ( $store->active_transactions ) < transactionsPerBlock () && $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-			logger ( LL_DBG, "Transactions::getTransactions(): pulled " . count ( $arr_page ) . " records" );
-			$store->active_transactions = array_merge ( $store->active_transactions, $arr_page );
-			// $this->obj_store->delete ( $arr_page );
-		}
-		logger ( LL_DBG, "Transactions::getTransactions(): total of " . count ( $store->active_transactions ) . " records" );
-
 		$ret = array ();
-		foreach ( $store->active_transactions as $txn ) {
-			$ret [] = (new Transaction ())->load ( $txn->getData () );
+		if (usingGae ()) {
+
+			$store->obj_store->query ( "SELECT * FROM " . $store->kind );
+			while ( count ( $store->active_transactions ) < transactionsPerBlock () && $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
+				logger ( LL_DBG, "Transactions::getTransactions(): pulled " . count ( $arr_page ) . " records" );
+				$store->active_transactions = array_merge ( $store->active_transactions, $arr_page );
+				// $this->obj_store->delete ( $arr_page );
+			}
+			logger ( LL_DBG, "Transactions::getTransactions(): total of " . count ( $store->active_transactions ) . " records" );
+
+			foreach ( $store->active_transactions as $txn ) {
+				$ret [] = (new Transaction ())->load ( $txn->getData () );
+			}
+		} else {
+			$sql = "SELECT * FROM " . $store->kind;
+			$store->active_transactions = MySqlDb::query ( $sql );
+			foreach ( $store->active_transactions as $txn ) {
+				$ret [] = (new Transaction ())->load ( $txn );
+			}
 		}
 
 		return $ret;
@@ -75,10 +84,15 @@ class TransactionStore extends DataStore {
 
 	public static function clearTransactions() {
 		$store = self::getInstance ();
-		while ( count ( $store->active_transactions ) ) {
-			$arr_page = array_splice ( $store->active_transactions, 0, transactionsPerPage () );
-			logger ( LL_DBG, "Transactions::clearTransactions(): deleting " . count ( $arr_page ) . " records" );
-			$store->obj_store->delete ( $arr_page );
+		if (usingGae ()) {
+			while ( count ( $store->active_transactions ) ) {
+				$arr_page = array_splice ( $store->active_transactions, 0, transactionsPerPage () );
+				logger ( LL_DBG, "Transactions::clearTransactions(): deleting " . count ( $arr_page ) . " records" );
+				$store->obj_store->delete ( $arr_page );
+			}
+		} else {
+			$sql = "DELETE FROM " . $store->kind;
+			MySqlDb::query ( $sql );
 		}
 	}
 }

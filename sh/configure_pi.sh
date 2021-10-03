@@ -236,8 +236,10 @@ sudo chown -R pi:pi coin73
 cd coin73
 sudo mysql --user=root < res/setup_root.sql
 sudo mysql -uroot -pEarl1er2day < res/setup_db.sql
-cp res/install/config_localhost.php www/config_localhost.php
-cp res/install/config_override.php www/config_override.php
+cp res/install/config_* www
+sudo mkdir -p /var/coin73
+sudo chown -R pi:pi /var/coin73
+sudo chmod -R 777 /var/coin73
 
 ## install the composer dependancies
 echo "## Installing composer dependancies" | tee -a $logfile

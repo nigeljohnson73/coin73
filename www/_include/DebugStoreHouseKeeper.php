@@ -21,14 +21,19 @@ class DebugStoreHouseKeeper extends DebugStore {
 		$store = self::getInstance ();
 		logger ( LL_DBG, "DebugStore::tidyUp(): started" );
 		$older = microtime ( true ) - (3 * 60 * 60);
-		$gql = "SELECT * FROM " . $store->kind . " WHERE created < @key";
-		$store->obj_store->query ( $gql, [ 
-				'key' => $older
-		] );
-		while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-			logger ( LL_DBG, "DebugStore::tidyUp(): pulled " . count ( $arr_page ) . " records" );
-			// $this->active_transactions = array_merge ( $this->active_transactions, $arr_page );
-			$store->obj_store->delete ( $arr_page );
+		if (usingGae ()) {
+			$gql = "SELECT * FROM " . $store->kind . " WHERE created < @key";
+			$store->obj_store->query ( $gql, [ 
+					'key' => $older
+			] );
+			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
+				logger ( LL_DBG, "DebugStore::tidyUp(): pulled " . count ( $arr_page ) . " records" );
+				// $this->active_transactions = array_merge ( $this->active_transactions, $arr_page );
+				$store->obj_store->delete ( $arr_page );
+			}
+		} else {
+			$sql = "SELECT * FROM " . $store->kind . " WHERE created < " . $older;
+			MySqlDb::query ( $sql );
 		}
 		logger ( LL_DBG, "DebugStore::tidyUp(): complete" );
 	}

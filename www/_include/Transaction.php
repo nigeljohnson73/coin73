@@ -3,10 +3,10 @@ use Elliptic\EC;
 
 class Transaction {
 
-	public function __construct($from = null, $to = null, $amount = null, $message = "") {
+	public function __construct($sender = null, $recipient = null, $amount = null, $message = "") {
 		$this->created = microtime ( true );
-		$this->from = $from;
-		$this->to = $to;
+		$this->sender = $sender;
+		$this->recipient = $recipient;
 		$this->amount = $amount;
 		$this->message = $message;
 		$this->payload = null;
@@ -23,8 +23,8 @@ class Transaction {
 		$ret = new StdClass ();
 
 		$ret->created = $this->created;
-		$ret->from = $this->from;
-		$ret->to = $this->to;
+		$ret->sender = $this->sender;
+		$ret->recipient = $this->recipient;
 		$ret->amount = $this->amount;
 		$ret->message = $this->message;
 		$this->payload = json_encode ( $ret );
@@ -37,7 +37,7 @@ class Transaction {
 	}
 
 	public function sign($privKey) {
-		if ($this->created == null || $this->to == null || $this->from == null || $this->amount <= 0) {
+		if ($this->created == null || $this->recipient == null || $this->sender == null || $this->amount <= 0) {
 			$this->invalid_reason = "Transaction is not properly formed";
 			logger ( LL_DBG, "Transaction::sign(): " . $this->invalid_reason );
 			return false;
@@ -45,7 +45,7 @@ class Transaction {
 
 		$ec = new EC ( 'secp256k1' );
 		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
-		if ($this->from != $sk->getPublic ( 'hex' )) {
+		if ($this->sender != $sk->getPublic ( 'hex' )) {
 			$this->invalid_reason = "Signing key does not belong to sender";
 			logger ( LL_ERR, "Transaction::sign(): " . $this->invalid_reason );
 			return false;
@@ -56,13 +56,13 @@ class Transaction {
 	}
 
 	public function isValid($signature_check = false) {
-		if ($this->created == null || $this->to == null || $this->from == null || $this->amount <= 0) {
+		if ($this->created == null || $this->recipient == null || $this->sender == null || $this->amount <= 0) {
 			$this->invalid_reason = "Transaction is not properly formed";
 			logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
 			return false;
 		}
 
-		if ($this->from == $this->to) {
+		if ($this->sender == $this->recipient) {
 			$this->invalid_reason = "Cannot send tranaction to yourself";
 			logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
 			return false;
@@ -76,7 +76,7 @@ class Transaction {
 		
 		if ($signature_check) {
 			$ec = new EC ( 'secp256k1' );
-			$vk = $ec->keyFromPublic ( $this->from, 'hex' );
+			$vk = $ec->keyFromPublic ( $this->sender, 'hex' );
 			if (! $vk->verify ( $this->calculateHash (), $this->signature )) {
 				$this->invalid_reason = "Transaction signature verification failed";
 				logger ( LL_DBG, "Transaction::isValid(): " . $this->invalid_reason );
@@ -107,7 +107,7 @@ class Transaction {
 		$store = UserStore::getInstance ();
 
 		// Check the receiver exists. We really should trust the sender more, but they are only human
-		$receiver = $store->getItemByWalletId ( $this->to );
+		$receiver = $store->getItemByWalletId ( $this->recipient );
 		if (! $receiver) {
 			$this->invalid_reason = "Receiver does not exist";
 			logger ( LL_ERR, "Transaction::isServiceable(): " . $this->getReason () );
@@ -117,14 +117,14 @@ class Transaction {
 		// Check the sender has funds (and exists)
 
 		// Well obviously the coinbase exists and is good for it
-		if ($this->from == coinbaseWalletId ()) {
+		if ($this->sender == coinbaseWalletId ()) {
 			logger ( LL_DBG, "Transaction::isServiceable(): Transaction is from '" . str_replace ( getDataNamespace (), "", coinbaseName () ) );
 			return true;
 		}
 
 		// The transaction amount will hav been checked in isValid() to be higher than zero. If a wallet
 		// cannot send that (it has zero or doesn't exist), then throw an error.
-		$sender_bal = $store->getWalletBalance ( $this->from );
+		$sender_bal = $store->getWalletBalance ( $this->sender );
 		if ($sender_bal < $this->amount) {
 			$this->invalid_reason = "Sender balance is not sufficient";
 			logger ( LL_ERR, "Tranaction::isServiceable(): " . $this->getReason () );
@@ -140,8 +140,8 @@ class Transaction {
 	public function unload() {
 		$arr = array ();
 		$arr ["created"] = $this->created;
-		$arr ["from"] = $this->from;
-		$arr ["to"] = $this->to;
+		$arr ["sender"] = $this->sender;
+		$arr ["recipient"] = $this->recipient;
 		$arr ["amount"] = $this->amount;
 		$arr ["message"] = $this->message;
 		$arr ["hash"] = $this->calculateHash ();
@@ -156,8 +156,8 @@ class Transaction {
 
 	public function fromArray($arr) {
 		$this->created = $arr ["created"] ?? microtime ( true );
-		$this->from = $arr ["from"] ?? null;
-		$this->to = $arr ["to"] ?? null;
+		$this->sender = $arr ["sender"] ?? null;
+		$this->recipient = $arr ["recipient"] ?? null;
 		$this->amount = $arr ["amount"] ?? null;
 		$this->message = $arr ["message"] ?? "";
 		$this->payload = $arr ["payload"] ?? $this->getPayload ();
@@ -173,8 +173,8 @@ class Transaction {
 
 		$payload = json_decode ( $payload );
 		$this->created = $payload->created ?? null;
-		$this->from = $payload->from ?? null;
-		$this->to = $payload->to ?? null;
+		$this->sender = $payload->sender ?? null;
+		$this->recipient = $payload->recipient ?? null;
 		$this->amount = $payload->amount ?? null;
 		$this->message = $payload->message ?? "";
 

@@ -1,16 +1,16 @@
 cron:
-- description: "System tick every minute (runs for 50-59 seconds)"
-  url: /cron/tick
-  schedule: every 1 minutes
+#- description: "System tick every minute (runs for 50-59 seconds)"
+#  url: /cron/tick
+#  schedule: every 1 minutes
 
-- description: "Every minute"
-  url: /cron/every_minute
-  schedule: every 1 minutes
+#- description: "Every minute"
+#  url: /cron/every_minute
+#  schedule: every 1 minutes
 
-- description: "Every hour"
-  url: /cron/every_hour
-  schedule: every 1 hours from 00:03 to 23:03
+#- description: "Every hour"
+#  url: /cron/every_hour
+#  schedule: every 1 hours from 00:03 to 23:03
 
-- description: "Every day"
-  url: /cron/every_day
-  schedule: every day 03:17
+#- description: "Every day"
+#  url: /cron/every_day
+#  schedule: every day 03:17

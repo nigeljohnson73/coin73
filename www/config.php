@@ -120,6 +120,15 @@ $miner_reward_tag = "-X- Miner Reward -X-";
 // you are working with. This should only be overwritten in the config_localhost.php file.
 $local_monika = "";
 
+// Whether we are using Google App Engine and associated resources. If we do not, then use MySQL
+// and the assocated file system in the DataStore and FileStore classes
+$use_gae = false;
+$db_server = "localhost";
+$db_name = "cc";
+$db_user = "cc_user";
+$db_pass = "cc_passwd";
+
+
 // Configure the logging variables
 define ( "LL_NONE", 0 );
 define ( "LL_SYSTEM", 0 );

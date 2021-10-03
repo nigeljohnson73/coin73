@@ -8,7 +8,7 @@ class InfoStore extends DataStore {
 
 		parent::__construct ( "Info" );
 
-		$this->addField ( "key", "String", true, true ); // indexed and key
+		$this->addField ( "xkey", "String", true, true ); // indexed and key
 		$this->addField ( "value", "String" ); // indexed
 		$this->addField ( "updated", "Float" );
 
@@ -35,7 +35,7 @@ class InfoStore extends DataStore {
 		$arr = self::getItemById ( $key );
 		if (! $arr) {
 			if (self::insert ( [ 
-					"key" => $key,
+					"xkey" => $key,
 					"value" => $fallback
 			] )) {
 				logger ( LL_XDBG, "InfoStore::getInfo('$key') - creating fallback" );
@@ -57,7 +57,7 @@ class InfoStore extends DataStore {
 	protected function _set($key, $value) {
 		$this->local [$key] = $value;
 		$arr = [ 
-				"key" => $key,
+				"xkey" => $key,
 				"value" => $value
 		];
 		if (! $this->update ( $arr )) {

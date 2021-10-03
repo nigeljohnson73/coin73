@@ -59,8 +59,9 @@ class UserStore extends DataStore {
 			logger ( LL_ERR, "UserStore::insert() - insert of base user failed" );
 			return false;
 		}
-		echo "UserStore::insert() - base user created\n";
+		// echo "UserStore::insert() - base user created:".ob_print_r($arr)."\n";
 
+		// return false;
 		$arr = self::setPassword ( $arr ["email"], $password );
 		if (! is_array ( $arr )) {
 			logger ( LL_ERR, "UserStore::insert() - unable to set password" );
@@ -99,51 +100,29 @@ class UserStore extends DataStore {
 	}
 
 	public static function getItemByGuid($key) {
-		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE guid = @key";
-		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-		// echo "UserStore::getItemByGuid('guid'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		return ($data) ? ($data->getData ()) : ($data);
+		return self::_getItemByKeyField ( "guid", $key );
 	}
 
 	public static function getItemByValidationNonce($key) {
-		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE validation_nonce = @key";
-		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		return ($data) ? ($data->getData ()) : ($data);
+		return self::_getItemByKeyField ( "validation_nonce", $key );
 	}
 
 	public static function getItemByRecoveryNonce($key) {
-		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE recovery_nonce = @key";
-		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-		// echo "UserStore::getItemByValidationNonce('validation_nonce'=>'" . $key . "')\n";
-		// echo " '$gql'\n";
-		return ($data) ? ($data->getData ()) : ($data);
+		return self::_getItemByKeyField ( "recovery_nonce", $key );
 	}
 
 	public static function getItemByPublicKey($key) {
 		if (isset ( self::$_wallet [$key] )) {
 			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - returning cached values" );
-			return self::$_wallet [$key]->getData ();
+			return self::$_wallet [$key];
 		}
 
-		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE public_key = @key";
-		$data = self::getInstance ()->obj_store->fetchOne ( $gql, [ 
-				'key' => $key
-		] );
-
+		$data = self::_getItemByKeyField ( "public_key", $key, true );
 		// Store it even if it's garbage so we don't go look for it again.
 		self::$_wallet [$key] = $data;
 		if ($data) {
 			logger ( LL_XDBG, "UserStore::getItemByPublicKey() - storing cached values" );
-			return $data->getData ();
+			return $data;
 		}
 		logger ( LL_WRN, "UserStore::getItemByPublicKey() - no such wallet" );
 		return $data;
@@ -176,40 +155,50 @@ class UserStore extends DataStore {
 					$user = self::getItemByPublicKey ( $id );
 					if (! $user) {
 						// User does not exist
-						logger ( LL_SYS, "UserStore::updateWalletBalances() - Delta for '" . $data->getData () ["email"] . "' by '" . number_format ( $delta, 6 ) . "' seems suspect" );
+						logger ( LL_SYS, "UserStore::updateWalletBalances() - Delta for '" . $data ["email"] . "' by '" . number_format ( $delta, 6 ) . "' seems suspect" );
 						$suspect [] = $id;
 					}
 					$data = self::$_wallet [$id] ?? null;
 				}
-
+				$sdata = $data; // for storing for the update
+				if (usingGae ()) {
+					$data = $data->getData ();
+				}
+				
+				echo "B: Storing data array from ".ob_print_r($data)."\n";
+				echo "B: Storing data array orig ".ob_print_r($sdata)."\n";
 				if ($data) {
-					$data->balance = $data->getData () ["balance"] + $delta;
-					self::$_updated_wallet [] = $data;
-					logger ( LL_SYS, "UserStore::updateWalletBalances() - Updating wallet balance for '" . $data->getData () ["email"] . "' by '" . number_format ( $delta, 6 ) . "'" );
+					if (usingGae ()) {
+						$data->balance = $data ["balance"] + $delta;
+					} else {
+						$data ["balance"] = $data ["balance"] + $delta;
+					}
+					self::$_updated_wallet [] = $sdata;
+					logger ( LL_SYS, "UserStore::updateWalletBalances() - Updating wallet balance for '" . $data ["email"] . "' by '" . number_format ( $delta, 6 ) . "'" );
 				}
 			}
 		}
 
-		while ( count ( self::$_updated_wallet ) ) {
-			$arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
-			logger ( LL_SYS, "UserStore::updateWalletBalances(): updating " . count ( $arr_page ) . " records" );
-			self::getInstance ()->obj_store->upsert ( $arr_page );
+		if (usingGae ()) {
+			while ( count ( self::$_updated_wallet ) ) {
+				$arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
+				logger ( LL_SYS, "UserStore::updateWalletBalances(): updating " . count ( $arr_page ) . " records" );
+				self::getInstance ()->obj_store->upsert ( $arr_page );
+			}
+		} else {
+			//print_r(self::$_updated_wallet);
+			// TODO: This will be really slow, make this work in paged mode so it's faster
+			foreach ( self::$_updated_wallet as $row ) {
+				$arr = array ();
+				$arr [self::getKeyField ()] = $row [self::getKeyField ()];
+				$arr ["balance"] = $row ["balance"];
+				self::update ( $arr );
+			}
 		}
 
 		return (count ( $suspect ) > 0) ? $suspect : null;
 	}
 
-	// public function applyWalletBalances() {
-	// while ( count ( self::$_updated_wallet ) ) {
-	// $arr_page = array_splice ( self::$_updated_wallet, 0, transactionsPerPage () );
-	// // $arr_page = self::$_updated_wallet;
-	// // self::$_updated_wallet = [ ];
-	// //logger ( LL_DBG, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
-	// logger ( LL_SYS, "UserStore::applyWalletBalances(): updating " . count ( $arr_page ) . " records" );
-	// $this->obj_store->upsert ( $arr_page );
-	// }
-	// return true;
-	// }
 	private static function generateMfa() {
 		global $mfa_words;
 		global $mfa_word_count;
@@ -313,15 +302,14 @@ class UserStore extends DataStore {
 
 	// Called by the system
 	public static function requestValidateUser($email) {
-		//global $www_host;
-
+		// global $www_host;
 		$user = self::getItemById ( $email );
 		if (! $user) {
 			logger ( LL_ERR, "UserStore::requestValidateUser('$email'): Unable to find user" );
 			return false;
 		}
 		/*
-		 * // Handled avove my paygrade
+		 * // Handled above my paygrade
 		 * // if (strlen ( $user ["recovery_nonce"] )) {
 		 * // logger ( LL_ERR, "UserStore::recoverUser('$email'): Already an email outstanding - don't spam" );
 		 * // return false;
@@ -352,10 +340,14 @@ class UserStore extends DataStore {
 	}
 
 	public static function setPassword($email, $password) {
-		$user = self::getItemById ( $email );
-		if (! $user) {
+		// TEst the user exists
+		$xuser = self::getItemById ( $email );
+		if (! $xuser) {
 			return false;
 		}
+		$user = array ();
+		$user ["email"] = $email;
+		$user ["guid"] = $xuser ["guid"];
 		$user ["password"] = $user ["guid"] . "." . $email . "." . $password;
 		logger ( LL_DBG, "UserStore::setPassword() - intermediate password: '" . $user ["password"] . "'" );
 		$user ["password"] = md5 ( $user ["password"] );

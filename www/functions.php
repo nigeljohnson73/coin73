@@ -80,6 +80,11 @@ function getDataNamespace() {
 	return $data_namespace;
 }
 
+function usingGae() {
+	global $use_gae;
+	return $use_gae;
+}
+
 function getAppName() {
 	global $config;
 	return $config->name;
@@ -471,7 +476,7 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 	$ret->status = $success ? "OK" : "FAIL";
 	$ret->message = $message;
 	$ret->console = $c;
-	
+
 	$resp = json_encode ( $ret );
 	if ($response) {
 		$response->getBody ()->write ( $resp );
@@ -500,7 +505,7 @@ function endPage($compress = false, $strip_comments = true) {
 		if ($_SERVER ["SERVER_NAME"] == "localhost") {
 			echo "<!-- RUNNING ON DEV HOST -->\n";
 		}
-		echo "<!-- ".getAppName()." - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved -->\n";
+		echo "<!-- " . getAppName () . " - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved -->\n";
 		echo "<!-- uncompressed: " . number_format ( strlen ( $odirty ), 0 ) . " bytes, compressed: " . number_format ( strlen ( $clean ), 0 ) . " bytes -->\n";
 		// echo "<!-- \n";
 		// print_r($_SERVER);
@@ -1162,6 +1167,11 @@ function sanitiseUser($user) {
 	return $ret;
 }
 
+function str_replace_first($from, $to, $content) {
+	$from = '/' . preg_quote ( $from, '/' ) . '/';
+	return preg_replace ( $from, $to, $content, 1 );
+}
+
 function is_cli() {
 	if (defined ( 'STDIN' ) || (empty ( $_SERVER ['REMOTE_ADDR'] ) && ! isset ( $_SERVER ['HTTP_USER_AGENT'] ) && count ( $_SERVER ['argv'] ) > 0)) {
 		return true;
@@ -1200,10 +1210,13 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
 	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
 
-	$api_host = "http://localhost:8085/api/";
-	$www_host = "http://localhost:8080/";
+// 	$api_host = "http://localhost:8085/api/";
+// 	$www_host = "http://localhost:8080/";
+	$api_host = "http://localhost/api/";
+	$www_host = "http://localhost/";
 	if ($api_CORS_origin != "*") {
-		$api_CORS_origin = "http://localhost:8080";
+// 		$api_CORS_origin = "http://localhost:8080";
+		$api_CORS_origin = "http://localhost";
 	}
 
 	@file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
@@ -1216,7 +1229,7 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 }
 
 // Start session handling so there is no excuse for it.
-session_id ( getDataNamespace () );
-session_start ();
+@session_id ( getDataNamespace () );
+@session_start ();
 
 ?>

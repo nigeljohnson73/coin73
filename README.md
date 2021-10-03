@@ -30,7 +30,7 @@ This project deals specifically with the centralised services. Mining will be a 
 
 ## Things harmed in the making of this project
 
-This project is built on the Google App Engine platform. The main idea here is that you pay for what you use, so you're not wasting resource paying for servers that are only 30% loaded. If you do have a spike or grow a lot, Google can throw more resource at things for you while you sleep. I appreciate there are huge caveats here. But this is a journey.
+This project is built with the Google App Engine platform in mind. The main idea here is that you pay for what you use, so you're not wasting resource paying for servers that are only 30% loaded. If you do have a spike or grow a lot, Google can throw more resource at things for you while you sleep. I appreciate there are huge caveats here. But this is a journey. while it is running on a Raspberry pi in my Lair, it does also scale up to, and run on Google App Engine.
 
 ### General technologies
 

@@ -19,11 +19,16 @@ class AuditStoreHouseKeeper extends AuditStore {
 	// @formatter:on
 	public static function __reset() {
 		$store = self::getInstance ();
-		$gql = "SELECT * FROM " . $store->kind;
-		$store->obj_store->query ( $gql );
-		while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-			logger ( LL_DBG, $store->kind . "Store::reset(): deleting " . count ( $arr_page ) . " records" );
-			$store->obj_store->delete ( $arr_page );
+		if (usingGae ()) {
+			$gql = "SELECT * FROM " . $store->kind;
+			$store->obj_store->query ( $gql );
+			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
+				logger ( LL_DBG, $store->kind . "Store::reset(): deleting " . count ( $arr_page ) . " records" );
+				$store->obj_store->delete ( $arr_page );
+			}
+		} else {
+			$sql = "DELETE FROM " . $store->kind;
+			MySqlDb::query ( $sql );
 		}
 	}
 }

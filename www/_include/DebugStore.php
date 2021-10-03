@@ -4,7 +4,7 @@ include_once (__DIR__ . "/DataStore.php");
 class DebugStore extends DataStore {
 
 	protected function __construct() {
-		logger ( LL_INF, "DebugStore::DebugStore()" );
+		logger ( LL_DBG, "DebugStore::DebugStore()" );
 
 		parent::__construct ( "Debug" );
 

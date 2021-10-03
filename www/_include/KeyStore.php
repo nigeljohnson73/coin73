@@ -11,11 +11,15 @@ class KeyStore extends FileStore {
 	}
 
 	protected static function genFilename($email) {
-		return hash ( "sha1", strtolower ( getDataNamespace () . "_" . $email ) );
+		if (usingGae ()) {
+			return hash ( "sha1", strtolower ( getDataNamespace () . "_" . $email ) );
+		} else {
+			return hash ( "sha1", strtolower ( $email ) );
+		}
 	}
 
 	public static function getKeys($email) {
-		//$store = self::getInstance ();
+		// $store = self::getInstance ();
 		logger ( LL_DBG, "KeyStore::getKeys('" . $email . "')" );
 		$filename = self::genFilename ( $email );
 		$json = parent::getContents ( $filename );
@@ -27,9 +31,9 @@ class KeyStore extends FileStore {
 		}
 		return json_decode ( $json );
 	}
-	
+
 	public static function putKeys($email, $public, $private) {
-		//return KeyStore::getInstance ()->_putKeys ( $email, $public, $private );
+		// return KeyStore::getInstance ()->_putKeys ( $email, $public, $private );
 		logger ( LL_DBG, "KeyStore::putKeys('" . $email . "', ...)" );
 		$filename = self::genFilename ( $email );
 		$value = self::genKeyPair ( $public, $private );
@@ -66,54 +70,59 @@ class KeyStore extends FileStore {
 }
 
 // function __testKeyStore() {
-// 	global $logger;
-// 	$ll = $logger->getLevel ();
-// 	$logger->setLevel ( LL_DBG );
+// global $logger;
+// $ll = $logger->getLevel ();
+// $logger->setLevel ( LL_DBG );
 
-// 	$store = KeyStore::getInstance ();
-// 	$email = "test@testy.com";
-// 	$pubKey = "publick_key";
-// 	$privKey = "privat_key";
-// 	$store->putKeys ( $email, $pubKey, $privKey );
+// $store = KeyStore::getInstance ();
+// $email = "test@testy.com";
+// $pubKey = "publick_key";
+// $privKey = "privat_key";
+// $store->putKeys ( $email, $pubKey, $privKey );
 
-// 	$keys = $store->getKeys ( $email );
-// 	print_r ( $keys );
-// 	$store->deleteKeys ( $email );
+// $keys = $store->getKeys ( $email );
+// print_r ( $keys );
+// $store->deleteKeys ( $email );
 
-// 	$logger->setLevel ( $ll );
+// $logger->setLevel ( $ll );
 // }
-
 function __getOverlordKeys($namespace = null) {
-	if (! class_exists ( "OverrideKeyStore" )) {
+	if (usingGae ()) {
+		if (! class_exists ( "OverrideKeyStore" )) {
 
-		class OverrideKeyStore extends KeyStore {
+			class OverrideKeyStore extends KeyStore {
 
-			public function __construct($namespace) {
-				logger ( LL_DBG, "KeyStore::KeyStore()" );
-				$this->storage = null;
-				$this->bucket = null;
-				$this->bucket_name = strtolower ( $namespace . "_KeyStore" );
-				$this->options = [ ];
-				$this->init ();
+				public function __construct($namespace) {
+					logger ( LL_DBG, "KeyStore::KeyStore()" );
+					$this->storage = null;
+					$this->bucket = null;
+					$this->bucket_name = strtolower ( $namespace . "_KeyStore" );
+					$this->options = [ ];
+					$this->init ();
+				}
 			}
 		}
+
+		global $logger;
+		global $data_namespace;
+
+		$dns = getDataNamespace ();
+		$data_namespace = $namespace ?? $dns;
+		$ll = $logger->getLevel ();
+		$logger->setLevel ( LL_DBG );
+
+		$store = new OverrideKeyStore ( $data_namespace );
+		echo "Keys for '" . coinbaseName () . "'\n";
+
+		$keys = $store->getKeys ( coinbaseName () );
+		print_r ( $keys );
+
+		$logger->setLevel ( $ll );
+		$data_namespace = $dns;
+	} else {
+		$keys = KeyStore::getKeys ( coinbaseName () );
+		echo "Keys for '" . coinbaseName () . "'\n";
+		print_r ( $keys );
 	}
-
-	global $logger;
-	global $data_namespace;
-
-	$dns = getDataNamespace ();
-	$data_namespace = $namespace ?? $dns;
-	$ll = $logger->getLevel ();
-	$logger->setLevel ( LL_DBG );
-
-	$store = new OverrideKeyStore ( $data_namespace );
-	echo "Keys for '" . coinbaseName () . "'\n";
-
-	$keys = $store->getKeys ( coinbaseName () );
-	print_r ( $keys );
-
-	$logger->setLevel ( $ll );
-	$data_namespace = $dns;
 }
 ?>

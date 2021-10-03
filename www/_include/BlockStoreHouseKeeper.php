@@ -19,6 +19,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 	// @formatter:on
 	public static function __reset() {
 		$store = self::getInstance ();
+		if(usingGae()) {
 		$c = 0;
 		foreach ( $store->bucket->objects () as $object ) {
 			$c += 1;
@@ -27,6 +28,13 @@ class BlockStoreHouseKeeper extends BlockStore {
 		}
 		if ($c > 0) {
 			logger ( LL_SYS, "BlockStore::reset(): Deleted $c objects" );
+		}
+		} else {
+			$files = directoryListing($store->bucket_name);
+			foreach($files as $filename) {
+				//logger(LL_DBG, "Blockstore::reset(): Deleting '".$filename."'");
+				self::delete(basename($filename));
+			}
 		}
 	}
 
@@ -62,7 +70,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 		// $ipt = new ProcessTimer ();
 		$txns = TransactionStore::getTransactions ();
 
-		if (count ( $txns ) > 0) {
+		if ($txns && count ( $txns ) > 0) {
 			$deltas = array ();
 
 			// DebugStore::log ( "Starting txns -> block process" );
@@ -93,8 +101,8 @@ class BlockStoreHouseKeeper extends BlockStore {
 						}
 						$payload = json_decode ( $txn->getPayload () );
 						// logger ( LL_DBG, "Processing transaction (" . $payload->amount . ")" );
-						$deltas [$payload->from] = ($deltas [$payload->from] ?? 0) - $payload->amount;
-						$deltas [$payload->to] = ($deltas [$payload->to] ?? 0) + $payload->amount;
+						$deltas [$payload->sender] = ($deltas [$payload->frsenderom] ?? 0) - $payload->amount;
+						$deltas [$payload->recipient] = ($deltas [$payload->recipient] ?? 0) + $payload->amount;
 					} else {
 						logger ( LL_ERR, "Invalid transaction (" . $txn->getReason () . ")" );
 						unset ( $txns [$k] );
@@ -140,8 +148,8 @@ class BlockStoreHouseKeeper extends BlockStore {
 
 					foreach ( $audit as $t ) {
 						$arr = array ();
-						$arr ["from"] = $t->from;
-						$arr ["to"] = $t->to;
+						$arr ["sender"] = $t->sender;
+						$arr ["recipient"] = $t->recipient;
 						$arr ["amount"] = $t->amount;
 						$arr ["message"] = $t->message ?? "";
 						DebugStore::log ( "Txn: " . ob_print_r ( $arr ) );

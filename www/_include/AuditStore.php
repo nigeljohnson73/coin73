@@ -10,8 +10,8 @@ class AuditStore extends DataStore {
 
 		$this->addField ( "txn_id", "String", true, true ); // indexed and key
 		$this->addField ( "created", "Float", true );
-		$this->addField ( "from", "String", true);
-		$this->addField ( "to", "String", true );
+		$this->addField ( "sender", "String", true);
+		$this->addField ( "recipient", "String", true );
 		$this->addField ( "amount", "Float" );
 		$this->addField ( "message", "String" );
 
