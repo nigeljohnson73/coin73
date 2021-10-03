@@ -89,7 +89,7 @@ class InfoStore extends DataStore {
 			if ($data) {
 				foreach ( $data as $r ) {
 					$x = $r->getData ();
-					$ret [$x ["key"]] = $x ["value"];
+					$ret [$x ["xkey"]] = $x ["value"];
 				}
 			}
 		} else {
@@ -100,7 +100,7 @@ class InfoStore extends DataStore {
 			if ($data) {
 				foreach ( $data as $r ) {
 					// $x = $r->getData ();
-					$ret [$r ["key"]] = $r ["value"];
+					$ret [$r ["xkey"]] = $r ["value"];
 				}
 			}
 		}
