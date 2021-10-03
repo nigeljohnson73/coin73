@@ -38,7 +38,7 @@ if (isset ( $_POST ["payload"] )) {
 				logger ( LL_DBG, "    Time now: " . timestampFormat ( timestampNow (), "Y/m/d H:i:s" ) . " (" . timestamp2Time ( timestampNow () ) . ")" );
 				logger ( LL_DBG, "    Creation Delta: " . (timestamp2Time ( timestampNow () ) - timestamp2Time ( $requested )) . " seconds" );
 				logger ( LL_DBG, "    Token timeout: " . $expiry_seconds . " seconds" );
-				$ret->reason = "Validation request has expired. Please <a href='/validate'>start the rerecovery process</a> again.";
+				$ret->reason = "Validation request has expired. Please <a href='/validate'>start the validation process</a> again.";
 			}
 			print_r ( $user );
 		} else {
@@ -47,7 +47,7 @@ if (isset ( $_POST ["payload"] )) {
 		}
 	} else {
 		logger ( LL_DBG, "Unable to find nonce" );
-		$ret->reason = "Validation request is not valid (Maybe you have used the email link already). Please <a href='/validate'>start the recovery process</a> again.";
+		$ret->reason = "Validation request is not valid (Maybe you have used the email link already). Please <a href='/validate'>start the validation process</a> again.";
 	}
 } else {
 	logger ( LL_DBG, "no payload sent - bad bot!!!" );

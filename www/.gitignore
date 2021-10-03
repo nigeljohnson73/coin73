@@ -1,3 +1,4 @@
 /vendor/
 /config_override.php
 /config_localhost.php
+/config_mnrtor.local.php

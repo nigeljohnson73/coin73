@@ -120,6 +120,9 @@ $miner_reward_tag = "-X- Miner Reward -X-";
 // you are working with. This should only be overwritten in the config_localhost.php file.
 $local_monika = "";
 
+// When running in non-localhost, you can force these to false so that you can debug javascript
+$compress_js = true;
+
 // Whether we are using Google App Engine and associated resources. If we do not, then use MySQL
 // and the assocated file system in the DataStore and FileStore classes
 $use_gae = false;
