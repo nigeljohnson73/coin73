@@ -84,11 +84,7 @@ echo "Shall we get started? Press return to continue"
 echo ""
 read ok
 
-#echo "####################################################################" | tee -a $logfile
-#echo "##" | tee -a $logfile
 echo "## Update BIOS and core OS" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "####################################################################" | tee -a $logfile
 echo "" | tee -a $logfile
 
 # Ensure the base packages are up to date
@@ -106,19 +102,16 @@ echo "## Install core pacakges" | tee -a $logfile
 #sudo apt install -y apache2 php php-mbstring php-gd php-xml php-curl mariadb-server php-mysql lsb-release apt-transport-https ca-certificates git python3-dev python3-pip python3-pil tor screen automake autoconf pkg-config libcurl4-openssl-dev libjansson-dev libssl-dev libgmp-dev make g++ git tor screen
 sudo apt install -y lsb-release apt-transport-https ca-certificates git python3-dev python3-pip python3-pil tor screen automake autoconf pkg-config libcurl4-openssl-dev libjansson-dev libssl-dev libgmp-dev make g++ git tor screen
 
-## Disable IPv6
 echo "## Disabling IPv6" | tee -a $logfile
 sudo bash -c 'cat > /etc/sysctl.d/disable-ipv6.conf' << EOF
 net.ipv6.conf.all.disable_ipv6 = 1
 EOF
 
-## Flashy login screen and path parameters
 echo "## Install bashrc hooks" | tee -a $logfile
 bash -c 'cat >> ~/.bashrc' << EOF
 source /webroot/coin73/res/bashrc
 EOF
 
-## Loop into rc.local
 echo "## Install rc.local hooks" | tee -a $logfile
 sudo cat /etc/rc.local | grep -v 'exit 0' | sudo tee /etc/rc.local.tmp >/dev/null
 sudo rm /etc/rc.local
@@ -132,8 +125,6 @@ EOF
 #echo "## Enable VNC service"
 #sudo ln -s /lib/systemd/system/vncserver-x11-serviced.service /etc/systemd/system/multi-user.target.wants/vncserver-x11-serviced.service
 
-## Overclock the PI, and enable VNC server screen resolution in boot.config
-#echo "## Overclocking the PI and setting screen resolution to 1080p"
 echo "## Setting up overclocking" | tee -a $logfile
 sudo bash -c 'cat >> /boot/config.txt' << EOF
 over_voltage=6
@@ -153,13 +144,6 @@ echo "Press return to continue"
 echo ""
 read ok
 
-#echo "####################################################################" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "## Update PHP to version 8, then downgrade to 7.4" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "####################################################################" | tee -a $logfile
-#echo "" | tee -a $logfile
-
 # Update the package list with a repository that supports our needs and ensure we are up to date with that
 echo "## Get repository signature" | tee -a $logfile
 sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
@@ -175,31 +159,6 @@ echo "## Install the required version of PHP for gcloud (v7.4)" | tee -a $logfil
 sudo apt install -y apache2 mariadb-server libapache2-mod-php7.4 php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
 echo "## Cleanup loose packages" | tee -a $logfile
 sudo apt autoremove -y
-#sudo phpenmod mysqli
-
-#echo "####################################################################"
-#echo ""
-#echo ""
-#echo "Next we install the gcloud SDK"
-#echo ""
-#echo "Press return to continue"
-#read ok
-#echo "####################################################################"
-#
-#echo "##"
-#echo "## Install gcloud SDK and toolset"
-#echo "##"
-#echo "####################################################################"
-#echo ""
-#
-## Add the google source repository to our list to get the SDK software
-#echo "## Get repository signatures and install into repository manager"
-#echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-#curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-#echo "## Install the google applications"
-#sudo apt-get install -y google-cloud-sdk google-cloud-sdk-datastore-emulator google-cloud-sdk-firestore-emulator 
-#echo "## Cleanup loose packages"
-#sudo apt-get autoremove -y
 
 ## Install composer
 echo "## Install Composer for PHP" | tee -a $logfile
@@ -213,16 +172,13 @@ echo "####################################################################"
 echo ""
 echo " Install the coin73 software"
 echo ""
+echo " You will need the bundle file from the dev server:"
+echo ""
+echo "  * php sh/gen_bundle.php"
+echo ""
 echo "Press return to continue"
 echo ""
 read ok
-
-#echo "####################################################################" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "## Install COIN73 software" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "####################################################################" | tee -a $logfile
-#echo "" | tee -a $logfile
 
 # The software is held in github so set that up and clone it to the right place 
 echo "## Cloning coin73 source code tree" | tee -a $logfile
@@ -240,6 +196,7 @@ cp res/install/config_* www
 sudo mkdir -p /var/coin73
 sudo chown -R pi:pi /var/coin73
 sudo chmod -R 777 /var/coin73
+sh/populate_config.php
 
 ## install the composer dependancies
 echo "## Installing composer dependancies" | tee -a $logfile
@@ -269,13 +226,6 @@ echo "Press return to continue"
 echo ""
 read ok
 
-#echo "####################################################################" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "## Configure TOR" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "####################################################################" | tee -a $logfile
-#echo "" | tee -a $logfile
-
 echo "## Configuring TOR" | tee -a $logfile
 sudo cp /etc/tor/torrc /etc/tor/torrc.orig
 sudo bash -c 'cat > /etc/tor/torrc' << EOF
@@ -289,13 +239,7 @@ sudo service tor start
 sleep 1
 sudo cat /var/lib/tor/hidden_service/hostname | tee /logs/darkweb_hostname.txt
 
-#echo "####################################################################" | tee -a $logfile
-#echo "##" | tee -a $logfile
 echo "## Redeploying Apache" | tee -a $logfile
-#echo "##" | tee -a $logfile
-#echo "####################################################################" | tee -a $logfile
-#echo "" | tee -a $logfile
-
 cd /var/www/
 sudo mv html html_orig
 sudo ln -s /webroot/coin73 html
@@ -321,6 +265,15 @@ sudo /etc/init.d/apache2 restart
 #echo "Press return to continue"
 #echo ""
 #read ok
+#
+## Add the google source repository to our list to get the SDK software
+#echo "## Get repository signatures and install into repository manager"
+#echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+#curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+#echo "## Install the google applications"
+#sudo apt-get install -y google-cloud-sdk google-cloud-sdk-datastore-emulator google-cloud-sdk-firestore-emulator 
+#echo "## Cleanup loose packages"
+#sudo apt-get autoremove -y
 #
 #echo ""
 #echo "####################################################################"
@@ -363,11 +316,5 @@ echo "We are all done. Thanks for flying with us today and we value your" | tee 
 echo "custom as we know you have choices. The next steps for you are:" | tee -a $logfile
 echo "" | tee -a $logfile
 echo " * Reboot this raspberry pi" | tee -a $logfile
-#echo " * VNC onto the desktop"
 echo "" | tee -a $logfile
-#echo "Here are some useful commands you can run from a terminal:" | tee -a $logfile
-#echo "" | tee -a $logfile
-#echo " * coin73-pull.sh   - Will update the codebase from git" | tee -a $logfile
-#echo " * coin73-deploy.sh - Will deploy the application to appspot"
-#echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
