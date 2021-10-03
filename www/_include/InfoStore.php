@@ -76,19 +76,32 @@ class InfoStore extends DataStore {
 
 	protected function _getAll() {
 		$data = array ();
-		$gql = "SELECT * FROM " . $this->kind;
-		$this->obj_store->query ( $gql );
-		while ( count ( $data ) < transactionsPerBlock () && $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
-			logger ( LL_DBG, "InfoStore::_getAll(): pulled " . count ( $arr_page ) . " records" );
-			$data = array_merge ( $data, $arr_page );
-			// $store->delete ( $arr_page );
-		}
+		if (usingGae ()) {
+			$gql = "SELECT * FROM " . $this->kind;
+			$this->obj_store->query ( $gql );
+			while ( count ( $data ) < transactionsPerBlock () && $arr_page = $this->obj_store->fetchPage ( transactionsPerPage () ) ) {
+				logger ( LL_DBG, "InfoStore::_getAll(): pulled " . count ( $arr_page ) . " records" );
+				$data = array_merge ( $data, $arr_page );
+				// $store->delete ( $arr_page );
+			}
 
-		$ret = array ();
-		if ($data) {
-			foreach ( $data as $r ) {
-				$x = $r->getData ();
-				$ret [$x ["key"]] = $x ["value"];
+			$ret = array ();
+			if ($data) {
+				foreach ( $data as $r ) {
+					$x = $r->getData ();
+					$ret [$x ["key"]] = $x ["value"];
+				}
+			}
+		} else {
+			$sql = "SELECT * FROM " . $this->kind;
+			$data = MySqlDb::query ( $sql );
+
+			$ret = array ();
+			if ($data) {
+				foreach ( $data as $r ) {
+					// $x = $r->getData ();
+					$ret [$r ["key"]] = $r ["value"];
+				}
 			}
 		}
 
