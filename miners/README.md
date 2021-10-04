@@ -5,9 +5,9 @@ All pre-requesites in all of the miners assume the user has an account setup to 
  * Your `wallet-id`from your account page;
  * A unique `rig-id` for each miner you want to use on your account.
 
-So the user is not forced to think of something clever and only wants to run one of your script, you can default the `rig-id` to something of your choice, possibly the language it's written in, for example `PHP-Miner`.
+So the user is not forced to think of something clever and only wants to run one of your script, scripts can default the `rig-id` to something useful, possibly the language it's written in, for example `PHP-Miner`.
 
-Optionally you can use a `chip-id` to help with some hashrate stats we may gather at some point in the project. You should default this to something generic like the language it's written in, for example `PHP Script`. 
+Optionally  a `chip-id` can be used to help with some hashrate stats we may gather at some point in the project. This should default to something generic like the language it's written in, for example `PHP Script`. 
 
 Also supplied below are a few 'supported' miners built here. They will work in you follow the instructions... which might not be fully written...
 
@@ -42,6 +42,7 @@ Here is the process you should repeat:
 
  * Currently CURL is needed to make the API calls. Ensure you have `php-curl` installed.
  * PHP 5 and up should work. Tested on PHP 7.4
+ * Requires a SOCKS proxy to handle TOR requests
 
 ## Operation
 
@@ -52,13 +53,13 @@ bash-3.2$ php miner.php -h
 
 Usage:- miner.php [-c 'chip-id'] [-d] [-h] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]
 
-    -c 'id' : Set the chip id for this miner (defaults to 'PHP Script')
-    -d      : Use the development server
-    -h      : This help message
-    -q      : Shhhh!!, hide all the 'MESSAGE' output lines
-    -r 'id' : Set the rig name for this miner (defaults to 'PHP-Miner')
-    -w 'id' : Set 130 character wallet ID for miner rewards
-    -y      : Yes!! I got everything correct, just get on with it
+    -c 'id'  : Set the chip id for this miner (defaults to 'PHP Script')
+    -d       : Use the development server (mnrtor.local)
+    -h       : This help message
+    -p 'url' : Set the TOR proxy (defaults to '127.0.0.1:9050')
+    -r 'id'  : Set the rig name for this miner (defaults to 'PHP-Miner')
+    -w 'id'  : Set 130 character wallet ID for miner rewards
+    -y       : Yes!! I got everything correct, just get on with it
 
 bash-3.2$ 
 ```
@@ -71,11 +72,43 @@ bash-3.2$ php miner.php -w 04d329153bacfc18f8400b......
 
 # Python miner
 
-Coming soon - once I've learned enough Python and worked it out.
+## pre-requestites
+
+ * Currently requests and pysocks are required. `pip3 install requests[socks]` will handle that for you
+ * I am very sure that python 3 is required. Tested on Python 3.7
+ * Requires a SOCKS proxy to handle TOR requests
+
+## Operation
+
+The script runs from the command line and the `-h` flag will display the help:
+
+```language-console
+bash-3.2$ python3 miner.py -h
+
+Usage:- python3 miner.py [-c 'chip-id'] [-d] [-h] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]
+
+    -c 'id'  : Set the chip id for this miner (defaults to 'Python Script')
+    -d       : Use the development server (mnrtor.local)
+    -h       : This help message
+    -p 'url' : Set the TOR proxy (defaults to '127.0.0.1:9050')
+    -r 'id'  : Set the rig name for this miner (defaults to 'Python-Miner')
+    -w 'id'  : Set 130 character wallet ID for miner rewards
+    -y       : Yes!! I got everything correct, just get on with it
+
+bash-3.2$ 
+```
+
+As a minimum, supply the wallet ID from your dashboard. You can optionally supply a `rig-id` of your choosing, and if you want to help some of the metrics, a `chip-id` as well.
+
+```language-console
+bash-3.2$ python3 miner.py -w 04d329153bacfc18f8400b......
+```
 
 # ESP32 miner
 
 ## pre-requestites
+
+Please note that this does not yet work on TOR addresses
 
  * You should probably use the Arduino IDE, that is what this has all been tested on;
  * You need an up to date implementation of the ESP32 firmware, add ththe following to your board manager list;
