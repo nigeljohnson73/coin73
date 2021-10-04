@@ -34,13 +34,13 @@ class Api:
         headers = { "Content-type": "application/x-www-form-urlencoded" }
         proxies = {}
         if use_tor:
-            proxies = { "http": "socks5://{}".format(tor_proxy) }
+            proxies = { "http": "socks5h://{}".format(tor_proxy) }
  
         try:
             response = requests.post(host + api, data=payload, headers=headers, proxies=proxies)
 
-        except:
-            print("Api call failed")
+        except Exception as err:
+            print("Api call failed: {}".format(err))
             return False
         
         if response.status_code == 200:
@@ -68,7 +68,7 @@ def usage():
 wallet_id = ""
 rig_id = "Python-Miner"
 chip_id = "Python Script"
-api_host = "ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion"
+api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion"
 use_tor = True
 tor_proxy = "127.0.0.1:9050"
 pause = True
@@ -82,29 +82,29 @@ except getopt.GetoptError as err:
 
 for o, a in opts:
     if o in ("-c", "--chipid"):
-        print ("CHIPID")
+        #print ("CHIPID")
         chip_id = a
     elif o in ("-d", "--dev"):
-        print ("DEV")
+        #print ("DEV")
         api_host = "http://mnrtor.local"
         use_tor = False
     elif o in ("-h", "--help"):
-        print ("HELP")
+        #print ("HELP")
         usage()
     elif o in ("-p", "--proxy"):
-        print ("PROXY")
+        #print ("PROXY")
         tor_proxy = a
     elif o in ("-r", "--rigid"):
-        print ("RIGID")
+        #print ("RIGID")
         rig_id = a
     elif o in ("-w", "--walletid"):
-        print ("WALLETID")
+        #print ("WALLETID")
         wallet_id = a
     elif o in ("-y", "--yes"):
-        print ("YES")
+        #print ("YES")
         pause = False
     else:
-        assert False, "unhandled option"
+        assert False, "unknown option"
 
 if len (rig_id) == 0:
     print("No Rig ID supplied")
