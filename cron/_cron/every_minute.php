@@ -1,6 +1,10 @@
 <?php
 include_once (dirname ( __FILE__ ) . "/../functions.php");
 
+if (!InfoStore::cronEnabled()) {
+	exit();
+}
+	
 function blockchainResetAbortHandler() {
 	if (connection_status () != CONNECTION_NORMAL) {
 		DebugStore::log ( "BlockChain::resetAbortHandler(): abort/timeout occurred. Setting restart flag" );

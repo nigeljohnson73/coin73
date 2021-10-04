@@ -1,6 +1,10 @@
 <?php
 include_once (dirname ( __FILE__ ) . "/../functions.php");
 
+if (!InfoStore::cronEnabled()) {
+	exit();
+}
+
 if (InfoStore::get ( switchKeyBlockCreation (), switchEnabled () ) == "RESETTING") {
 	exit ();
 }

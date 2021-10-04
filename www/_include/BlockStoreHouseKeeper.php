@@ -44,7 +44,7 @@ class BlockStoreHouseKeeper extends BlockStore {
 			logger ( LL_WRN, "Block management is disabled" );
 			return;
 		}
-		if (InfoStore::isBlockBusy ()) {
+		if (InfoStore::blockBusy ()) {
 			// DebugStore::log ( "Block creation already active" );
 			logger ( LL_WRN, "Block management already active" );
 			return;

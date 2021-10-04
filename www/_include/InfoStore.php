@@ -144,32 +144,84 @@ class InfoStore extends DataStore {
 		return InfoStore::set ( blockCountInfoKey (), $v );
 	}
 
-	public static function isBlockBusy() {
+	public static function blockBusy() {
 		return InfoStore::get ( switchKeyBlockBusy (), "NO" ) == "YES";
 	}
 
-	public static function setBlockBusy($v) {
+	public static function setBlockBusy($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == "YES")) ? ("YES") : ("NO");
 		return InfoStore::set ( switchKeyBlockBusy (), strtoupper ( $v ) );
 	}
 
+	public static function cronEnabled() {
+		return InfoStore::get ( switchKeyCron (), switchEnabled () ) == switchEnabled ();
+	}
+
+	public static function setCronEnabled($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == switchEnabled ())) ? (switchEnabled ()) : ("DISABLED");
+		return InfoStore::set ( switchKeyCron (), $v );
+	}
+
 	public static function signupEnabled() {
-		return strtolower ( InfoStore::get ( switchKeySignup (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtoupper ( InfoStore::get ( switchKeySignup (), switchEnabled () ) ) == strtoupper ( switchEnabled () );
+	}
+
+	public static function setSignupEnabled($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == switchEnabled ())) ? (switchEnabled ()) : ("DISABLED");
+		return InfoStore::set ( switchKeySignup (), $v );
 	}
 
 	public static function loginEnabled() {
-		return strtolower ( InfoStore::get ( switchKeyLogin (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtoupper ( InfoStore::get ( switchKeyLogin (), switchEnabled () ) ) == strtoupper ( switchEnabled () );
+	}
+
+	public static function setLoginEnabled($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == switchEnabled ())) ? (switchEnabled ()) : ("DISABLED");
+		return InfoStore::set ( switchKeyLogin (), $v );
 	}
 
 	public static function miningEnabled() {
-		return strtolower ( InfoStore::get ( switchKeyMining (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtoupper ( InfoStore::get ( switchKeyMining (), switchEnabled () ) ) == strtoupper ( switchEnabled () );
+	}
+
+	public static function setMiningEnabled($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == switchEnabled ())) ? (switchEnabled ()) : ("DISABLED");
+		return InfoStore::set ( switchKeyMining (), $v );
 	}
 
 	public static function blockCreationEnabled() {
-		return strtolower ( InfoStore::get ( switchKeyBlockCreation (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtoupper ( InfoStore::get ( switchKeyBlockCreation (), switchEnabled () ) ) == strtoupper ( switchEnabled () );
+	}
+
+	public static function setBlockCreationEnabled($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == switchEnabled ())) ? (switchEnabled ()) : ("DISABLED");
+		return InfoStore::set ( switchKeyBlockCreation (), $v );
 	}
 
 	public static function transactionsEnabled() {
-		return strtolower ( InfoStore::get ( switchKeyTransactions (), switchEnabled () ) ) == strtolower ( switchEnabled () );
+		return strtoupper ( InfoStore::get ( switchKeyTransactions (), switchEnabled () ) ) == strtoupper ( switchEnabled () );
+	}
+
+	public static function setTransactionsEnabled($v = true) {
+		$v = (($v === true) || (strtoupper ( $v ) == switchEnabled ())) ? (switchEnabled ()) : ("DISABLED");
+		return InfoStore::set ( switchKeyTransactions (), $v );
+	}
+
+	protected static function setSystemOperational($tf) {
+		self::setCronEnabled ( $tf );
+		self::setSignupEnabled ( $tf );
+		self::setLoginEnabled ( $tf );
+		self::setMiningEnabled ( $tf );
+		self::setBlockCreationEnabled ( $tf );
+		self::setTransactionsEnabled ( $tf );
+	}
+
+	public static function lockdown() {
+		self::setSystemOperational ( false );
+	}
+
+	public static function restart() {
+		self::setSystemOperational ( true );
 	}
 }
 ?>

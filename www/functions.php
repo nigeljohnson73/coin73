@@ -302,6 +302,11 @@ function switchKeyBlockBusy() {
 	return $switch_key_block_busy;
 }
 
+function switchKeyCron() {
+	global $switch_key_cron;
+	return $switch_key_cron;
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
