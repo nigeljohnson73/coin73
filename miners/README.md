@@ -1,8 +1,10 @@
 # Coin73 Miners
 
+__Please note:__ The TOR network aka the darkweb is a funny ole' place, in that you can't get to it without a specialist browser or proxy. I am working on building some things into the PHP/Python stuff, but it's not as easy as I had originally anticipated. Getting things onto a small board like an ESP is also practically impossible. But I will continute to look at things - there has to be a way to solve this. In the mean time, a Raspberry PI can be set up with the `tor` package, and then you can use these the PHP and python stuff by using that. I'll document that someplace else when we are all up and running.
+
 All pre-requesites in all of the miners assume the user has an account setup to use the miners. Users will need the following:
 
- * Your `wallet-id`from your account page;
+ * Your `wallet-id` from your account page;
  * A unique `rig-id` for each miner you want to use on your account.
 
 So the user is not forced to think of something clever and only wants to run one of your script, scripts can default the `rig-id` to something useful, possibly the language it's written in, for example `PHP-Miner`.
@@ -40,9 +42,9 @@ Here is the process you should repeat:
 
 ## pre-requestites
 
- * Currently CURL is needed to make the API calls. Ensure you have `php-curl` installed.
- * PHP 5 and up should work. Tested on PHP 7.4
- * Requires a SOCKS proxy to handle TOR requests
+ * Currently CURL is needed to make the API calls. Ensure you have `php-curl` installed;
+ * PHP 5 and up should work. Tested on PHP 7.4;
+ * Requires a SOCKS proxy to handle TOR requests.
 
 ## Operation
 
@@ -74,9 +76,9 @@ bash-3.2$ php miner.php -w 04d329153bacfc18f8400b......
 
 ## pre-requestites
 
- * Currently requests and pysocks are required. `pip3 install requests[socks]` will handle that for you
- * I am very sure that python 3 is required. Tested on Python 3.7
- * Requires a SOCKS proxy to handle TOR requests
+ * Currently requests and pysocks are required. `pip3 install requests[socks]` will handle that for you;
+ * I am very sure that python 3 is required. Tested on Python 3.7;
+ * Requires a SOCKS proxy to handle TOR requests.
 
 ## Operation
 
@@ -108,13 +110,13 @@ bash-3.2$ python3 miner.py -w 04d329153bacfc18f8400b......
 
 ## pre-requestites
 
-Please note that this does not yet work on TOR addresses
+__Please note:__ This does not yet work on TOR addresses
 
  * You should probably use the Arduino IDE, that is what this has all been tested on;
  * You need an up to date implementation of the ESP32 firmware, add ththe following to your board manager list;
  * https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
  * You should then be able to select the ESP32 boards version 2.0.0 or higher within the board manager;
- * The code has been written to have a few dependancies as possibl, so it uses the textual API - no JSON.
+ * The code has been written to have a few dependancies as possible, so it uses the textual API - no JSON.
 
 Once all of that is done and software compiles, you will need to update a few varaibles that are 'hard-coded' near the top of the file.
 
