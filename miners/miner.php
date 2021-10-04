@@ -1,17 +1,17 @@
 <?php
 //@formatter:off
 /*
- _______        _______ _    _ _______ __   _ _______ __   __      _______ _____ _    _ _______
- |______ |      |______  \  /  |______ | \  |    |      \_/        |______   |    \  /  |______
- |______ |_____ |______   \/   |______ |  \_|    |       |         |       __|__   \/   |______
- 
- _____  _     _  _____       _______ _____ __   _ _______  ______
+ _______ _____ __   _ _______  ______     _______  _____   ______
+ |  |  |   |   | \  | |______ |_____/ ___    |    |     | |_____/
+ |  |  | __|__ |  \_| |______ |    \_        |    |_____| |    \_
+                                                                 
+  _____  _     _  _____       _______ _____ __   _ _______  ______
  |_____] |_____| |_____]      |  |  |   |   | \  | |______ |_____/
- |       |     | |            |  |  | __|__ |  \_| |______ |    \_                 Version 0.1a
- 
+ |       |     | |            |  |  | __|__ |  \_| |______ |    \_ 
+
+                                                       Version 0.1a
  (c) Nigel Johnson 2020
  https://github.com/nigeljohnson73/coin73
- https://coin73.appspot.com/
 */
 // @formatter:on
 $VERSION = "0.1a";
@@ -76,10 +76,9 @@ foreach ( $opts as $k => $v ) {
 		$chip_id = $v;
 	} else if ($k == "d") {
 		$api_host = "http://mnrtor.local/api/";
+		$use_tor = false;
 	} else if ($k == "h") {
 		help ();
-	} else if ($k == "q") {
-		$messages = false;
 	} else if ($k == "p") {
 		$tor_proxy = $v;
 	} else if ($k == "r") {
@@ -125,7 +124,7 @@ if ($pause) {
 // Output messages with timestamp
 function output($txt = "") {
 	$d = date ( "Y/m/d H:i:s", time () );
-	echo $d . "; ";
+	echo $d . " | ";
 	echo $txt;
 	echo "\n";
 }
@@ -150,7 +149,7 @@ while ( true ) {
 	$data = jsonApi ( $api_host . "job/request/json", $rpost );
 	if (! ($data && $data->success)) {
 		// Got an error. Pause in case the server is struggling
-		output ( "ERROR, " . isset ( $data->reason ) ? ($data->reason) : ("API call failed") );
+		output ( "0x00 | Request failed " . isset ( $data->reason ) ? ($data->reason) : ("API call failed") );
 		sleep ( 5 );
 	} else {
 		// Log the start time so we can maximise profit :)
@@ -173,7 +172,7 @@ while ( true ) {
 		$begins = str_pad ( "", $data->difficulty, "0" );
 
 		// Output the job details in the Text API format
-		output ( "Received job: Y " . $job_id . " " . $data->hash . " " . str_pad ( $data->difficulty, 2, "0", STR_PAD_LEFT ) . " " . str_pad ( $data->target_seconds, 2, "0", STR_PAD_LEFT ) );
+		output ( "0x01 | Received job: Y " . $job_id . " " . $data->hash . " " . str_pad ( $data->difficulty, 2, "0", STR_PAD_LEFT ) . " " . str_pad ( $data->target_seconds, 2, "0", STR_PAD_LEFT ) );
 
 		// Repeat the looping until we find a valid signature, or we run out of time (being twice the target)
 		while ( ($nonce < 0) && (microtime ( true ) < ($started + (2 * $data->target_seconds))) ) {
@@ -195,9 +194,9 @@ while ( true ) {
 
 		// If we calcuated a value, tell everyone
 		if ($nonce >= 0) {
-			output ( "Nonce: " . $nonce . ", duration: " . number_format ( $duration, 4 ) . ", hashrate: " . number_format ( $spost ["hashrate"], 2 ) . ", hash: " . $signed );
+			output ( "0x02 | Nonce: " . $nonce . " | duration: " . number_format ( $duration, 4 ) . " | hashrate: " . number_format ( $spost ["hashrate"], 2 ) . " | hash: " . $signed );
 		} else {
-			output ( "ERROR, Failed to calculate hash in time" );
+			output ( "0x02 | Error: Failed to calculate hash in time" );
 		}
 
 		// Wait for the submission window
@@ -209,10 +208,9 @@ while ( true ) {
 		$data = jsonApi ( $api_host . "job/submit/json/" . $job_id . "/" . (($nonce < 0) ? (0) : ($nonce)), $spost );
 		if ($data && $data->success) {
 			$shares += 1;
-			$pcnt = number_format ( ($shares / $job_c) * 100, 2 );
-			output ( "ACCEPTED, " . number_format ( $shares ) . "/" . number_format ( $job_c ) . ", " . $pcnt . "%" );
+			output ( "0x03 | ACCEPTED | " . number_format ( $shares ) . "/" . number_format ( $job_c ) . " | " . number_format ( ($shares / $job_c) * 100, 2 ) . "%" );
 		} else {
-			output ( "REJECTED, " . (isset ( $data->reason ) ? ($data->reason) : ("An API error occurred")) );
+			output ( "0x04 | REJECTED | " . (isset ( $data->reason ) ? ($data->reason) : ("An API error occurred")) );
 			sleep ( 1 );
 		}
 	}
