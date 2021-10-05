@@ -19,11 +19,20 @@ USAGE:
 	`basename $0` [parameters]
 
 PARAMETERS:
+	-ac <CODE>  Setup the WiFI country code. Default: "GB"
+	-as <SSID>  Setup the WiFI access point SSID. Default: "MnrTOR"
+	-ap <SSID>  Setup the WiFI access point Passphrase. Default: "Welcome123"
+	-cs <SSID>  Connect the remote side to this SSID access point. Default: ""
+	-cp <PASS>  The passphrase for the remote side SSID access point. Default: ""
 	-gn <NAME>  Your pretty name for git checking in. Default: "Nigel Johnson"
 	-ge <EMAIL> Your git registered email address. Default: nigel@nigeljohnson.net
 	-gp <PASS>  The Personal Access Token you made on github 
 
 	-h | --help Show this help and exit
+	
+	NOTE: If you want to configure the wifi, you will need to supply the remote side
+	      SSID and passphrase. You will also need to have a wifi dongle plugged in
+	      and presenting itself as 'wlan1' in your ifconfig
 
 EOF
 }
@@ -32,6 +41,16 @@ die() { [ -n "$1" ] && echo -e "\nError: $1\n" >&2; usage; [ -z "$1" ]; exit;}
 GIT_USERNAME="Nigel Johnson"
 GIT_USERMAIL="nigel@nigeljohnson.net"
 GIT_PAT=""
+CLIENT_SSID=""
+CLIENT_PASSPHRASE=""
+AP_SSID="MnrTOR"
+AP_PASSPHRASE="Welcome123"
+AP_IP="10.10.1.1"
+AP_CHANNEL=6
+AP_WLAN=1
+CCODE="GB"
+OPENFLAG=""
+DNS_IP="8.8.8.8"
 
 if [ $# -eq 0 ]; then
 	die
@@ -39,6 +58,31 @@ fi
 
 while [[ $# -gt 0 ]]; do
 	case $1 in
+		-ac)
+			CCODE="$2"
+			echo "WiFi country code: '$2'"
+			shift
+			;;
+		-as)
+			AP_SSID="$2"
+			echo "AP SSID: '$2'"
+			shift
+			;;
+		-ap)
+			AP_PASSPHRASE="$2"
+			echo "AP passphrase: '$2'"
+			shift
+			;;
+		-cs)
+			CLIENT_SSID="$2"
+			echo "Remote side SSID: '$2'"
+			shift
+			;;
+		-cp)
+			CLIENT_PASSPHRASE="$2"
+			echo "Remote side passphrase: '$2'"
+			shift
+			;;
 		-gp)
 			GIT_PAT="$2"
 			echo "GIT PAT: '$2'"
@@ -76,7 +120,19 @@ echo "## The configuration we will be using today:" | tee -a $logfile
 echo "##" | tee -a $logfile
 echo "##  git checkin name : '${GIT_USERNAME}'" | tee -a $logfile
 echo "## git email address : '${GIT_USERMAIL}'" | tee -a $logfile
-echo "##  git access token : '${GIT_PAT}'" | tee -a $logfile
+echo "##  git access token : '${GIT_PAT}'"
+echo "##" | tee -a $logfile
+if [[ -n "$CLIENT_SSID$CLIENT_PASSPHRASE" ]]
+then
+	echo "##      WiFi Country : '${CCODE}'" | tee -a $logfile
+	echo "##       client SSID : '${CLIENT_SSID}'" | tee -a $logfile
+	echo "## client passphrase : '${CLIENT_PASSPHRASE}'"
+	echo "##           AP SSID : '${AP_SSID}'" | tee -a $logfile
+	echo "##     AP passphrase : '${AP_PASSPHRASE}'"
+	echo "##     AP IP address : '${AP_IP}'" | tee -a $logfile
+else
+	echo "## WiFi will not be configured" | tee -a $logfile
+fi
 echo "##" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
 echo "" | tee -a $logfile
@@ -96,6 +152,17 @@ echo "## Cleanup loose packages" | tee -a $logfile
 sudo apt autoremove -y
 echo "## Ensure we have latest firmware installed" | tee -a $logfile
 sudo rpi-eeprom-update
+
+echo "## Update the bootloader order USB -> SD card" | tee -a $logfile
+cat > /tmp/boot.conf << EOF
+[all]
+BOOT_UART=0
+WAKE_ON_GPIO=1
+ENABLE_SELF_UPDATE=1
+BOOT_ORDER=0xf14
+EOF
+sudo rpi-eeprom-config --apply /tmp/boot.conf
+
 
 # Install core packages we need to do the core stuff later
 echo "## Install core pacakges" | tee -a $logfile
@@ -231,6 +298,8 @@ sudo cp /etc/tor/torrc /etc/tor/torrc.orig
 sudo bash -c 'cat > /etc/tor/torrc' << EOF
 HiddenServiceDir /var/lib/tor/hidden_service/
 HiddenServicePort 80 127.0.0.1:80
+SocksPort 0.0.0.0:9050
+SocksPolicy accept *
 EOF
 sudo service tor stop
 sleep 1
@@ -254,7 +323,11 @@ sudo bash -c 'cat >> /etc/apache2/apache2.conf' << EOF
 EOF
 sudo /etc/init.d/apache2 restart
 
-
+if [[ -n "$CLIENT_SSID$CLIENT_PASSPHRASE" ]]
+then
+	echo "Skipping wifi config for now. Run this if you want to do it:"
+	echo "bash /webroot/coin73/sh/configure_wifi.sh -c '$CLIENT_SSID' '$CLIENT_PASSPHRASE' -a '$AP_SSID' '$AP_PASSPHRASE' -i '$AP_IP' -d '$DNS_IP' -x '$CCODE' -f '$AP_CHANNEL' -l '$AP_WLAN' $OPEN_FLAG"
+fi
 
 #echo ""
 #echo "####################################################################"
