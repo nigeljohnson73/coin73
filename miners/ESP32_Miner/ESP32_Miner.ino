@@ -24,9 +24,9 @@ const String VERSION = "v0.1a";
 // https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
 #include "sha/sha_parallel_engine.h"
 
-//const char* wifi_ssid = "WIFISSID";  // You WiFi SSID on your router
-//const char* wifi_pass = "PASSWORD";  // The password/phrase you access the router with
-//const char* wallet_id = "WALLETID";  // The really long string found on the account
+const char* wifi_ssid = "WIFISSID";  // You WiFi SSID on your router
+const char* wifi_pass = "PASSWORD";  // The password/phrase you access the router with
+const char* wallet_id = "WALLETID";  // The really long string found on the account
 const char* rig_id  = "ESP32-Miner"; // This must be unique on your account
 
 /************************************************************************************************
