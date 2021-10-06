@@ -10,11 +10,12 @@ logger ( LL_DBG, ob_print_r ( $_POST ) );
 
 $success = false;
 $message = ""; // Used by the toaster pop-up
-//$ret->reason = ""; // Used in the page alerts
+               // $ret->reason = ""; // Used in the page alerts
 
 // verify the response
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["guid"] ) && isset ( $_POST ["challenge"] ) && isset ( $_POST ["password"] )) {
 	global $valid_password_regex;
+	global $recaptcha_recover_threshold;
 	if (! $_POST ["accept_toc"]) {
 		$message = "User recovery failed";
 		$ret->reason = "Not sure how it happened, but you still have to accept the terms of use";
@@ -24,10 +25,10 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 	} else {
 		// use the reCAPTCHA PHP client library for recovery
 		$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-		$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
+		$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( $recaptcha_recover_threshold )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 		if ($resp->isSuccess ()) {
-			//$store = UserStore::getInstance ();
+			// $store = UserStore::getInstance ();
 			$user = UserStore::getItemByGuid ( @$_POST ["guid"] );
 			if (is_array ( $user )) {
 				$expect = json_decode ( $user ["recovery_data"] )->expect;
@@ -42,7 +43,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 				$user ["validation_reminded"] = 0;
 				$user ["validation_nonce"] = "";
 				$user ["validation_data"] = "";
-				
+
 				$user = UserStore::update ( $user );
 
 				if (is_array ( $user )) {

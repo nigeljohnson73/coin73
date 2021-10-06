@@ -15,7 +15,7 @@ logger ( LL_DBG, ob_print_r ( $_SESSION ) );
 $success = true;
 $message = "";
 
-session_destroy();
+session_destroy ();
 
 if (! $success) {
 	global $api_failure_delay;

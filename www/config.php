@@ -68,6 +68,11 @@ $coinbase_privKey = "";
 $recaptcha_site_key = "";
 $recaptcha_secret_key = "";
 
+$recaptcha_create_threshold = 0.75;
+$recaptcha_login_threshold = 0.25;
+$recaptcha_recover_threshold = 0.5;
+$recaptcha_validate_threshold = 0.5;
+
 // This is the configuration for GMail SMTP. The username is generally your email address and your
 // password is an app password you need to set up. See the README.md file for more info on that.
 // Expected to be overridden in config_override.php

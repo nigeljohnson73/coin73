@@ -12,7 +12,7 @@ $ret->reason = "";
 $success = false;
 $message = "Unable to prepare validation";
 
-//$store = UserStore::getInstance ();
+// $store = UserStore::getInstance ();
 if (isset ( $_POST ["payload"] )) {
 	$user = UserStore::getItemByValidationNonce ( $_POST ["payload"] );
 	if ($user) {

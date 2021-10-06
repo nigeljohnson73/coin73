@@ -17,6 +17,7 @@ $message = "";
 // $ret->challenge = "Wibble";
 
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["email"] ) && isset ( $_POST ["password"] ) && isset ( $_POST ["accept_toc"] )) {
+	global $recaptcha_create_threshold;
 	global $valid_password_regex;
 	if (! $_POST ["accept_toc"]) {
 		$message = "User creation failed";
@@ -32,7 +33,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 		if (InfoStore::signupEnabled ()) {
 			// use the reCAPTCHA PHP client library for validation
 			$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
+			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( $recaptcha_create_threshold )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
 
 			// verify the response
 			if ($resp->isSuccess ()) {

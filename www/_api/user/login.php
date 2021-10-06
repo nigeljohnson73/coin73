@@ -18,6 +18,7 @@ $ret->disabled = false;
 
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["email"] ) && isset ( $_POST ["password"] ) && isset ( $_POST ["accept_toc"] )) {
 	global $valid_password_regex;
+	global $recaptcha_login_threshold;
 	if (! $_POST ["accept_toc"]) {
 		$message = "User login failed";
 		$ret->reason = "Not sure how it happened, but you still have to accept the terms of use";
@@ -32,7 +33,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 		if (InfoStore::loginEnabled ()) {
 			// use the reCAPTCHA PHP client library for validation
 			$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
+			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( $recaptcha_login_threshold )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
 
 			if ($resp->isSuccess ()) {
 				$user = UserStore::authenticate ( @$_POST ["email"], @$_POST ["password"] );
@@ -55,7 +56,7 @@ if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST 
 						$ret->reason = "There is an outstanding validation request. Please complete that first.";
 					}
 				} else {
-					//$message = "Unable to authenticate user\n";
+					// $message = "Unable to authenticate user\n";
 					$ret->reason = "The request was invalid - your user details could not be authenticated";
 				}
 			} else {

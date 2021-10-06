@@ -14,12 +14,13 @@ $ret->reason = ""; // Used in the page alerts
 
 // verify the response
 if (isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["guid"] ) && isset ( $_POST ["challenge"] )) {
+	global $recaptcha_validate_threshold;
 	// use the reCAPTCHA PHP client library for validation
 	$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( 0.5 )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
+	$resp = $recaptcha->setExpectedAction ( $_POST ['action'] )->setScoreThreshold ( $recaptcha_validate_threshold )->verify ( $_POST ['token'], $_SERVER ['REMOTE_ADDR'] );
 
 	if ($resp->isSuccess ()) {
-		//$store = UserStore::getInstance ();
+		// $store = UserStore::getInstance ();
 		$user = UserStore::getItemByGuid ( @$_POST ["guid"] );
 		if (is_array ( $user )) {
 			$expect = json_decode ( $user ["validation_data"] )->expect;
