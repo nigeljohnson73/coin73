@@ -22,32 +22,24 @@ import requests, json
 from datetime import datetime
 
 
-class Api:
+def jsonApi(url, payload):
+    headers = { "Content-type": "application/x-www-form-urlencoded" }
+    proxies = {}
+    if use_tor:
+        proxies = { "http": "socks5h://{}".format(tor_proxy) }
 
-    def __init__(self):
-        pass
+    try:
+        response = requests.post(url, data=payload, headers=headers, proxies=proxies, timeout=60)
 
-    def __str__(self):
-        return "Api object"
-
-    def call(self, host, api, payload):
-        headers = { "Content-type": "application/x-www-form-urlencoded" }
-        proxies = {}
-        if use_tor:
-            proxies = { "http": "socks5h://{}".format(tor_proxy) }
- 
-        try:
-            response = requests.post(host + api, data=payload, headers=headers, proxies=proxies)
-
-        except Exception as err:
-            print("Api call failed: {}".format(err))
-            return False
-        
-        if response.status_code == 200:
-            return json.loads(response.text)
-
-        print("Api call failed ({code}): {reason}".format(code=response.status_code, reason=response.reason))
+    except Exception as err:
+        print("Api call failed: {}".format(err))
         return False
+    
+    if response.status_code == 200:
+        return json.loads(response.text)
+
+    print("Api call failed ({code}): {reason}".format(code=response.status_code, reason=response.reason))
+    return False
 
 
 def usage():
@@ -65,13 +57,13 @@ def usage():
     sys.exit ()
 
 
-wallet_id = ""
+api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion"
 rig_id = "Python-Miner"
 chip_id = "Python Script"
-api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion"
-use_tor = True
+wallet_id = ""
 tor_proxy = "127.0.0.1:9050"
 pause = True
+use_tor = True
  
 try:
     opts, args = getopt.getopt(sys.argv[1:], "c:dhp:r:w:y", ["chipid=", "dev", "help", "proxy=", "rigid=", "walletid=", "yes"])
@@ -82,26 +74,26 @@ except getopt.GetoptError as err:
 
 for o, a in opts:
     if o in ("-c", "--chipid"):
-        #print ("CHIPID")
+        # print ("CHIPID")
         chip_id = a
     elif o in ("-d", "--dev"):
-        #print ("DEV")
+        # print ("DEV")
         api_host = "http://mnrtor.local"
         use_tor = False
     elif o in ("-h", "--help"):
-        #print ("HELP")
+        # print ("HELP")
         usage()
     elif o in ("-p", "--proxy"):
-        #print ("PROXY")
+        # print ("PROXY")
         tor_proxy = a
     elif o in ("-r", "--rigid"):
-        #print ("RIGID")
+        # print ("RIGID")
         rig_id = a
     elif o in ("-w", "--walletid"):
-        #print ("WALLETID")
+        # print ("WALLETID")
         wallet_id = a
     elif o in ("-y", "--yes"):
-        #print ("YES")
+        # print ("YES")
         pause = False
     else:
         assert False, "unknown option"
@@ -134,9 +126,8 @@ if pause:
     print("#####################################################################################################################################################")
     input("Press return to continue")
 
-# sys.exit();
 
-
+# Output messages with timestamp
 def output(str):
     now = datetime.now()
     ts = now.strftime("%Y/%m/%d %H:%M:%S")
@@ -146,18 +137,16 @@ def output(str):
 request_api = "/api/job/request/json"
 submit_api = "/api/job/submit/json"
 
+# Prepare the data for the API calls (hashrate will be calulated and overwritten)
 request_payload = {"wallet_id": wallet_id, "rig_id": rig_id}
 submit_payload = {"hashrate": 0, "chiptype": chip_id}
-
-api = Api()
 
 # Keep track of how many jobs we received and how many were successful
 job_c = 0;
 shares = 0;
 
-# $data = jsonApi ( $api_host . "job/request/json", $request_payload );
 for loop in range (sys.maxsize):
-    job = api.call(api_host, request_api, request_payload)
+    job = jsonApi(api_host + request_api, request_payload)
     if job:
         if not job["success"]:
             print ("0x00 | Request failed: {reason}".format(reason=job["reason"]))
@@ -200,7 +189,7 @@ for loop in range (sys.maxsize):
             while (time.perf_counter() - start) < submit_delay:
                 time.sleep(0.1)
             
-            job = api.call(api_host, submit_api + "/" + job_id + "/" + str(nonce), submit_payload)
+            job = jsonApi(api_host + submit_api + "/" + job_id + "/" + str(nonce), submit_payload)
             if not job["success"]:
                 print ("0x04 | REJECTED | {reason}".format(reason=job["reason"]))
             else:

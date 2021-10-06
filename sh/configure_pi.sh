@@ -151,7 +151,7 @@ sudo apt full-upgrade -y
 echo "## Cleanup loose packages" | tee -a $logfile
 sudo apt autoremove -y
 echo "## Ensure we have latest firmware installed" | tee -a $logfile
-sudo rpi-eeprom-update
+sudo rpi-eeprom-update -a -d
 
 echo "## Update the bootloader order USB -> SD card" | tee -a $logfile
 cat > /tmp/boot.conf << EOF

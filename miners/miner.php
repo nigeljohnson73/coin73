@@ -15,7 +15,6 @@
 */
 // @formatter:on
 $VERSION = "0.1a";
-$use_tor = true;
 
 if (function_exists ( "curl_init" )) {
 
@@ -63,19 +62,20 @@ function help() {
 }
 
 // $api_host = "http://coin73.appspot.com/api/";
-$api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion/api/";
+$api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion";
 $rig_id = "PHP-Miner";
 $chip_id = "PHP Script";
 $tor_proxy = "127.0.0.1:9050";
 $wallet_id = "";
 $pause = true;
+$use_tor = true;
 
 $opts = getopt ( 'c:dhp:r:w:y' );
 foreach ( $opts as $k => $v ) {
 	if ($k == "c") {
 		$chip_id = $v;
 	} else if ($k == "d") {
-		$api_host = "http://mnrtor.local/api/";
+		$api_host = "http://mnrtor.local";
 		$use_tor = false;
 	} else if ($k == "h") {
 		help ();
@@ -114,7 +114,9 @@ if ($pause) {
 	echo "#    Rig ID    : '" . $rig_id . "'\n";
 	echo "#    Wallet ID : '" . $wallet_id . "'\n";
 	echo "#    API host  : '" . $api_host . "'\n";
-	echo "#    TOR proxy : '" . $tor_proxy . "'\n";
+	if ($use_tor) {
+		echo "#    TOR proxy : '" . $tor_proxy . "'\n";
+	}
 	echo "#\n";
 	echo "#####################################################################################################################################################\n";
 	echo "Press return to continue\n";
@@ -129,24 +131,27 @@ function output($txt = "") {
 	echo "\n";
 }
 
+$request_api = "/api/job/request/json";
+$submit_api = "/api/job/submit/json";
+
 // Set up the data for the request job API
-$rpost = array ();
-$rpost ["wallet_id"] = $wallet_id;
-$rpost ["rig_id"] = $rig_id;
+$request_payload = array ();
+$request_payload ["wallet_id"] = $wallet_id;
+$request_payload ["rig_id"] = $rig_id;
 
 // Prepare the data for the submit job API (hashrate will be calulated and overwritten)
-$spost = array ();
-$spost ["hashrate"] = 0;
-$spost ["chiptype"] = $chip_id;
+$submit_payload = array ();
+$submit_payload ["hashrate"] = 0;
+$submit_payload ["chiptype"] = $chip_id;
 
-// KEep track of how many jobs we received and how many were successful
+// Keep track of how many jobs we received and how many were successful
 $job_c = 0;
 $shares = 0;
 
 // Loop forever (hopefully)
 while ( true ) {
 	// Request a job
-	$data = jsonApi ( $api_host . "job/request/json", $rpost );
+	$data = jsonApi ( $api_host . $request_api, $request_payload );
 	if (! ($data && $data->success)) {
 		// Got an error. Pause in case the server is struggling
 		output ( "0x00 | Request failed " . isset ( $data->reason ) ? ($data->reason) : ("API call failed") );
@@ -185,7 +190,7 @@ while ( true ) {
 				$nonce = $cnonce;
 				// calcuate the hashrate
 				$duration = microtime ( true ) - $started;
-				$spost ["hashrate"] = ($cnonce + 1) / $duration;
+				$submit_payload ["hashrate"] = ($cnonce + 1) / $duration;
 			}
 
 			// Increment the counter so we can try again
@@ -194,7 +199,7 @@ while ( true ) {
 
 		// If we calcuated a value, tell everyone
 		if ($nonce >= 0) {
-			output ( "0x02 | Nonce: " . $nonce . " | duration: " . number_format ( $duration, 4 ) . " | hashrate: " . number_format ( $spost ["hashrate"], 2 ) . " | hash: " . $signed );
+			output ( "0x02 | Nonce: " . $nonce . " | duration: " . number_format ( $duration, 4 ) . " | hashrate: " . number_format ( $submit_payload ["hashrate"], 2 ) . " | hash: " . $signed );
 		} else {
 			output ( "0x02 | Error: Failed to calculate hash in time" );
 		}
@@ -205,7 +210,7 @@ while ( true ) {
 		}
 
 		// Submit the job, even if we failed - it's ok to admit failure.
-		$data = jsonApi ( $api_host . "job/submit/json/" . $job_id . "/" . (($nonce < 0) ? (0) : ($nonce)), $spost );
+		$data = jsonApi ( $api_host . $submit_api . "/" . $job_id . "/" . (($nonce < 0) ? (0) : ($nonce)), $submit_payload );
 		if ($data && $data->success) {
 			$shares += 1;
 			output ( "0x03 | ACCEPTED | " . number_format ( $shares ) . "/" . number_format ( $job_c ) . " | " . number_format ( ($shares / $job_c) * 100, 2 ) . "%" );

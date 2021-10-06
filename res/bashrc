@@ -1,6 +1,7 @@
 PATH=$PATH:/webroot/coin73/sh
 _NAME=$(hostname)
 _IP=$(hostname -I)
+_DWEB=$(cat /logs/darkweb_hostname.txt)
 
 echo ""
 echo "                                                            @        "
@@ -30,7 +31,7 @@ echo "       ,@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@,    "
 echo ""
 echo "---------------------------------------------------------------------"
 echo ""
-echo "Access the Eleventy-Five server on your network:"
+echo "Access the MinerTOR server on your network:"
 echo ""
 
 for name in $_NAME;
@@ -42,6 +43,9 @@ do
     echo "    http://$ip"
 done
 
+echo ""
+echo "Access MinerTOR on the darkweb:"
+    echo "    $_DWEB"
 echo ""
 echo "---------------------------------------------------------------------"
 echo ""
