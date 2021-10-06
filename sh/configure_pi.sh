@@ -263,14 +263,15 @@ cp res/install/config_* www
 sudo mkdir -p /var/coin73
 sudo chown -R pi:pi /var/coin73
 sudo chmod -R 777 /var/coin73
-sh/populate_config.php
 
 ## install the composer dependancies
 echo "## Installing composer dependancies" | tee -a $logfile
 cd /webroot/coin73/www
 composer install
-#cd /webroot/coin73/api
-#composer install
+
+echo "## Configuring software keys" | tee -a $logfile
+cd /webroot/coin73
+sh/populate_config.sh
 
 ## Install crontab entries to start the services
 echo "## Installing service management startup in crontab" | tee -a $logfile
