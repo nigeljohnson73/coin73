@@ -4,6 +4,7 @@
  * <a target="_filestore" href="https://console.cloud.google.com/storage/browser?project=coin73">Cloud Store buckets</a>
  * <a target="_versions" href="https://console.cloud.google.com/appengine/versions?serviceId=default&project=coin73&pageState=(%22versionsTable%22:(%22r%22:200))">App versions</a>
  * <a target="_billing" href="https://console.cloud.google.com/billing/00191D-4FB89B-3B9D38/reports;grouping=GROUP_BY_SKU;projects=coin73?project=coin73&organizationId=203754394715">Billing</a>
+ * <a target="_recaptcha" href="https://www.google.com/recaptcha/admin/site/474525021">RECAPTCHA Admin console</a>
 
 ## Production data
 
