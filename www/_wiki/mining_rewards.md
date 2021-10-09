@@ -50,6 +50,6 @@ Doing the substitution and you get:
 
 `total = {{MINER_REWARD_TARGET_DAY}} x {{MINER_SUBMIT_TARGET_REWARD_PERCENT}} x {{MINER_PERCEIVED_MAX}}`
 
-This gives you the {{ACCOUNT_MINED_COINS_PER_DAY}} coins per day shown at the top of the page. Bear in mind though, that your milage **WILL** vary to the lower side, due to the number of miners submitting on your account at any one time, as well as the submission times you actually get, and the fact that to calculate the rate per job you need to work out a fraction of day rate for the target time.
+This gives you the {{ACCOUNT_MINED_COINS_PER_DAY}} coins per day shown at the top of the page. Bear in mind though, that your milage **WILL** vary to the lower side, due to the timings and number of miners submitting on your account at any one time, as well as the submission times you actually get and the fact that to calculate the rate per job you need to work out a fraction of day rate for the target time. If you are running over the darkweb then timings will also be hindered in a negative way.
 
 Yep, seems low, but please refer to the very first sentence on this page.
