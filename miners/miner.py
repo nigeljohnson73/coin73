@@ -28,15 +28,22 @@ def jsonApi(url, payload):
     if use_tor:
         proxies = { "http": "socks5h://{}".format(tor_proxy) }
 
-    try:
-        response = requests.post(url, data=payload, headers=headers, proxies=proxies, timeout=60)
-
-    except Exception as err:
-        print("Api call failed: {}".format(err))
-        return False
+    for n in range(5):
+        try:
+            response = requests.post(url, data=payload, headers=headers, proxies=proxies, timeout=15)
     
-    if response.status_code == 200:
-        return json.loads(response.text)
+        except Exception as err:
+            print("Api call failed: {}".format(err))
+    
+            class DuffReponse:
+                pass
+    
+            response = DuffReponse();
+            response.status_code = 0;
+            response.reason = str(err)
+        
+        if response.status_code == 200:
+            return json.loads(response.text)
 
     print("Api call failed ({code}): {reason}".format(code=response.status_code, reason=response.reason))
     return False
