@@ -138,7 +138,7 @@ if pause:
 def output(str):
     now = datetime.now()
     ts = now.strftime("%Y/%m/%d %H:%M:%S")
-    print(ts + "| " + str)
+    print(ts + " | " + str)
 
 
 request_api = "/api/job/request/json"
