@@ -197,7 +197,7 @@ for loop in range (sys.maxsize):
                 time.sleep(0.1)
             
             job = jsonApi(api_host + submit_api + "/" + job_id + "/" + str(nonce), submit_payload)
-            if not job["success"]:
+            if job == False or not job["success"]:
                 print ("0x04 | REJECTED | {reason}".format(reason=job["reason"]))
             else:
                 shares += 1
