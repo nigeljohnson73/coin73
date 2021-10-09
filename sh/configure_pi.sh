@@ -28,6 +28,7 @@ USAGE:
 
 PARAMETERS:
 	-ac <CODE>  Setup the WiFI country code. Default: "GB"
+	-ad <DNS>   Setup the WiFI DNS redirection. Default: "8.8.8.8"
 	-as <SSID>  Setup the WiFI access point SSID. Default: "MnrTOR"
 	-ap <SSID>  Setup the WiFI access point Passphrase. Default: "Welcome123"
 	-cs <SSID>  Connect the remote side to this SSID access point. Default: ""
@@ -69,6 +70,11 @@ while [[ $# -gt 0 ]]; do
 		-ac)
 			CCODE="$2"
 			echo "WiFi country code: '$2'"
+			shift
+			;;
+		-ac)
+			DNS_IP="$2"
+			echo "WiFi IP address: '$2'"
 			shift
 			;;
 		-as)
@@ -138,6 +144,7 @@ then
 	echo "##           AP SSID : '${AP_SSID}'" | tee -a $logfile
 	echo "##     AP passphrase : '${AP_PASSPHRASE}'"
 	echo "##     AP IP address : '${AP_IP}'" | tee -a $logfile
+	echo "## AP DNS IP address : '${DNS_IP}'" | tee -a $logfile
 else
 	echo "## WiFi will not be configured" | tee -a $logfile
 fi
