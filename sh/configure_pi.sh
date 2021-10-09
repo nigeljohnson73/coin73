@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
 			echo "WiFi country code: '$2'"
 			shift
 			;;
-		-ac)
+		-ad)
 			DNS_IP="$2"
 			echo "WiFi IP address: '$2'"
 			shift
@@ -254,9 +254,9 @@ echo "####################################################################"
 echo ""
 echo " Install the coin73 software"
 echo ""
-echo " You will need the bundle file from the dev server:"
+echo " You will need the bundle file from your dev server:"
 echo ""
-echo "  * php sh/gen_bundle.php"
+echo "  * sh/gen_bundle.sh"
 echo ""
 echo "Press return to continue"
 echo ""
@@ -297,7 +297,7 @@ echo "# coin73 Miner configuration" | { cat; sudo bash -c 'cat' << EOF
 #* * * * * curl -o /tmp/coin73_tick.log http://localhost:/cron/tick >/dev/null 2>&1
 #* * * * * curl -o /tmp/coin73_minute.log http://localhost/cron/every_minute >/dev/null 2>&1
 #3 * * * * curl -o /tmp/coin73_hour.log http://localhost/cron/every_hour >/dev/null 2>&1
-#17 3 * * * curl -o /tmp/coin73_day.log http://localhost/cron/every_day >/dev/null 2>&1
+#9 3 * * * curl -o /tmp/coin73_day.log http://localhost/cron/every_day >/dev/null 2>&1
 EOF
 } | crontab -
 
