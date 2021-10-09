@@ -1,4 +1,12 @@
 #!/usr/bin/bash
+#
+# Clone the SD Card to attached USB drive:
+#
+# cd /tmp
+# wget https://raw.githubusercontent.com/billw2/rpi-clone/master/rpi-clone
+# lsblk
+# sudo bash rpi-clone -v sda
+#
 
 sudo mkdir /logs
 sudo chown -R pi:pi /logs
@@ -276,9 +284,10 @@ sh/populate_config.sh
 ## Install crontab entries to start the services
 echo "## Installing service management startup in crontab" | tee -a $logfile
 echo "# coin73 Miner configuration" | { cat; sudo bash -c 'cat' << EOF
-#@reboot sleep 30 && screen -S api -L -Logfile /tmp/api.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8085 -t api api/index.php"
-#@reboot sleep 30 && screen -S www -L -Logfile /tmp/www.php.log -dm bash -c "cd ~/webroot/coin73; php -S localhost:8080 -t www www/index.php"
-##* * * * * curl -o /tmp/coin73_tick.log http://localhost:/cron/tick >/dev/null 2>&1
+#@reboot sleep 60 && screen -S php -L -Logfile /tmp/miner.php.log -dm bash -c "cd /webroot/coin73/miners; php miner.php -w WALLETID -y"
+#@reboot sleep 60 && screen -S python -L -Logfile /tmp/miner.python.log -dm bash -c "cd /webroot/coin73/miners; python3 miner.py -w WALLETID -y"
+
+#* * * * * curl -o /tmp/coin73_tick.log http://localhost:/cron/tick >/dev/null 2>&1
 #* * * * * curl -o /tmp/coin73_minute.log http://localhost/cron/every_minute >/dev/null 2>&1
 #3 * * * * curl -o /tmp/coin73_hour.log http://localhost/cron/every_hour >/dev/null 2>&1
 #17 3 * * * curl -o /tmp/coin73_day.log http://localhost/cron/every_day >/dev/null 2>&1
