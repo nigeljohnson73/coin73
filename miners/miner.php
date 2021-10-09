@@ -21,23 +21,33 @@ if (function_exists ( "curl_init" )) {
 	// Calls a $url and returns a wrapped object. Pass in $post arguments as key/value array pairs
 	function jsonApi($url, $post) {
 		global $use_tor, $tor_proxy;
-		$ch = curl_init ( $url );
-		curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, 0 );
-		curl_setopt ( $ch, CURLOPT_TIMEOUT, 60 );
-		curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt ( $ch, CURLOPT_POSTFIELDS, $post );
-		if ($use_tor) {
-			curl_setopt ( $ch, CURLOPT_PROXY, $tor_proxy );
-			curl_setopt ( $ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME );
+		$retries = 5;
+		$ret = false;
+		for($try = 0; $try < $retries && $ret == false; $try ++) {
+			$ch = curl_init ( $url );
+			curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, 0 );
+			curl_setopt ( $ch, CURLOPT_TIMEOUT, 15 );
+			curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt ( $ch, CURLOPT_POSTFIELDS, $post );
+			if ($use_tor) {
+				curl_setopt ( $ch, CURLOPT_PROXY, $tor_proxy );
+				curl_setopt ( $ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME );
+			}
+			$data = curl_exec ( $ch );
+			$response = curl_getinfo ( $ch, CURLINFO_HTTP_CODE );
+			if ($response < 200 || $response > 299) {
+				echo "jsonApi(): API failed: response code $response\n";
+				// echo "jsonApi(): Data:\n" . $data . "\n";
+				sleep ( 1 );
+			} else {
+				$ret = json_decode ( $data );
+				if (getType ( $ret ) != "object") {
+					echo "jsonApi(): API failed: invalid JSON:\n" . ob_print_r ( $ret ) . "\n";
+					$ret = false;
+				}
+			}
+			curl_close ( $ch );
 		}
-		$data = curl_exec ( $ch );
-		$response = curl_getinfo ( $ch, CURLINFO_HTTP_CODE );
-		if ($response < 200 || $response > 299) {
-			echo "jsonApi(): Got response code $response\n";
-			echo "jsonApi(): Data:\n" . $data . "\n";
-		}
-		$ret = json_decode ( $data );
-		curl_close ( $ch );
 
 		return $ret;
 		// }
