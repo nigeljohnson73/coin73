@@ -164,7 +164,7 @@ while ( true ) {
 	$data = jsonApi ( $api_host . $request_api, $request_payload );
 	if (! ($data && $data->success)) {
 		// Got an error. Pause in case the server is struggling
-		output ( "0x00 | Request failed " . ($data && isset ( $data->reason ) ? ($data->reason) : ("API call failed")) );
+		output ( "0x00 | Request failed: " . ($data && isset ( $data->reason ) ? ($data->reason) : ("API call failed")) );
 		sleep ( 5 );
 	} else {
 		// Log the start time so we can maximise profit :)
