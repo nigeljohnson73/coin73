@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cd /webroot/coin73
+cd /webroot/minertor
 git checkout www/config.json
 git pull

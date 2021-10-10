@@ -227,7 +227,7 @@ EOF
 
 echo "## Install bashrc hooks" | tee -a $logfile
 bash -c 'cat >> ~/.bashrc' << EOF
-source /webroot/coin73/res/bashrc
+source /webroot/minertor/res/bashrc
 EOF
 
 echo "## Install rc.local hooks" | tee -a $logfile
@@ -235,7 +235,7 @@ sudo cat /etc/rc.local | grep -v 'exit 0' | sudo tee /etc/rc.local.tmp >/dev/nul
 sudo rm /etc/rc.local
 sudo mv /etc/rc.local.tmp /etc/rc.local
 sudo bash -c 'cat >> /etc/rc.local' << EOF
-. /webroot/coin73/res/rc.local
+. /webroot/minertor/res/rc.local
 exit 0
 EOF
 
@@ -289,14 +289,14 @@ sudo composer self-update
 echo ""
 echo "####################################################################"
 echo ""
-echo " Install the coin73 software"
+echo " Install the minertor software"
 echo ""
 echo "Press return to continue"
 echo ""
 read ok
 
 # The software is held in github so set that up and clone it to the right place 
-echo "## Cloning coin73 source code tree" | tee -a $logfile
+echo "## Cloning minertor source code tree" | tee -a $logfile
 sudo mkdir /webroot
 cd /webroot
 if [[ -n "$GIT_PAT" ]]
@@ -304,34 +304,34 @@ then
 	git config --global credential.helper store
 	git config --global user.email $GIT_USERMAIL
 	git config --global user.name $GIT_USERNAME
-	sudo git clone https://${GIT_PAT}:x-oauth-basic@github.com/nigeljohnson73/coin73.git
+	sudo git clone https://${GIT_PAT}:x-oauth-basic@github.com/nigeljohnson73/minertor.git
 else
-	sudo git clone https://github.com/nigeljohnson73/coin73.git
+	sudo git clone https://github.com/nigeljohnson73/minertor.git
 fi
-sudo chown -R pi:pi coin73
-cd coin73
+sudo chown -R pi:pi minertor
+cd minertor
 sudo mysql --user=root < res/setup_root.sql
 sudo mysql -uroot -pEarl1er2day < res/setup_db.sql
 cp res/install/config_* www
-sudo mkdir -p /var/coin73
-sudo chown -R pi:pi /var/coin73
-sudo chmod -R 777 /var/coin73
+sudo mkdir -p /var/minertor
+sudo chown -R pi:pi /var/minertor
+sudo chmod -R 777 /var/minertor
 
 ## install the composer dependancies
 echo "## Installing composer dependancies" | tee -a $logfile
-cd /webroot/coin73/www
+cd /webroot/minertor/www
 composer install
 
 ## Install crontab entries to start the services
 echo "## Installing service management startup in crontab" | tee -a $logfile
-echo "# coin73 Miner configuration" | { cat; sudo bash -c 'cat' << EOF
-#@reboot sleep 60 && screen -S php -L -Logfile /tmp/miner.php.log -dm bash -c "cd /webroot/coin73/miners; php miner.php -w WALLETID -y"
-#@reboot sleep 60 && screen -S python -L -Logfile /tmp/miner.python.log -dm bash -c "cd /webroot/coin73/miners; python3 miner.py -w WALLETID -y"
+echo "# minertor Miner configuration" | { cat; sudo bash -c 'cat' << EOF
+#@reboot sleep 60 && screen -S php -L -Logfile /tmp/miner.php.log -dm bash -c "cd /webroot/minertor/miners; php miner.php -w WALLETID -y"
+#@reboot sleep 60 && screen -S python -L -Logfile /tmp/miner.python.log -dm bash -c "cd /webroot/minertor/miners; python3 miner.py -w WALLETID -y"
 
-#* * * * * curl -o /tmp/coin73_tick.log http://localhost:/cron/tick >/dev/null 2>&1
-#* * * * * curl -o /tmp/coin73_minute.log http://localhost/cron/every_minute >/dev/null 2>&1
-#3 * * * * curl -o /tmp/coin73_hour.log http://localhost/cron/every_hour >/dev/null 2>&1
-#9 3 * * * curl -o /tmp/coin73_day.log http://localhost/cron/every_day >/dev/null 2>&1
+#* * * * * curl -o /tmp/minertor_tick.log http://localhost:/cron/tick >/dev/null 2>&1
+#* * * * * curl -o /tmp/minertor_minute.log http://localhost/cron/every_minute >/dev/null 2>&1
+#3 * * * * curl -o /tmp/minertor_hour.log http://localhost/cron/every_hour >/dev/null 2>&1
+#9 3 * * * curl -o /tmp/minertor_day.log http://localhost/cron/every_day >/dev/null 2>&1
 EOF
 } | crontab -
 
@@ -362,7 +362,7 @@ sudo cat /var/lib/tor/hidden_service/hostname | tee /logs/darkweb_hostname.txt
 echo "## Configuring Nginx" | tee -a $logfile
 cd /var/www/
 sudo mv html html_orig
-sudo ln -s /webroot/coin73 html
+sudo ln -s /webroot/minertor html
 sudo bash -c 'cat > /etc/php/7.4/fpm/pool.d/www.conf' << EOF
 [www]
 user = www-data
@@ -445,7 +445,7 @@ sudo systemctl restart nginx
 #echo "## Redeploying Apache" | tee -a $logfile
 #cd /var/www/
 #sudo mv html html_orig
-#sudo ln -s /webroot/coin73 html
+#sudo ln -s /webroot/minertor html
 #sudo a2enmod rewrite
 #sudo a2enmod actions
 #sudo bash -c 'cat >> /etc/apache2/apache2.conf' << EOF
@@ -521,7 +521,7 @@ echo ""
 echo "Press return to continue"
 echo ""
 read ok
-bash /webroot/coin73/sh/configure_wifi.sh -c '$CLIENT_SSID' '$CLIENT_PASSPHRASE' -a '$AP_SSID' '$AP_PASSPHRASE' -i '$AP_IP' -d '$DNS_IP' -x '$CCODE' -f '$AP_CHANNEL' -l '$AP_WLAN' $OPEN_FLAG
+bash /webroot/minertor/sh/configure_wifi.sh -c '$CLIENT_SSID' '$CLIENT_PASSPHRASE' -a '$AP_SSID' '$AP_PASSPHRASE' -i '$AP_IP' -d '$DNS_IP' -x '$CCODE' -f '$AP_CHANNEL' -l '$AP_WLAN' $OPEN_FLAG
 EOF
 else 
 echo "## Skipping WiFi configuration" | tee -a $logfile 
@@ -531,7 +531,7 @@ bash -c 'cat > ~/setup_wifi.sh' << EOF
 echo "This file does nothing, have a look inside to see what to do"
 
 # Run the following commands to Configure the WiFi. There are a lot of options to run through
-# /webroot/coin73/sh/configure_wifi.sh
+# /webroot/minertor/sh/configure_wifi.sh
 #
 EOF
 fi
@@ -608,7 +608,7 @@ EOF
 echo ""
 echo "####################################################################"
 echo ""
-echo " Configure the coin73 software"
+echo " Configure the minertor software"
 echo ""
 echo " You will need the bundle file from your dev server:"
 echo ""
@@ -619,7 +619,7 @@ echo ""
 read ok
 
 echo "## Configuring software keys" | tee -a $logfile
-cd /webroot/coin73
+cd /webroot/minertor
 sh/populate_config.sh
 
 echo "" | tee -a $logfile

@@ -5,7 +5,7 @@ $localdev_namespace = "localdev";
 
 // The project id is the google application project short code. Change this and the world is a
 // different place as this is where all the management and identity stuff happend operationally.
-$project_id = "coin73";
+$project_id = "minertor";
 
 // When re/validating user accounts a Multifactor authentication mechanism is used, a bit like the
 // Microsoft one. When you perfrom the action you are told a word, and in the authentication stage

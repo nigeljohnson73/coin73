@@ -1,5 +1,5 @@
 <?php
-// https://coin73.appspot.com/benchmark?d=4&n=1000&LOG
+// https://minertor.appspot.com/benchmark?d=4&n=1000&LOG
 include_once (__DIR__ . "/functions.php");
 
 echo "<pre>\n";

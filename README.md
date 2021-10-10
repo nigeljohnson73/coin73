@@ -1,6 +1,6 @@
-# Coin73
+# MinerTOR
 
-The codename for Nigels new Blockchain. The name might change. but it's core will not.
+Nigels new Blockchain.
 
 ## Before we begin
 
@@ -56,7 +56,7 @@ This project is built with the Google App Engine platform in mind. The main idea
 
 -------------------------------------------------------------------------------------------
 
-# I haven't go round to rationalising things below here yet
+# I haven't got round to rationalising things below here yet
 
 ## Up and running on the DevServer
 
@@ -64,7 +64,7 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
 
  * Start 3 terminal windows
  * Goto the main code directory in all terminals
- * `cd ~/git/coin73` 
+ * `cd ~/git/minertor` 
  * In the first window, start the test server for the web service
  * `php -S localhost:8080 -t www www/index.php`
  * In the second window start a test server for the API service
@@ -74,11 +74,11 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
 
 ## Project URLs:
 
- * [COIN73 github code](https://github.com/nigeljohnson73/coin73)
- * [COIN73 on the web](https://coin73.appspot.com)
+ * [COIN73 github code](https://github.com/nigeljohnson73/minertor)
+ * [COIN73 on the web](https://minertor.appspot.com)
  * [localhost web-app](http://localhost:8080)
  * [localhost web-api](http://localhost:8085/api/) (not really useful)
- * [Data store on GAE](https://console.cloud.google.com/datastore/entities/query/kind?project=coin73)
+ * [Data store on GAE](https://console.cloud.google.com/datastore/entities/query/kind?project=minertor)
  * [ReCAPTCHA details](https://www.google.com/recaptcha/admin/site/474517032)
 
 ## Blockchain in Javascript:
@@ -100,7 +100,7 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
  * Setup an [app password][gmail-app-password] for the gmail account.
  * Follow the [RECAPTCHA integration][recaptcha-integration] documentation.
  * The service account needs to be made an owner in it's role under IAM.
- * ~Created a [key for the service account](https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=coin73&supportedpurview=project) on the project. It downloaded a JSON file, wihch I saved as service-account.json~
+ * ~Created a [key for the service account](https://console.cloud.google.com/iam-admin/serviceaccounts/details/118118471124134424927/keys?folder=&organizationId=&project=minertor&supportedpurview=project) on the project. It downloaded a JSON file, wihch I saved as service-account.json~
  * ~Launch local for php72: `dev_appserver.py app.yaml --php_executable_path /usr/bin/php --support_datastore_emulator=true`~
  * ~optionally, well done one, install the local datastore emulator with `gcloud components install cloud-datastore-emulator`~
  * ~Start the local data store `gcloud beta emulators datastore start`~

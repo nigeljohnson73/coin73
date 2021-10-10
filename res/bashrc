@@ -1,4 +1,4 @@
-PATH=$PATH:/webroot/coin73/sh
+PATH=$PATH:/webroot/minertor/sh
 _NAME=$(hostname)
 _IP=$(hostname -I)
 _DWEB=$(cat /logs/darkweb_hostname.txt)

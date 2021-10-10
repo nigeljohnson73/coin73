@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /webroot/coin73
+cd /webroot/minertor
 
 echo "Paste your bundle here"
 read bundle
