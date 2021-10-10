@@ -22,7 +22,10 @@ set -o pipefail
 usage() {
 cat 1>&2 <<EOF
 
-This script configures a base Pi with OS updates, coin software and tools
+This script configures a base Pi with OS updates, coin software and supporting tools.
+It provides scripts to also install ExpressVPN as well as the RAsbian desktop. An 
+option also exists to install a WiFi access point on a second WiFi adapter.
+
 USAGE:
 	`basename $0` [parameters]
 
@@ -65,9 +68,10 @@ DNS_IP="8.8.8.8"
 XVPN_ACT=""
 XVPN_LOC="uklo"
 
-if [ $# -eq 0 ]; then
-	die
-fi
+# You can now supply no paramters
+#if [ $# -eq 0 ]; then
+#	die
+#fi
 
 while [[ $# -gt 0 ]]; do
 	case $1 in
@@ -359,7 +363,7 @@ echo "## Configuring Nginx" | tee -a $logfile
 cd /var/www/
 sudo mv html html_orig
 sudo ln -s /webroot/coin73 html
-sudo bash -c 'cat > /etc/php/7.4/fpm/pool.d/www.conf' << _EOF
+sudo bash -c 'cat > /etc/php/7.4/fpm/pool.d/www.conf' << EOF
 [www]
 user = www-data
 group = www-data
@@ -371,8 +375,8 @@ pm.max_children = 10
 pm.start_servers = 3
 pm.min_spare_servers = 1
 pm.max_spare_servers = 5
-_EOF
-sudo bash -c 'cat > /etc/nginx/sites-enabled/default' << _EOF
+EOF
+sudo bash -c 'cat > /etc/nginx/sites-enabled/default' << EOF
 server {
     listen       80;
     server_name  _;
@@ -389,9 +393,54 @@ server {
         fastcgi_pass unix:/run/php/php7.4-fpm.sock;
     }
 }
-_EOF
+EOF
 sudo systemctl reload php7.4-fpm
-sudo systemctl start nginx
+sudo systemctl restart nginx
+
+########################################################################
+#
+## Replace Apache with this bit
+#
+#sudo apt-get remove apache2
+#sudo apt-get install nginx php7.4-fpm
+#
+#sudo bash -c 'cat > /etc/php/7.4/fpm/pool.d/www.conf' << _EOF
+#[www]
+#user = www-data
+#group = www-data
+#listen = /run/php/php7.4-fpm.sock
+#listen.owner = www-data
+#listen.group = www-data
+#pm = dynamic
+#pm.max_children = 10
+#pm.start_servers = 3
+#pm.min_spare_servers = 1
+#pm.max_spare_servers = 5
+#_EOF
+#
+#sudo bash -c 'cat > /etc/nginx/sites-enabled/default' << _EOF
+#server {
+#    listen       80;
+#    server_name  _;
+#    root         /var/www/html;
+#
+#    location / {
+#        fastcgi_connect_timeout 3s;
+#        fastcgi_read_timeout 10s;
+#        include fastcgi_params;
+#        fastcgi_param  SCRIPT_FILENAME  \$document_root/index.php;
+#        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+#    }
+#}
+#_EOF
+#
+#sudo systemctl reload php7.4-fpm
+#sudo systemctl start nginx
+#
+#sudo systemctl status php7.4-fpm
+#sudo systemctl status nginx
+#
+########################################################################
 
 #echo "## Redeploying Apache" | tee -a $logfile
 #cd /var/www/

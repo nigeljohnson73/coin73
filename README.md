@@ -111,6 +111,5 @@ Install php 7.4 On a Mac:
  * brew link php@7.4
  * (also does this any way - brew install gmp)
  
-
 [recaptcha-integration]: https://code.tutsplus.com/tutorials/example-of-how-to-add-google-recaptcha-v3-to-a-php-form--cms-33752
 [gmail-app-password]: https://support.google.com/accounts/answer/185833?p=InvalidSecondFactor&visit_id=637667920918322961-3041154280&rd=1
