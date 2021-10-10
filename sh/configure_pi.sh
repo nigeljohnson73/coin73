@@ -36,6 +36,8 @@ PARAMETERS:
 	-gn <NAME>  Your pretty name for git checking in. Default: "Nigel Johnson"
 	-ge <EMAIL> Your git registered email address. Default: nigel@nigeljohnson.net
 	-gp <PASS>  The Personal Access Token you made on github 
+	-xa <PASS>  The ExpressVPN activation code
+	-xl <PASS>  The ExpressVPN location for connection. Default: UKLO
 
 	-h | --help Show this help and exit
 	
@@ -60,6 +62,8 @@ AP_WLAN=1
 CCODE="GB"
 OPENFLAG=""
 DNS_IP="8.8.8.8"
+XVPN_ACT=""
+XVPN_LOC="uklo"
 
 if [ $# -eq 0 ]; then
 	die
@@ -112,6 +116,16 @@ while [[ $# -gt 0 ]]; do
 			echo "GIT email address: '$2'"
 			shift
 			;;
+		-xa)
+			XVPN_ACT="$2"
+			echo "ExpressVPN activation: '$2'"
+			shift
+			;;
+		-xl)
+			XVPN_LOC="$2"
+			echo "ExpressVPN location: '$2'"
+			shift
+			;;
 		-h|--help)
 			usage
 			exit 0
@@ -147,6 +161,13 @@ then
 	echo "## AP DNS IP address : '${DNS_IP}'" | tee -a $logfile
 else
 	echo "## WiFi will not be configured" | tee -a $logfile
+fi
+if [[ -n "$XVPN_ACT" ]]
+	echo "##    VPN activation : '${XVPN_ACT}'"
+	echo "##      VPN location : '${XVPN_LOC}'" | tee -a $logfile
+then
+	echo "## ExpressVPN will not be configured" | tee -a $logfile
+else
 fi
 echo "##" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
@@ -254,10 +275,6 @@ echo "####################################################################"
 echo ""
 echo " Install the coin73 software"
 echo ""
-echo " You will need the bundle file from your dev server:"
-echo ""
-echo "  * sh/gen_bundle.sh"
-echo ""
 echo "Press return to continue"
 echo ""
 read ok
@@ -284,10 +301,6 @@ echo "## Installing composer dependancies" | tee -a $logfile
 cd /webroot/coin73/www
 composer install
 
-echo "## Configuring software keys" | tee -a $logfile
-cd /webroot/coin73
-sh/populate_config.sh
-
 ## Install crontab entries to start the services
 echo "## Installing service management startup in crontab" | tee -a $logfile
 echo "# coin73 Miner configuration" | { cat; sudo bash -c 'cat' << EOF
@@ -304,7 +317,7 @@ EOF
 echo ""
 echo "####################################################################"
 echo ""
-echo " Configure TOR and redeploy apache"
+echo " Configure TOR, redeploy apache and sort WiFi/VPN"
 echo ""
 echo "Press return to continue"
 echo ""
@@ -339,12 +352,6 @@ sudo bash -c 'cat >> /etc/apache2/apache2.conf' << EOF
 </Directory>
 EOF
 sudo /etc/init.d/apache2 restart
-
-if [[ -n "$CLIENT_SSID$CLIENT_PASSPHRASE" ]]
-then
-	echo "Skipping wifi config for now. Run this if you want to do it:"
-	echo "bash /webroot/coin73/sh/configure_wifi.sh -c '$CLIENT_SSID' '$CLIENT_PASSPHRASE' -a '$AP_SSID' '$AP_PASSPHRASE' -i '$AP_IP' -d '$DNS_IP' -x '$CCODE' -f '$AP_CHANNEL' -l '$AP_WLAN' $OPEN_FLAG"
-fi
 
 #echo ""
 #echo "####################################################################"
@@ -399,6 +406,118 @@ fi
 #echo "## Authenticating default service account"
 #gcloud auth application-default login
 
+if [[ -n "$CLIENT_SSID" && -n "$CLIENT_PASSPHRASE" ]]
+then
+echo "## Deploying WiFi setup" | tee -a $logfile
+bash -c 'cat > ~/setup_wifi.sh' << EOF
+#/bin/sh
+echo
+echo "This is a one-way thing. Are you sure?"
+echo ""
+echo "Press return to continue"
+echo ""
+read ok
+bash /webroot/coin73/sh/configure_wifi.sh -c '$CLIENT_SSID' '$CLIENT_PASSPHRASE' -a '$AP_SSID' '$AP_PASSPHRASE' -i '$AP_IP' -d '$DNS_IP' -x '$CCODE' -f '$AP_CHANNEL' -l '$AP_WLAN' $OPEN_FLAG
+EOF
+else 
+echo "## Skipping WiFi configuration" | tee -a $logfile 
+bash -c 'cat > ~/setup_wifi.sh' << EOF
+#/bin/sh
+
+echo "This file does nothing, have a look inside to see what to do"
+
+# Run the following commands to Configure the WiFi. There are a lot of options to run through
+# /webroot/coin73/sh/configure_wifi.sh
+#
+EOF
+fi
+
+echo "## Deploying ExpressVPN setup" | tee -a $logfile
+cd /tmp
+wget https://www.expressvpn.works/clients/linux/expressvpn_3.11.0.16-1_armhf.deb
+sudo dpkg -i expressvpn_*.deb
+if [[ -n "$XVPN_ACT" && -n "$XVPN_LOC" ]]; then
+bash -c 'cat > ~/setup_vpn.sh' << EOF
+#/bin/sh
+echo
+echo "When asked, the code you need is: '$XVPN_ACT'"
+echo ""
+expressvpn activate
+bash -c "expressvpn connect $XVPN_LOC > /dev/null" &
+#bash -c "sleep 30 && expressvpn autoconnect true" &
+echo ""
+echo "This session will now probably hang while the VPN connects."
+echo "Give it a minute or so, then reboot to complete the config."
+echo ""
+EOF
+else
+echo "## Skipping VPN configuration" | tee -a $logfile 
+bash -c 'cat > ~/setup_vpn.sh' << EOF
+#!/bin/sh
+
+echo "This file does nothing, have a look inside to see what to do"
+
+# Run the following commands to make the VPN work
+#
+# Activate the VPN with your activation code
+#    expressvpn activate
+#
+# Get a list of access points
+#    expressvpn list
+#
+# Connect to the default 'smart' location, or supply one from the list 
+#    expressvpn connect
+#
+# The connection above may hang the session as traffic is routed for the 
+# first time, if so, just kill the session and connect, then set up 
+# the auto connection to the last connected location
+#    expressvpn autoconnect true
+#
+EOF
+fi
+
+
+bash -c 'cat > ~/setup_desktop.sh' << EOF
+#!/bin/sh
+
+echo "We will install a desktop environment. This will take a while."
+echo ""
+echo "Press return to continue"
+echo ""
+read ok
+
+sudo apt install -y xserver-xorg lightdm chromium-browser raspberrypi-ui-mods
+
+echo ""
+echo "####################################################################"
+echo ""
+echo "You will need to manually sudo raspi-config, then these screens"
+echo ""
+echo " * Interface options -> VNC -> Enable"
+echo " * Display -> Resoultion -> Choose one"
+echo " * System Options -> Boot / Auto login -> Choose one"
+echo ""
+echo "Reboot and you're all good"
+echo ""
+EOF
+
+echo ""
+echo "####################################################################"
+echo ""
+echo " Configure the coin73 software"
+echo ""
+echo " You will need the bundle file from your dev server:"
+echo ""
+echo "  * sh/gen_bundle.sh"
+echo ""
+echo "Press return to continue"
+echo ""
+read ok
+
+echo "## Configuring software keys" | tee -a $logfile
+cd /webroot/coin73
+sh/populate_config.sh
+
 echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
 echo "" | tee -a $logfile
@@ -406,5 +525,8 @@ echo "We are all done. Thanks for flying with us today and we value your" | tee 
 echo "custom as we know you have choices. The next steps for you are:" | tee -a $logfile
 echo "" | tee -a $logfile
 echo " * Reboot this raspberry pi" | tee -a $logfile
+echo " * Optionally, install ExpressVPN (~/setup_vpn.sh)" | tee -a $logfile
+echo " * Optionally, install WiFi (after ExpressVPN) (~/setup_wifi.sh)" | tee -a $logfile
+echo " * Optionally, install Desktop (~/setup_desktop.sh)" | tee -a $logfile
 echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
