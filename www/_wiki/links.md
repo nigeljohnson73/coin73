@@ -4,7 +4,7 @@
  * <a target="_filestore" href="https://console.cloud.google.com/storage/browser?project=minertor">Cloud Store buckets</a>
  * <a target="_versions" href="https://console.cloud.google.com/appengine/versions?serviceId=default&project=minertor&pageState=(%22versionsTable%22:(%22r%22:200))">App versions</a>
  * <a target="_billing" href="https://console.cloud.google.com/billing/00191D-4FB89B-3B9D38/reports;grouping=GROUP_BY_SKU;projects=minertor?project=minertor&organizationId=203754394715">Billing</a>
- * <a target="_recaptcha" href="https://www.google.com/recaptcha/admin/site/474525021">RECAPTCHA Admin console</a>
+ * <a target="_recaptcha" href="https://www.google.com/recaptcha/admin/site/482368862">RECAPTCHA Admin console</a>
 
 ## Production data
 
