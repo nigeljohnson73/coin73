@@ -26,29 +26,29 @@ include_once (__DIR__ . "/routes.php");
 // $routes ["/cron/every_day"] = __DIR__ . "/_cron/every_day.php";
 
 // foreach ( array_keys ( $routes ) as $p ) {
-// 	$app->get ( $p, function (Request $request, Response $response, $args) {
-// 		global $routes;
-// 		$uri = $request->getUri ()->getPath ();
-// 		if (strlen ( $uri ) > 1) {
-// 			$uri = rtrim ( $request->getUri ()->getPath (), "/" );
-// 		}
-// 		// See if any of the api keys expand into the URI I got passed as
-// 		foreach ( $routes as $k => $v ) {
-// 			foreach ( $args as $ak => $av ) {
-// 				$k = str_replace ( "{" . $ak . "}", $av, $k );
-// 			}
-// 			if ($uri == $k) {
-// 				$include = $v;
-// 			}
-// 		}
-// 		if (strlen ( $include )) {
-// 			include ($include);
-// 			return $response;
-// 		} else {
-// 			$response->getBody ()->write ( "Could not find '" . $uri . "'" );
-// 			return $response->withStatus ( 404 );
-// 		}
-// 	} );
+// $app->get ( $p, function (Request $request, Response $response, $args) {
+// global $routes;
+// $uri = $request->getUri ()->getPath ();
+// if (strlen ( $uri ) > 1) {
+// $uri = rtrim ( $request->getUri ()->getPath (), "/" );
+// }
+// // See if any of the api keys expand into the URI I got passed as
+// foreach ( $routes as $k => $v ) {
+// foreach ( $args as $ak => $av ) {
+// $k = str_replace ( "{" . $ak . "}", $av, $k );
+// }
+// if ($uri == $k) {
+// $include = $v;
+// }
+// }
+// if (strlen ( $include )) {
+// include ($include);
+// return $response;
+// } else {
+// $response->getBody ()->write ( "Could not find '" . $uri . "'" );
+// return $response->withStatus ( 404 );
+// }
+// } );
 // }
 
 $app->map ( [ 
@@ -64,4 +64,9 @@ $app->map ( [
 } );
 
 $app->run ();
+
+$str .= "cron\n";
+$str .= ob_print_r ( $cron_routes );
+
+@file_put_contents ( sys_get_temp_dir () . "/coin73.cron.txt", $str );
 ?>
