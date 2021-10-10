@@ -154,7 +154,9 @@ echo "##  GIT access token : '${GIT_PAT}'"
 else
 	echo "## GIT will not be configured for updating" | tee -a $logfile
 fi
+
 echo "##" | tee -a $logfile
+
 if [[ -n "$CLIENT_SSID" && -n "$CLIENT_PASSPHRASE" ]]
 then
 	echo "##      WiFi Country : '${CCODE}'" | tee -a $logfile
@@ -167,13 +169,17 @@ then
 else
 	echo "## Local Access Point will not be configured" | tee -a $logfile
 fi
+
+echo "##" | tee -a $logfile
+
 if [[ -n "$XVPN_ACT" ]]
+then
 	echo "##    VPN activation : '${XVPN_ACT}'"
 	echo "##      VPN location : '${XVPN_LOC}'" | tee -a $logfile
-then
-	echo "## ExpressVPN will not be configured" | tee -a $logfile
 else
+	echo "## ExpressVPN will not be configured" | tee -a $logfile
 fi
+
 echo "##" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
 echo "" | tee -a $logfile
@@ -557,7 +563,7 @@ echo " Configure the coin73 software"
 echo ""
 echo " You will need the bundle file from your dev server:"
 echo ""
-echo "  * sh/gen_bundle.sh"
+echo "  * php sh/gen_bundle.php"
 echo ""
 echo "Press return to continue"
 echo ""
