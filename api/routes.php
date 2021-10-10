@@ -2,7 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-include_once (__DIR__ . '/functions.php');
+//include_once (__DIR__ . '/functions.php');
 
 $api_routes = array ();
 $api_routes ["/ping"] = __DIR__ . "/_api/ping.php";

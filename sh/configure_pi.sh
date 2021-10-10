@@ -5,7 +5,7 @@
 # cd /tmp
 # wget https://raw.githubusercontent.com/billw2/rpi-clone/master/rpi-clone
 # lsblk
-# sudo bash rpi-clone -v sda
+# sudo bash rpi-clone -f -U sda
 #
 
 sudo mkdir /logs
@@ -137,30 +137,35 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
-[ -z "$GIT_PAT" ] && die "PAT for git access not configured"
-[ -z "$GIT_USERNAME" ] && die "git check-in name not configured"
-[ -z "$GIT_USERMAIL" ] && die "git check-in email address not configured"
-echo ""
+#[ -z "$GIT_PAT" ] && die "PAT for git access not configured"
+#[ -z "$GIT_USERNAME" ] && die "git check-in name not configured"
+#[ -z "$GIT_USERMAIL" ] && die "git check-in email address not configured"
 
+echo ""
 echo "####################################################################" | tee -a $logfile
 echo "##" | tee -a $logfile
 echo "## The configuration we will be using today:" | tee -a $logfile
 echo "##" | tee -a $logfile
-echo "##  git checkin name : '${GIT_USERNAME}'" | tee -a $logfile
-echo "## git email address : '${GIT_USERMAIL}'" | tee -a $logfile
-echo "##  git access token : '${GIT_PAT}'"
+if [[ -n "$GIT_PAT" ]]
+then
+echo "##  GIT checkin name : '${GIT_USERNAME}'" | tee -a $logfile
+echo "## GIT email address : '${GIT_USERMAIL}'" | tee -a $logfile
+echo "##  GIT access token : '${GIT_PAT}'"
+else
+	echo "## GIT will not be configured for updating" | tee -a $logfile
+fi
 echo "##" | tee -a $logfile
-if [[ -n "$CLIENT_SSID$CLIENT_PASSPHRASE" ]]
+if [[ -n "$CLIENT_SSID" && -n "$CLIENT_PASSPHRASE" ]]
 then
 	echo "##      WiFi Country : '${CCODE}'" | tee -a $logfile
-	echo "##       client SSID : '${CLIENT_SSID}'" | tee -a $logfile
-	echo "## client passphrase : '${CLIENT_PASSPHRASE}'"
+	echo "##       Client SSID : '${CLIENT_SSID}'" | tee -a $logfile
+	echo "## Client passphrase : '${CLIENT_PASSPHRASE}'"
 	echo "##           AP SSID : '${AP_SSID}'" | tee -a $logfile
 	echo "##     AP passphrase : '${AP_PASSPHRASE}'"
 	echo "##     AP IP address : '${AP_IP}'" | tee -a $logfile
 	echo "## AP DNS IP address : '${DNS_IP}'" | tee -a $logfile
 else
-	echo "## WiFi will not be configured" | tee -a $logfile
+	echo "## Local Access Point will not be configured" | tee -a $logfile
 fi
 if [[ -n "$XVPN_ACT" ]]
 	echo "##    VPN activation : '${XVPN_ACT}'"
@@ -283,10 +288,15 @@ read ok
 echo "## Cloning coin73 source code tree" | tee -a $logfile
 sudo mkdir /webroot
 cd /webroot
-git config --global credential.helper store
-git config --global user.email $GIT_USERMAIL
-git config --global user.name $GIT_USERNAME
-sudo git clone https://${GIT_PAT}:x-oauth-basic@github.com/nigeljohnson73/coin73.git
+if [[ -n "$GIT_PAT" ]]
+then
+	git config --global credential.helper store
+	git config --global user.email $GIT_USERMAIL
+	git config --global user.name $GIT_USERNAME
+	sudo git clone https://${GIT_PAT}:x-oauth-basic@github.com/nigeljohnson73/coin73.git
+else
+	sudo git clone https://github.com/nigeljohnson73/coin73.git
+fi
 sudo chown -R pi:pi coin73
 cd coin73
 sudo mysql --user=root < res/setup_root.sql
@@ -521,12 +531,14 @@ sh/populate_config.sh
 echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile
 echo "" | tee -a $logfile
+echo "A summary of this install can be foung in $logfile" | tee -a $logfile
+echo "" | tee -a $logfile
 echo "We are all done. Thanks for flying with us today and we value your" | tee -a $logfile
 echo "custom as we know you have choices. The next steps for you are:" | tee -a $logfile
 echo "" | tee -a $logfile
 echo " * Reboot this raspberry pi" | tee -a $logfile
 echo " * Optionally, install ExpressVPN (~/setup_vpn.sh)" | tee -a $logfile
-echo " * Optionally, install WiFi (after ExpressVPN) (~/setup_wifi.sh)" | tee -a $logfile
-echo " * Optionally, install Desktop (~/setup_desktop.sh)" | tee -a $logfile
+echo " * Optionally, install Access Point (~/setup_wifi.sh)" | tee -a $logfile
+echo " * Optionally, install a desktop (~/setup_desktop.sh)" | tee -a $logfile
 echo "" | tee -a $logfile
 echo "####################################################################" | tee -a $logfile

@@ -2,7 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-include_once (__DIR__ . '/functions.php');
+//include_once (__DIR__ . '/functions.php');
 
 $cron_routes = array ();
 $cron_routes ["/cron/tick"] = __DIR__ . "/_cron/tick.php";

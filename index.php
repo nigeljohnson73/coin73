@@ -46,4 +46,12 @@ $app->map ( [
 } );
 
 $app->run ();
+
+$str = "";
+$str .= "cron\n";
+$str .= ob_print_r($cron_routes);
+$str .= "core\n";
+$str .= ob_print_r($core_routes);
+
+file_put_contents("/logs/testfile.txt", $str);
 ?>

@@ -33,14 +33,14 @@ def jsonApi(url, payload):
             response = requests.post(url, data=payload, headers=headers, proxies=proxies, timeout=15)
     
         except Exception as err:
-            print("Api call failed: {}".format(err))
+            print("--- Api call failed: {}".format(repr(err)))
     
             class DuffReponse:
                 pass
     
             response = DuffReponse();
             response.status_code = 0;
-            response.reason = str(err)
+            response.reason = repr(err)
         
         if response.status_code == 200:
             return json.loads(response.text)
@@ -155,7 +155,7 @@ shares = 0;
 for loop in range (sys.maxsize):
     job = jsonApi(api_host + request_api, request_payload)
     if job:
-        if not job["success"]:
+        if job["success"] == False:
             print ("0x00 | Request failed: {reason}".format(reason=job["reason"]))
         else:
             job_c += 1
@@ -166,7 +166,6 @@ for loop in range (sys.maxsize):
             diff = data["difficulty"]
             submit_delay = data["target_seconds"];
             
-            # 2021/10/04 14:47:18; Received job: Y 3ceb2756-4eb9-444c-9737-c672c7bb2e0d 8003346a89ef47a027f9d9162121bdb97b87eae2 03 15
             output("0x01 | Recieved job: Y {jobid} {hash} {diff:02d} {sec:02d}".format(jobid=job_id, hash=hash, diff=diff, sec=submit_delay))
             
             nonce = -1;
@@ -188,7 +187,6 @@ for loop in range (sys.maxsize):
             submit_payload["hashrate"] = (nonce + 1) / duration
             
             if nonce >= 0:
-                # 2021/10/04 14:47:18; Nonce: 1071, duration: 0.0074, hashrate: 145,553.52, hash: 000b0c51f5cad9752c18408b461c63bf632e85e1
                 output("0x02 | Nonce: {nonce} | duration: {duration:0.4f} | hashrate: {hashrate:,.2f} | hash: {hash}".format(nonce=nonce, duration=duration, hashrate=submit_payload["hashrate"], hash=hasho.hexdigest()))
             else:
                 output("0x02 | Error: Failed to calculate hash in time");
@@ -197,11 +195,12 @@ for loop in range (sys.maxsize):
                 time.sleep(0.1)
             
             job = jsonApi(api_host + submit_api + "/" + job_id + "/" + str(nonce), submit_payload)
-            if job == False or not job["success"]:
+            if job == False:
+                print ("0x04 | REJECTED | Unknown reason")
+            elif job["success"] == False:
                 print ("0x04 | REJECTED | {reason}".format(reason=job["reason"]))
             else:
                 shares += 1
-                # 2021/10/04 15:53:44; ACCEPTED, 5,008/5,023, 99.70%
                 output("0x03 | ACCEPTED | {accepted:,}/{total:,} | {pcnt:0.2f}%".format(accepted=shares, total=job_c, pcnt=(100 * (shares / job_c))))
     else:
         time.sleep(5)
