@@ -65,8 +65,8 @@ $app->map ( [
 
 $app->run ();
 
-$str .= "cron\n";
-$str .= ob_print_r ( $cron_routes );
+// $str .= "cron\n";
+// $str .= ob_print_r ( $cron_routes );
 
-@file_put_contents ( sys_get_temp_dir () . "/coin73.cron.txt", $str );
+// @file_put_contents ( sys_get_temp_dir () . "/coin73.cron.txt", $str );
 ?>

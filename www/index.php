@@ -26,13 +26,13 @@ $app->map ( [
 
 $app->run ();
 
-$str = "";
-$str .= "core\n";
-$str .= ob_print_r ( $core_routes );
-$str .= "images\n";
-$str .= ob_print_r ( $image_routes );
-$str .= "app\n";
-$str .= ob_print_r ( $app_routes );
+// $str = "";
+// $str .= "core\n";
+// $str .= ob_print_r ( $core_routes );
+// $str .= "images\n";
+// $str .= ob_print_r ( $image_routes );
+// $str .= "app\n";
+// $str .= ob_print_r ( $app_routes );
 
-@file_put_contents ( sys_get_temp_dir () . "/coin73.www.txt", $str );
+// @file_put_contents ( sys_get_temp_dir () . "/coin73.www.txt", $str );
 ?>

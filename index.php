@@ -47,17 +47,17 @@ $app->map ( [
 
 $app->run ();
 
-$str = "";
-$str .= "core\n";
-$str .= ob_print_r ( $core_routes );
-$str .= "images\n";
-$str .= ob_print_r ( $image_routes );
-$str .= "app\n";
-$str .= ob_print_r ( $app_routes );
-$str .= "cron\n";
-$str .= ob_print_r ( $cron_routes );
-$str .= "api\n";
-$str .= ob_print_r ( $api_routes );
+// $str = "";
+// $str .= "core\n";
+// $str .= ob_print_r ( $core_routes );
+// $str .= "images\n";
+// $str .= ob_print_r ( $image_routes );
+// $str .= "app\n";
+// $str .= ob_print_r ( $app_routes );
+// $str .= "cron\n";
+// $str .= ob_print_r ( $cron_routes );
+// $str .= "api\n";
+// $str .= ob_print_r ( $api_routes );
 
-@file_put_contents ( sys_get_temp_dir () . "/coin73.core.txt", $str );
+// @file_put_contents ( sys_get_temp_dir () . "/coin73.core.txt", $str );
 ?>
