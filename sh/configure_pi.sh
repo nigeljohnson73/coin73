@@ -263,8 +263,9 @@ echo "## Install out-of-date packages" | tee -a $logfile
 sudo apt upgrade -y
 echo "## Remove the latest PHP (v8)" | tee -a $logfile
 sudo apt remove -y --purge php8.0
-echo "## Install the required version of PHP for gcloud (v7.4)" | tee -a $logfile
-sudo apt install -y apache2 mariadb-server libapache2-mod-php7.4 php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
+echo "## Install the required version of PHP (v7.4)" | tee -a $logfile
+#sudo apt install -y apache2 mariadb-server libapache2-mod-php7.4 php7.4 php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
+sudo apt install -y nginx mariadb-server php7.4 php7.4-fpm php7.4-BCMath php7.4-bz2 php7.4-Calendar php7.4-cgi php7.4-ctype php7.4-cURL php7.4-dba php7.4-dom php7.4-enchant php7.4-Exif php7.4-fileinfo php7.4-FTP php7.4-GD php7.4-gettext php7.4-GMP php7.4-iconv php7.4-intl php7.4-json php7.4-LDAP php7.4-mbstring php7.4-mysql php7.4-OPcache php7.4-Phar php7.4-posix php7.4-Shmop php7.4-SimpleXML php7.4-SOAP php7.4-Sockets php7.4-tidy php7.4-tokenizer php7.4-XML php7.4-XMLreader php7.4-XMLrpc php7.4-XMLwriter php7.4-XSL 
 echo "## Cleanup loose packages" | tee -a $logfile
 sudo apt autoremove -y
 
@@ -327,7 +328,7 @@ EOF
 echo ""
 echo "####################################################################"
 echo ""
-echo " Configure TOR, redeploy apache and sort WiFi/VPN"
+echo " Configure TOR, Nginx and sort WiFi/VPN"
 echo ""
 echo "Press return to continue"
 echo ""
@@ -348,20 +349,58 @@ sudo service tor start
 sleep 1
 sudo cat /var/lib/tor/hidden_service/hostname | tee /logs/darkweb_hostname.txt
 
-echo "## Redeploying Apache" | tee -a $logfile
+echo "## Configuring Nginx" | tee -a $logfile
 cd /var/www/
 sudo mv html html_orig
 sudo ln -s /webroot/coin73 html
-sudo a2enmod rewrite
-sudo a2enmod actions
-sudo bash -c 'cat >> /etc/apache2/apache2.conf' << EOF
-<Directory /var/www/>
-	Options Indexes FollowSymLinks
-	AllowOverride All
-	Require all granted
-</Directory>
-EOF
-sudo /etc/init.d/apache2 restart
+sudo bash -c 'cat > /etc/php/7.4/fpm/pool.d/www.conf' << _EOF
+[www]
+user = www-data
+group = www-data
+listen = /run/php/php7.4-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+pm = dynamic
+pm.max_children = 10
+pm.start_servers = 3
+pm.min_spare_servers = 1
+pm.max_spare_servers = 5
+_EOF
+sudo bash -c 'cat > /etc/nginx/sites-enabled/default' << _EOF
+server {
+    listen       80;
+    server_name  _;
+    root         /var/www/html;
+
+    #try_files \$uri \$uri/ /index.php\$is_args\$args;	
+
+    location / {
+        fastcgi_connect_timeout 3s;     # default of 60s is just too long
+        fastcgi_read_timeout 10s;       # default of 60s is just too long
+        include fastcgi_params;
+        fastcgi_param  SCRIPT_FILENAME  \$document_root/index.php;
+        #fastcgi_index index.php;
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+    }
+}
+_EOF
+sudo systemctl reload php7.4-fpm
+sudo systemctl start nginx
+
+#echo "## Redeploying Apache" | tee -a $logfile
+#cd /var/www/
+#sudo mv html html_orig
+#sudo ln -s /webroot/coin73 html
+#sudo a2enmod rewrite
+#sudo a2enmod actions
+#sudo bash -c 'cat >> /etc/apache2/apache2.conf' << EOF
+#<Directory /var/www/>
+#	Options Indexes FollowSymLinks
+#	AllowOverride All
+#	</Directory>
+#	Require all granted
+#EOF
+#sudo /etc/init.d/apache2 restart
 
 #echo ""
 #echo "####################################################################"
