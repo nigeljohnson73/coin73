@@ -42,7 +42,9 @@ if (function_exists ( "curl_init" )) {
 			} else {
 				$ret = json_decode ( $data );
 				if (getType ( $ret ) != "object") {
-					echo "jsonApi(): API failed: invalid JSON:\n" . ob_print_r ( $ret ) . "\n";
+					echo "jsonApi(): API failed: invalid JSON:\n";
+					print_r ( $ret );
+					echo "\n";
 					$ret = false;
 				}
 			}
