@@ -39,6 +39,9 @@ if (file_exists ( $fn )) {
 	$documented [] = "mining_difficulty.md";
 	$documented [] = "mining_rewards.md";
 	$documented [] = "mining_script.md";
+	$documented [] = "deployment.md";
+	$documented [] = "deployment_google.md";
+	$documented [] = "deployment_local.md";
 	
 	$files = directoryListing ( __DIR__ . "/../_wiki", ".md" );
 	$str = "";

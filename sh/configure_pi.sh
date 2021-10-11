@@ -385,8 +385,8 @@ server {
     #try_files \$uri \$uri/ /index.php\$is_args\$args;	
 
     location / {
-        fastcgi_connect_timeout 3s;     # default of 60s is just too long
-        fastcgi_read_timeout 10s;       # default of 60s is just too long
+        fastcgi_connect_timeout 3s;
+        fastcgi_read_timeout 10s;
         include fastcgi_params;
         fastcgi_param  SCRIPT_FILENAME  \$document_root/index.php;
         #fastcgi_index index.php;
@@ -452,8 +452,8 @@ sudo systemctl restart nginx
 #<Directory /var/www/>
 #	Options Indexes FollowSymLinks
 #	AllowOverride All
-#	</Directory>
 #	Require all granted
+#</Directory>
 #EOF
 #sudo /etc/init.d/apache2 restart
 

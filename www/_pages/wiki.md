@@ -20,9 +20,17 @@ These pages outline the various public API calls that can be used.
 
 ## Mining information
 
-These pages outline the various components on mining on this platform.
+These pages outline the various components of mining on this platform.
 
  * [Miner difficulty](/wiki/mining/difficulty) - How we manage the difficulty of the work that needs doing.
  * [Mining rewards](/wiki/mining/rewards) - The core tennant of mining - Proof Of Work. This is how we do it.
- * [Mining script](/wiki/mining/script) - Write your own script. Or use our PHP one.
+ * [Mining script](/wiki/mining/script) - Write your own script.
+ 
+ ## Deploying and configuration
+
+These pages outline the various components on mining on this platform.
+
+ * [Deployment overview](/wiki/deployment) - The introduction and pre-requsites
+ * [Deploying locally](/wiki/deployment/local) - Deploy to a Pi (or other unix based platform)
+ * [Deploying to google](/wiki/deployment/google) - Deploy to the big-boy
  

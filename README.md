@@ -76,8 +76,8 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
 
  * [MinerTOR github code](https://github.com/nigeljohnson73/minertor)
  * [MinerTOR on the web](https://minertor.appspot.com)
- * [localhost web-app](http://localhost:8080)
- * [localhost web-api](http://localhost:8085/api/) (not really useful)
+ * [MinerTOR on the lan](http://minertor.local)
+ * [MinerTOR on the localhost](http://localhost)
  * [Data store on GAE](https://console.cloud.google.com/datastore/entities/query/kind?project=minertor)
  * [ReCAPTCHA details](https://www.google.com/recaptcha/admin/site/474517032)
 
