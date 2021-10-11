@@ -18,10 +18,13 @@
         "**/api/_include/**",
         "**/api/functions.php",
         "**/api/config*",
+        "**/api/composer*",
         "**/cron/_include/**",
         "**/cron/functions.php",
         "**/cron/config*",
-        "**/vendor/**"
+        "**/cron/composer*",
+        "**/vendor/**",
+        "composer*"
     ],
     "intelephense.files.exclude": [
         "**/.git/**",
@@ -36,54 +39,76 @@
         "**/api/_include/**",
         "**/api/functions.php",
         "**/api/config*",
+        "**/api/composer*",
         "**/cron/_include/**",
         "**/cron/functions.php",
         "**/cron/config*",
-        "**/vendor/**"
+        "**/cron/composer*",
+        "**/vendor/**",
+        "composer*"
     ],
     "search.exclude": {
         "**/api/_include/**": true,
         "**/api/functions.php": true,
         "**/api/config*": true,
+        "**/api/composer*": true,
         "**/cron/_include/**": true,
         "**/cron/functions.php": true,
         "**/cron/config*": true,
-        "**/vendor/**": true
+        "**/cron/composer*": true,
+        "**/vendor/**": true,
+        "composer*": true
     },
     "files.watcherExclude": {
         "**/api/_include/**": true,
         "**/api/functions.php": true,
         "**/api/config*": true,
+        "**/api/composer*": true,
         "**/cron/_include/**": true,
         "**/cron/functions.php": true,
         "**/cron/config*": true,
-        "**/vendor/**": true
+        "**/cron/composer*": true,
+        "**/vendor/**": true,
+        "composer*": true
     },
     "intelephense.rename.exclude": [
         "**/api/_include/**",
         "**/api/functions.php",
         "**/api/config*",
+        "**/api/composer*",
         "**/cron/_include/**",
         "**/cron/functions.php",
         "**/cron/config*",
-        "**/vendor/**"
+        "**/cron/composer*",
+        "**/vendor/**",
+        "composer*"
     ],
     "files.exclude": {
         "**/api/_include/**": true,
         "**/api/functions.php": true,
         "**/api/config*": true,
+        "**/api/composer*": true,
         "**/cron/_include/**": true,
         "**/cron/functions.php": true,
         "**/cron/config*": true,
-        "**/vendor/**": true
+        "**/cron/composer*": true,
+        "**/vendor/**": true,
+        "composer*": true,
+        ".project*": true,
+        ".buildpath*": true,
+        ".pydevproject*": true,
+        ".settings": true
     },
     "intelephense.references.exclude": [
         "**/api/_include/**",
         "**/api/functions.php",
         "**/api/config*",
+        "**/api/composer*",
         "**/cron/_include/**",
         "**/cron/functions.php",
         "**/cron/config*",
-        "**/vendor/**"
+        "**/cron/composer*",
+        "**/vendor/**",
+        "composer*"
     ]
 }
