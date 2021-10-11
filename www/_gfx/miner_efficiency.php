@@ -1,6 +1,6 @@
 <?php
 include_once (dirname ( __FILE__ ) . "/../functions.php");
-
+ 
 $p = new StdClass ();
 $p->x_min = 1;
 $p->x_max = minerMaxCount();
