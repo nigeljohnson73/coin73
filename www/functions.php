@@ -1,71 +1,71 @@
 <?php
-include_once (__DIR__ . "/vendor/autoload.php");
+include_once(__DIR__ . "/vendor/autoload.php");
 
 // Poormans MFA like Microsoft
-$mfa_words = array ();
-$mfa_words [] = "Wedensday";
-$mfa_words [] = "Helper";
-$mfa_words [] = "Utility";
-$mfa_words [] = "Layout";
-$mfa_words [] = "Floating";
-$mfa_words [] = "Efficient";
-$mfa_words [] = "Miner";
-$mfa_words [] = "Apple";
-$mfa_words [] = "Verify";
-$mfa_words [] = "Brand";
-$mfa_words [] = "Power";
-$mfa_words [] = "Private";
-$mfa_words [] = "About";
-$mfa_words [] = "Document";
-$mfa_words [] = "Manual";
-$mfa_words [] = "Server";
-$mfa_words [] = "Home";
-$mfa_words [] = "Arrow";
-$mfa_words [] = "Keyboard";
-$mfa_words [] = "Words";
-$mfa_words [] = "Change";
-$mfa_words [] = "Number";
-$mfa_words [] = "Letter";
-$mfa_words [] = "Reduce";
-$mfa_words [] = "Website";
-$mfa_words [] = "Printer";
-$mfa_words [] = "Flask";
-$mfa_words [] = "Reverse";
-$mfa_words [] = "Change";
-$mfa_words [] = "Value";
-$mfa_words [] = "Slice";
-$mfa_words [] = "Email";
-$mfa_words [] = "Pencil";
-$mfa_words [] = "Ruler";
-$mfa_words [] = "Digital";
-$mfa_words [] = "Dream";
-$mfa_words [] = "Welder";
-$mfa_words [] = "Member";
-$mfa_words [] = "College";
-$mfa_words [] = "Event";
-$mfa_words [] = "Funding";
-$mfa_words [] = "Experience";
-$mfa_words [] = "Road";
-$mfa_words [] = "Voucher";
-$mfa_words [] = "Photo";
-$mfa_words [] = "Reward";
-$mfa_words [] = "Open";
-$mfa_words [] = "Subscribe";
-$mfa_words [] = "Coffee";
-$mfa_words [] = "Message";
-$mfa_words [] = "Laundry";
-$mfa_words [] = "Recent";
-$mfa_words [] = "Studio";
-$mfa_words [] = "Access";
-$mfa_words [] = "Tonight";
-$mfa_words [] = "Pulse";
-$mfa_words [] = "Survey";
-$mfa_words [] = "Product";
-$mfa_words [] = "Refund";
-$mfa_words [] = "Policy";
-$mfa_words [] = "Counting";
-$mfa_words [] = "Vector";
-$mfa_words [] = "Customer";
+$mfa_words = array();
+$mfa_words[] = "Wedensday";
+$mfa_words[] = "Helper";
+$mfa_words[] = "Utility";
+$mfa_words[] = "Layout";
+$mfa_words[] = "Floating";
+$mfa_words[] = "Efficient";
+$mfa_words[] = "Miner";
+$mfa_words[] = "Apple";
+$mfa_words[] = "Verify";
+$mfa_words[] = "Brand";
+$mfa_words[] = "Power";
+$mfa_words[] = "Private";
+$mfa_words[] = "About";
+$mfa_words[] = "Document";
+$mfa_words[] = "Manual";
+$mfa_words[] = "Server";
+$mfa_words[] = "Home";
+$mfa_words[] = "Arrow";
+$mfa_words[] = "Keyboard";
+$mfa_words[] = "Words";
+$mfa_words[] = "Change";
+$mfa_words[] = "Number";
+$mfa_words[] = "Letter";
+$mfa_words[] = "Reduce";
+$mfa_words[] = "Website";
+$mfa_words[] = "Printer";
+$mfa_words[] = "Flask";
+$mfa_words[] = "Reverse";
+$mfa_words[] = "Change";
+$mfa_words[] = "Value";
+$mfa_words[] = "Slice";
+$mfa_words[] = "Email";
+$mfa_words[] = "Pencil";
+$mfa_words[] = "Ruler";
+$mfa_words[] = "Digital";
+$mfa_words[] = "Dream";
+$mfa_words[] = "Welder";
+$mfa_words[] = "Member";
+$mfa_words[] = "College";
+$mfa_words[] = "Event";
+$mfa_words[] = "Funding";
+$mfa_words[] = "Experience";
+$mfa_words[] = "Road";
+$mfa_words[] = "Voucher";
+$mfa_words[] = "Photo";
+$mfa_words[] = "Reward";
+$mfa_words[] = "Open";
+$mfa_words[] = "Subscribe";
+$mfa_words[] = "Coffee";
+$mfa_words[] = "Message";
+$mfa_words[] = "Laundry";
+$mfa_words[] = "Recent";
+$mfa_words[] = "Studio";
+$mfa_words[] = "Access";
+$mfa_words[] = "Tonight";
+$mfa_words[] = "Pulse";
+$mfa_words[] = "Survey";
+$mfa_words[] = "Product";
+$mfa_words[] = "Refund";
+$mfa_words[] = "Policy";
+$mfa_words[] = "Counting";
+$mfa_words[] = "Vector";
+$mfa_words[] = "Customer";
 
 function getProjectId() {
 	global $project_id;
@@ -169,12 +169,12 @@ function minerSubmitPunishment() {
 
 // Allow for capitalism tiers
 function minerSubmitMinSeconds($wallet_id = null) {
-	return minerSubmitTargetSeconds ( $wallet_id ) / 2;
+	return minerSubmitTargetSeconds($wallet_id) / 2;
 }
 
 // Allow for capitalism tiers
 function minerSubmitMaxSeconds($wallet_id = null) {
-	return minerSubmitTargetSeconds ( $wallet_id ) * 2;
+	return minerSubmitTargetSeconds($wallet_id) * 2;
 }
 
 // Allow for capitalism tiers
@@ -196,7 +196,7 @@ function minerDifficulty() {
 
 function coinbaseName() {
 	global $coinbase;
-	return getDataNamespace () . $coinbase;
+	return getDataNamespace() . $coinbase;
 }
 
 function coinbaseWalletId() {
@@ -313,117 +313,128 @@ function rootFs() {
 }
 
 function filestoreBase() {
-	return rootFs () . "/" . getProjectId ();
+	return rootFs() . "/" . getProjectId();
+}
+
+function getHostUrl() {
+	return urlOrigin($_SERVER);
+}
+
+function getAppEmail() {
+	global $smtp_from_email;
+	return $smtp_from_email;
 }
 
 function ob_print_r($what) {
-	ob_start ();
-	print_r ( $what );
-	$c = ob_get_contents ();
-	ob_end_clean ();
+	ob_start();
+	print_r($what);
+	$c = ob_get_contents();
+	ob_end_clean();
 	return $c;
 }
 
 // Transform data sent back in the app.js and app.css packing stuff or the wiki pages
 function processSendableFile($str) {
-	$str = str_replace ( "{{APP_NAME}}", getAppName (), $str );
-	$str = str_replace ( "{{API_HOST}}", getApiHost (), $str );
-	$str = str_replace ( "{{API_DATE}}", getApiDate (), $str );
-	$str = str_replace ( "{{APP_DATE}}", getAppDate (), $str );
-	$str = str_replace ( "{{APP_VERSION}}", getAppVersion (), $str );
-	$str = str_replace ( "{{RECAPTCHA_SITE_KEY}}", getRecaptchaSiteKey (), $str );
-	$str = str_replace ( "{{ACTION_GRACE_DAYS}}", actionGraceDays (), $str );
-	$str = str_replace ( "{{TOKEN_TIMEOUT_HOURS}}", tokenTimeoutHours (), $str );
-	$str = str_replace ( "{{REVALIDATION_PERIOD_DAYS}}", revalidationPeriodDays (), $str );
-	$str = str_replace ( "{{MFA_WORD_COUNT}}", mfaWordCount (), $str );
-	$str = str_replace ( "{{VALID_PASSWORD_REGEX}}", validPasswordRegex (), $str );
-	$str = str_replace ( "{{MINER_REWARD_TARGET_DAY}}", minerRewardTargetPerDay (), $str );
-	$str = str_replace ( "{{MINER_SUBMIT_TARGET_SEC}}", minerSubmitTargetSeconds (), $str );
-	$str = str_replace ( "{{MINER_MAX_COUNT}}", minerMaxCount (), $str );
-	$str = str_replace ( "{{MINER_DIFFICULTY}}", minerDifficulty (), $str );
-	$str = str_replace ( "{{MINER_SUBMIT_TARGET_REWARD_PERCENT}}", rtrim ( rtrim ( number_format ( (submissionReward ( minerSubmitTargetSeconds () )) * 100, 1 ), "0" ), "." ) . "%", $str );
-	$str = str_replace ( "{{MINER_DEGREDATION_PERCENT}}", rtrim ( rtrim ( number_format ( (minerEfficiencyDegradation ()) * 100, 1 ), "0" ), "." ) . "%", $str );
-	$str = str_replace ( "{{MINER_PERCEIVED_MAX}}", rtrim ( rtrim ( number_Format ( totalMinerEfficiency (), 2 ), "0" ), "." ), $str );
-	$str = str_replace ( "{{ACCOUNT_MINED_COINS_PER_DAY}}", rtrim ( rtrim ( number_Format ( totalMinedCoinsPerDay (), 2 ), "0" ), "." ), $str );
+	$str = str_replace("{{APP_EMAIL}}", getAppEmail(), $str);
+	$str = str_replace("{{APP_HOST}}", getHostUrl(), $str);
+	$str = str_replace("{{APP_NAME}}", getAppName(), $str);
+	$str = str_replace("{{API_HOST}}", getApiHost(), $str);
+	$str = str_replace("{{API_DATE}}", getApiDate(), $str);
+	$str = str_replace("{{APP_DATE}}", getAppDate(), $str);
+	$str = str_replace("{{APP_VERSION}}", getAppVersion(), $str);
+	$str = str_replace("{{RECAPTCHA_SITE_KEY}}", getRecaptchaSiteKey(), $str);
+	$str = str_replace("{{ACTION_GRACE_DAYS}}", actionGraceDays(), $str);
+	$str = str_replace("{{TOKEN_TIMEOUT_HOURS}}", tokenTimeoutHours(), $str);
+	$str = str_replace("{{REVALIDATION_PERIOD_DAYS}}", revalidationPeriodDays(), $str);
+	$str = str_replace("{{MFA_WORD_COUNT}}", mfaWordCount(), $str);
+	$str = str_replace("{{VALID_PASSWORD_REGEX}}", validPasswordRegex(), $str);
+	$str = str_replace("{{MINER_REWARD_TARGET_DAY}}", minerRewardTargetPerDay(), $str);
+	$str = str_replace("{{MINER_SUBMIT_TARGET_SEC}}", minerSubmitTargetSeconds(), $str);
+	$str = str_replace("{{MINER_MAX_COUNT}}", minerMaxCount(), $str);
+	$str = str_replace("{{MINER_DIFFICULTY}}", minerDifficulty(), $str);
+	$str = str_replace("{{MINER_SUBMIT_TARGET_REWARD_PERCENT}}", rtrim(rtrim(number_format((submissionReward(minerSubmitTargetSeconds())) * 100, 1), "0"), ".") . "%", $str);
+	$str = str_replace("{{MINER_DEGREDATION_PERCENT}}", rtrim(rtrim(number_format((minerEfficiencyDegradation()) * 100, 1), "0"), ".") . "%", $str);
+	$str = str_replace("{{MINER_PERCEIVED_MAX}}", rtrim(rtrim(number_Format(totalMinerEfficiency(), 2), "0"), "."), $str);
+	$str = str_replace("{{ACCOUNT_MINED_COINS_PER_DAY}}", rtrim(rtrim(number_Format(totalMinedCoinsPerDay(), 2), "0"), "."), $str);
 
 	return $str;
 }
 
 // The target reward calcuation
 function submissionReward($s, $wallet_id = null) {
-	$t = minerSubmitTargetSeconds ( $wallet_id );
+	$t = minerSubmitTargetSeconds($wallet_id);
 	$sc = 1.140099116 * $t - 3.1;
 	$xd = 0.1644 * $t - 0.1;
-	return 1 / (1 + exp ( - ($t - $sc) * ($s - ($t - $xd)) ));
+	return 1 / (1 + exp(- ($t - $sc) * ($s - ($t - $xd))));
 }
 
 // If you had $n miners, what is the effective actual mining amount
 function degradedMinerEfficiency($n) {
-	$delt = minerEfficiencyDegradation ();
+	$delt = minerEfficiencyDegradation();
 	if ($n == 1) {
 		return 1;
 	}
-	return degradedMinerEfficiency ( $n - 1 ) * (1 - $delt);
+	return degradedMinerEfficiency($n - 1) * (1 - $delt);
 }
 
 function totalMinerEfficiency() {
-	return effectiveMinerEfficiency ( minerMaxCount () );
+	return effectiveMinerEfficiency(minerMaxCount());
 }
 
 function effectiveMinerEfficiency($n) {
 	$tot = 0;
-	for($xx = 1; $xx <= $n; $xx ++) {
-		$tot += degradedMinerEfficiency ( $xx );
+	for ($xx = 1; $xx <= $n; $xx++) {
+		$tot += degradedMinerEfficiency($xx);
 	}
 	return $tot;
 }
 
 function totalMinedCoinsPerDay() {
-	$sub_reward = submissionReward ( minerSubmitTargetSeconds () );
-	$tot_efficiency = totalMinerEfficiency ();
-	$tot_coin = minerRewardTargetPerDay ();
+	$sub_reward = submissionReward(minerSubmitTargetSeconds());
+	$tot_efficiency = totalMinerEfficiency();
+	$tot_coin = minerRewardTargetPerDay();
 
 	return $tot_coin * $sub_reward * $tot_efficiency;
 }
 
 function directoryListing($dirname, $extensoes = null) {
 	if ($extensoes === null) {
-		$extensoes = array (
-				".*"
+		$extensoes = array(
+			".*"
 		);
-	} else if (! is_array ( $extensoes )) {
-		$extensoes = explode ( ",", $extensoes );
+	} else if (!is_array($extensoes)) {
+		$extensoes = explode(",", $extensoes);
 	}
 
-	$files = array ();
-	$dir = @ opendir ( $dirname );
-	while ( $dir && false !== ($file = readdir ( $dir )) ) {
+	$files = array();
+	$dir = @opendir($dirname);
+	while ($dir && false !== ($file = readdir($dir))) {
 		// $matches = array ();
 		if ($file != "." && $file != ".." && $file != ".svn") {
-			for($i = 0; $i < count ( $extensoes ); $i ++) {
-				if ($extensoes [$i] [0] == "*") {
-					$extensoes [$i] = "." . $extensoes [$i];
+			for ($i = 0; $i < count($extensoes); $i++) {
+				if ($extensoes[$i][0] == "*") {
+					$extensoes[$i] = "." . $extensoes[$i];
 				}
-				if (preg_match ( "/" . $extensoes [$i] . "/i", $file )) {
+				if (preg_match("/" . $extensoes[$i] . "/i", $file)) {
 					// if (ereg("\.+" . $extensoes[$i] . "$", $file)) {
-					$files [] = $dirname . "/" . $file;
+					$files[] = $dirname . "/" . $file;
 				}
 			}
 		}
 	}
 
-	@ closedir ( $dirname );
-	sort ( $files );
+	@closedir($dirname);
+	sort($files);
 	return $files;
 }
 
 function includeDirectory($d, $ext = "php") {
-	$ret = array ();
-	$files = directoryListing ( $d, $ext );
-	foreach ( $files as $file ) {
+	$ret = array();
+	$files = directoryListing($d, $ext);
+	foreach ($files as $file) {
 		// echo "loading $file<br />";
-		if (! preg_match ( '/index.php$/', $file )) {
-			$ret [] = $file;
+		if (!preg_match('/index.php$/', $file)) {
+			$ret[] = $file;
 		}
 	}
 	return $ret;
@@ -443,17 +454,17 @@ function newestFile($p = ".") {
 	$mtime = 0;
 	$mfile = "";
 
-	$files = directoryListing ( $p );
-	foreach ( $files as $file ) {
-		$fn = str_replace ( $p . "/", "", $file );
-		$dot = strpos ( $fn, "." );
+	$files = directoryListing($p);
+	foreach ($files as $file) {
+		$fn = str_replace($p . "/", "", $file);
+		$dot = strpos($fn, ".");
 		if ($dot !== 0) {
-			$mt = filemtime ( $file );
-			if (is_dir ( $file )) {
-				$n = newestFile ( $file );
-				if ($n [0] > $mtime) {
-					$mtime = $n [0];
-					$mfile = $n [1];
+			$mt = filemtime($file);
+			if (is_dir($file)) {
+				$n = newestFile($file);
+				if ($n[0] > $mtime) {
+					$mtime = $n[0];
+					$mfile = $n[1];
 				}
 			} else if ($mt > $mtime) {
 				$mtime = $mt;
@@ -462,16 +473,16 @@ function newestFile($p = ".") {
 		}
 	}
 
-	return array (
-			$mtime,
-			$mfile,
-			date ( "Y/m/d H:i:s", $mtime )
+	return array(
+		$mtime,
+		$mfile,
+		date("Y/m/d H:i:s", $mtime)
 	);
 }
 
 function startJsonResponse() {
-	ob_start ();
-	return new StdClass ();
+	ob_start();
+	return new StdClass();
 }
 
 function endJsonResponse($response, $ret, $success = true, $message = "") {
@@ -479,48 +490,48 @@ function endJsonResponse($response, $ret, $success = true, $message = "") {
 	// echo GUIDv4(). "\n";
 	// }
 	// global $response;
-	$c = ob_get_contents ();
-	ob_end_clean ();
+	$c = ob_get_contents();
+	ob_end_clean();
 
-	$c = trim ( $c );
-	if (strlen ( $c )) {
-		$c = explode ( PHP_EOL, $c );
+	$c = trim($c);
+	if (strlen($c)) {
+		$c = explode(PHP_EOL, $c);
 	}
 	$ret->success = $success;
 	$ret->status = $success ? "OK" : "FAIL";
 	$ret->message = $message;
 	$ret->console = $c;
 
-	$resp = json_encode ( $ret );
+	$resp = json_encode($ret);
 	if ($response) {
-		$response->getBody ()->write ( $resp );
+		$response->getBody()->write($resp);
 	} else {
 		echo $resp;
 	}
 }
 
 function startPage() {
-	ob_start ();
+	ob_start();
 }
 
 function endPage($compress = false, $strip_comments = true) {
-	$odirty = ob_get_contents ();
+	$odirty = ob_get_contents();
 	$dirty = $odirty;
 	if ($strip_comments) {
-		$dirty = preg_replace ( '/<!--(.|\s)*?-->/m', '', $dirty );
-		$dirty = preg_replace ( '/^\w*[\r\n]+/m', '', $dirty );
+		$dirty = preg_replace('/<!--(.|\s)*?-->/m', '', $dirty);
+		$dirty = preg_replace('/^\w*[\r\n]+/m', '', $dirty);
 	}
-	ob_end_clean ();
+	ob_end_clean();
 	if ($compress) {
-		libxml_use_internal_errors ( true );
-		$x = new DOMDocument ();
-		$x->loadHTML ( $dirty );
-		$clean = $x->saveHTML ();
-		if ($_SERVER ["SERVER_NAME"] == "localhost") {
+		libxml_use_internal_errors(true);
+		$x = new DOMDocument();
+		$x->loadHTML($dirty);
+		$clean = $x->saveHTML();
+		if ($_SERVER["SERVER_NAME"] == "localhost") {
 			echo "<!-- RUNNING ON DEV HOST -->\n";
 		}
-		echo "<!-- " . getAppName () . " - (c) 2020 - " . date ( 'Y' ) . " Nigel Johnson, all rights reserved -->\n";
-		echo "<!-- uncompressed: " . number_format ( strlen ( $odirty ), 0 ) . " bytes, compressed: " . number_format ( strlen ( $clean ), 0 ) . " bytes -->\n";
+		echo "<!-- " . getAppName() . " - (c) 2020 - " . date('Y') . " Nigel Johnson, all rights reserved -->\n";
+		echo "<!-- uncompressed: " . number_format(strlen($odirty), 0) . " bytes, compressed: " . number_format(strlen($clean), 0) . " bytes -->\n";
 		// echo "<!-- \n";
 		// print_r($_SERVER);
 		// echo "-->\n";
@@ -531,7 +542,7 @@ function endPage($compress = false, $strip_comments = true) {
 }
 
 function msTime() {
-	return microtime ( true );
+	return microtime(true);
 	// $mt = explode(' ', microtime());
 	// return ((int)$mt[1]) * 1000 + ((int)round($mt[0] * 1000));
 }
@@ -541,46 +552,46 @@ function numDays($d) {
 }
 
 function timestamp($day, $mon, $year, $hour = 0, $minute = 0, $second = 0) {
-	$day = str_pad ( (( int ) $day) + 0, 2, "0", STR_PAD_LEFT );
-	$mon = str_pad ( (( int ) $mon) + 0, 2, "0", STR_PAD_LEFT );
-	$hour = str_pad ( (( int ) $hour) + 0, 2, "0", STR_PAD_LEFT );
-	$minute = str_pad ( (( int ) $minute) + 0, 2, "0", STR_PAD_LEFT );
-	$second = str_pad ( (( int ) $second) + 0, 2, "0", STR_PAD_LEFT );
+	$day = str_pad(((int) $day) + 0, 2, "0", STR_PAD_LEFT);
+	$mon = str_pad(((int) $mon) + 0, 2, "0", STR_PAD_LEFT);
+	$hour = str_pad(((int) $hour) + 0, 2, "0", STR_PAD_LEFT);
+	$minute = str_pad(((int) $minute) + 0, 2, "0", STR_PAD_LEFT);
+	$second = str_pad(((int) $second) + 0, 2, "0", STR_PAD_LEFT);
 	return $year . $mon . $day . $hour . $minute . $second;
 }
 
 function timestampNow() {
 	global $date_overide;
-	if (isset ( $date_overide )) {
+	if (isset($date_overide)) {
 		return $date_overide;
 	}
-	return adodb_date ( "YmdHis" );
+	return adodb_date("YmdHis");
 }
 
 function time2Timestamp($tm) {
-	return adodb_date ( "YmdHis", $tm );
+	return adodb_date("YmdHis", $tm);
 }
 
 function timestamp2Time($ts) {
 	// echo "timestamp2Time($ts): Got: '$ts'\n";
-	$ts = str_replace ( " ", "", $ts );
-	$ts = str_replace ( ":", "", $ts );
-	$ts = str_replace ( "/", "", $ts );
-	$ts = str_replace ( "-", "", $ts );
-	$ts = str_replace ( ".", "", $ts );
-	$ts = preg_replace ( "/[A-Z]*/", "", strtoupper ( $ts ) );
+	$ts = str_replace(" ", "", $ts);
+	$ts = str_replace(":", "", $ts);
+	$ts = str_replace("/", "", $ts);
+	$ts = str_replace("-", "", $ts);
+	$ts = str_replace(".", "", $ts);
+	$ts = preg_replace("/[A-Z]*/", "", strtoupper($ts));
 	$ts .= "000000"; // just in case I only suply a date
 
 	// echo "timestamp2Time($ts): New ts: '$ts'\n";
 
-	$year = substr ( $ts, 0, 4 );
-	$month = substr ( $ts, 4, 2 );
-	$day = substr ( $ts, 6, 2 );
-	$hour = substr ( $ts, 8, 2 );
-	$minute = substr ( $ts, 10, 2 );
-	$second = substr ( $ts, 12, 2 );
+	$year = substr($ts, 0, 4);
+	$month = substr($ts, 4, 2);
+	$day = substr($ts, 6, 2);
+	$hour = substr($ts, 8, 2);
+	$minute = substr($ts, 10, 2);
+	$second = substr($ts, 12, 2);
 	// echo "adodb_mktime($hour, $minute, $second, $month, $day, $year)\n";
-	return adodb_mktime ( $hour, $minute, $second, $month, $day, $year );
+	return adodb_mktime($hour, $minute, $second, $month, $day, $year);
 }
 
 function periodFormat($secs, $short = false) {
@@ -590,11 +601,11 @@ function periodFormat($secs, $short = false) {
 	// this takes a duration in seconds and outputs in hours and
 	// minutes to the nearest minute - is use is for kind of "about" times.
 	$estr = "";
-	$hours = floor ( $h );
+	$hours = floor($h);
 	if ($hours) {
-		$hours = number_format ( $hours, 0 );
+		$hours = number_format($hours, 0);
 		$estr .= $hours . $hflag;
-		if (! $short) {
+		if (!$short) {
 			$pl = "s";
 			if ($hours == 1) {
 				$pl = "";
@@ -606,12 +617,12 @@ function periodFormat($secs, $short = false) {
 	$mins = $h - $hours;
 	$mins *= 60;
 	if ($mins) {
-		$mins = ceil ( $mins );
-		if (strlen ( $estr )) {
+		$mins = ceil($mins);
+		if (strlen($estr)) {
 			$estr .= " ";
 		}
 		$estr .= $mins . $mflag;
-		if (! $short) {
+		if (!$short) {
 			$pl = "s";
 			if ($mins == 1) {
 				$pl = "";
@@ -623,20 +634,20 @@ function periodFormat($secs, $short = false) {
 }
 
 function durationFormat($secs, $use_nearest_sec = false) {
-	if ($use_nearest_sec) {
-		$secs = nearest ( $secs, 1 );
-	}
+	// if ($use_nearest_sec) {
+	// 	$secs = nearest($secs, 1);
+	// }
 	$sec_min = 60;
 	$sec_hour = $sec_min * 60;
 	$sec_day = $sec_hour * 24;
 
-	$days = floor ( $secs / $sec_day );
+	$days = floor($secs / $sec_day);
 	$secs -= $days * $sec_day;
 
-	$hours = floor ( $secs / $sec_hour );
+	$hours = floor($secs / $sec_hour);
 	$secs -= $hours * $sec_hour;
 
-	$mins = floor ( $secs / $sec_min );
+	$mins = floor($secs / $sec_min);
 	$secs -= $mins * $sec_min;
 
 	$ret = "";
@@ -652,10 +663,10 @@ function durationFormat($secs, $use_nearest_sec = false) {
 	if ($use_nearest_sec) {
 		$ret .= " " . $secs . "s";
 	} else {
-		$ret .= " " . number_format ( $secs, 3 ) . "s";
+		$ret .= " " . number_format($secs, 3) . "s";
 	}
 
-	return trim ( $ret );
+	return trim($ret);
 }
 
 function durationStamp($secs, $use_us = false) {
@@ -664,23 +675,23 @@ function durationStamp($secs, $use_us = false) {
 	$sec_hour = $sec_min * 60;
 	$sec_day = $sec_hour * 24;
 
-	$days = floor ( $secs / $sec_day );
+	$days = floor($secs / $sec_day);
 	$secs -= $days * $sec_day;
 	// echo "durationStamp(): days: $days\n";
 
-	$hours = floor ( $secs / $sec_hour );
+	$hours = floor($secs / $sec_hour);
 	$secs -= $hours * $sec_hour;
 	// echo "durationStamp(): hours: $hours\n";
 
-	$mins = floor ( $secs / $sec_min );
+	$mins = floor($secs / $sec_min);
 	$secs -= $mins * $sec_min;
 	// echo "durationStamp(): mins: $mins\n";
 
-	$ms = ($secs - (floor ( $secs ))) * 1000;
-	$secs = floor ( $secs );
+	$ms = ($secs - (floor($secs))) * 1000;
+	$secs = floor($secs);
 
-	$us = round ( ($ms - (floor ( $ms ))) * 1000 );
-	$ms = floor ( $ms );
+	$us = round(($ms - (floor($ms))) * 1000);
+	$ms = floor($ms);
 
 	// echo "durationStamp(): secs: $secs\n";
 	// echo "durationStamp(): ms: $ms\n";
@@ -688,55 +699,90 @@ function durationStamp($secs, $use_us = false) {
 
 	$ret = "";
 	if ($days > 0) {
-		$ret .= (strlen ( $ret ) ? (" ") : ("")) . $days . "d";
+		$ret .= (strlen($ret) ? (" ") : ("")) . $days . "d";
 	}
-	if (strlen ( $ret ) || $hours > 0) {
-		$ret .= (strlen ( $ret ) ? (" ") : ("")) . $hours . "h";
+	if (strlen($ret) || $hours > 0) {
+		$ret .= (strlen($ret) ? (" ") : ("")) . $hours . "h";
 	}
-	if (strlen ( $ret ) || $mins > 0) {
-		$ret .= (strlen ( $ret ) ? (" ") : ("")) . $mins . "m";
+	if (strlen($ret) || $mins > 0) {
+		$ret .= (strlen($ret) ? (" ") : ("")) . $mins . "m";
 	}
-	if (strlen ( $ret ) || $secs > 0) {
-		$ret .= (strlen ( $ret ) ? (" ") : ("")) . $secs . "s";
+	if (strlen($ret) || $secs > 0) {
+		$ret .= (strlen($ret) ? (" ") : ("")) . $secs . "s";
 	}
-	if (! $use_us || strlen ( $ret ) || $ms > 0) {
-		$ret .= (strlen ( $ret ) ? (" ") : ("")) . $ms . "ms";
+	if (!$use_us || strlen($ret) || $ms > 0) {
+		$ret .= (strlen($ret) ? (" ") : ("")) . $ms . "ms";
 	}
 	if ($use_us) {
-		$ret .= (strlen ( $ret ) ? (" ") : ("")) . $us . "us";
+		$ret .= (strlen($ret) ? (" ") : ("")) . $us . "us";
 	}
 
-	return trim ( $ret );
+	return trim($ret);
 }
 
 function timestampFormat($ts, $format = null) {
 	if ($format == null) {
 		$format = "d/m/Y H:i:s";
 	}
-	$tm = timestamp2Time ( $ts );
-	return adodb_date ( $format, $tm );
+	$tm = timestamp2Time($ts);
+	return adodb_date($format, $tm);
 }
 
 function timestampAdd($ts, $sec) {
 	// default is add seconds
-	$tm = timestamp2Time ( $ts );
-	return time2Timestamp ( $tm + $sec );
+	$tm = timestamp2Time($ts);
+	return time2Timestamp($tm + $sec);
 }
 
 function timestampAddDays($ts, $day) {
-	return timestampAdd ( $ts, numDays ( $day ) );
+	return timestampAdd($ts, numDays($day));
 }
 
 function imageCenteredString(&$img, $font, $xMin, $xMax, $y, $str, $col) {
-	$textWidth = imagefontwidth ( $font ) * strlen ( $str );
+	$textWidth = imagefontwidth($font) * strlen($str);
 	$xLoc = ($xMax - $xMin - $textWidth) / 2 + $xMin + $font;
-	imagestring ( $img, $font, $xLoc, $y, $str, $col );
+	imagestring($img, $font, $xLoc, $y, $str, $col);
 }
 
 function imageRightString(&$img, $font, $xMin, $xMax, $y, $str, $col) {
-	$textWidth = imagefontwidth ( $font ) * strlen ( $str );
+	$textWidth = imagefontwidth($font) * strlen($str);
 	$xLoc = ($xMax - $xMin - $textWidth) / 2 + $xMin + $font;
-	imagestring ( $img, $font, $xLoc, $y, $str, $col );
+	imagestring($img, $font, $xLoc, $y, $str, $col);
+}
+
+function calcStringCenter($image, $text, $font) {
+	// font sizes
+	$width = array(
+		1 => 5,
+		6,
+		7,
+		8,
+		9
+	);
+	$height = array(
+		1 => 6,
+		8,
+		13,
+		15,
+		15
+	);
+
+	// find the size of the image
+	$xi = ImageSX($image);
+	$yi = ImageSY($image);
+
+	// find the size of the text
+	$xr = $width[$font] * strlen($text);
+	$yr = $height[$font];
+
+	// compute centering
+	$x = intval(($xi - $xr) / 2);
+	$y = intval(($yi - $yr) / 2);
+
+	return array(
+		$x,
+		$y
+	);
 }
 
 function graphData($package, $x = 260, $y = 80) {
@@ -744,55 +790,55 @@ function graphData($package, $x = 260, $y = 80) {
 
 	$x_min = $package->x_min;
 	$x_max = $package->x_max;
-	$x_major = isset ( $package->x_major ) ? ($package->x_major) : (0);
-	$x_minor = isset ( $package->x_minor ) ? ($package->x_minor) : (0);
-	$x_major_scaler = isset ( $package->x_major_scaler ) ? ($package->x_major_scaler) : (null);
-	$x_major_label = isset ( $package->x_major_label ) ? ($package->x_major_label) : ("");
-	$x_tgt = isset ( $package->x_tgt ) ? ($package->x_tgt) : (null);
-	$x_swt = isset ( $package->x_swt ) ? ($package->x_swt) : (0);
+	$x_major = isset($package->x_major) ? ($package->x_major) : (0);
+	$x_minor = isset($package->x_minor) ? ($package->x_minor) : (0);
+	$x_major_scaler = isset($package->x_major_scaler) ? ($package->x_major_scaler) : (null);
+	$x_major_label = isset($package->x_major_label) ? ($package->x_major_label) : ("");
+	$x_tgt = isset($package->x_tgt) ? ($package->x_tgt) : (null);
+	$x_swt = isset($package->x_swt) ? ($package->x_swt) : (0);
 	$y_min = $package->y_min;
 	$y_max = $package->y_max;
-	$y_major = isset ( $package->y_major ) ? ($package->y_major) : (0);
-	$y_minor = isset ( $package->y_minor ) ? ($package->y_minor) : (0);
-	$y_major_scaler = isset ( $package->y_major_scaler ) ? ($package->y_major_scaler) : (null);
-	$y_major_label = isset ( $package->y_major_label ) ? ($package->y_major_label) : ("");
+	$y_major = isset($package->y_major) ? ($package->y_major) : (0);
+	$y_minor = isset($package->y_minor) ? ($package->y_minor) : (0);
+	$y_major_scaler = isset($package->y_major_scaler) ? ($package->y_major_scaler) : (null);
+	$y_major_label = isset($package->y_major_label) ? ($package->y_major_label) : ("");
 	$values = $package->values;
 
-	$background_color = (isset ( $package->background_color ) && is_array ( $package->background_color ) && (count ( $package->background_color ) == 3)) ? ($package->background_color) : ([ 
-			0x99,
-			0x99,
-			0x99
+	$background_color = (isset($package->background_color) && is_array($package->background_color) && (count($package->background_color) == 3)) ? ($package->background_color) : ([
+		0x99,
+		0x99,
+		0x99
 	]);
 
-	$border_color = (isset ( $package->border_color ) && is_array ( $package->border_color ) && (count ( $package->border_color ) == 3)) ? ($package->border_color) : ([ 
-			0x99,
-			0x99,
-			0x99
+	$border_color = (isset($package->border_color) && is_array($package->border_color) && (count($package->border_color) == 3)) ? ($package->border_color) : ([
+		0x99,
+		0x99,
+		0x99
 	]);
-	$line_color = (isset ( $package->line_color ) && is_array ( $package->line_color ) && (count ( $package->line_color ) == 3)) ? ($package->line_color) : ([ 
-			0x00,
-			0x99,
-			0x00
+	$line_color = (isset($package->line_color) && is_array($package->line_color) && (count($package->line_color) == 3)) ? ($package->line_color) : ([
+		0x00,
+		0x99,
+		0x00
 	]);
-	$grid_major_color = (isset ( $package->grid_major_color ) && is_array ( $package->grid_major_color ) && (count ( $package->grid_major_color ) == 3)) ? ($package->grid_major_color) : ([ 
-			0x77,
-			0x77,
-			0x77
+	$grid_major_color = (isset($package->grid_major_color) && is_array($package->grid_major_color) && (count($package->grid_major_color) == 3)) ? ($package->grid_major_color) : ([
+		0x77,
+		0x77,
+		0x77
 	]);
-	$grid_minor_color = (isset ( $package->grid_minor_color ) && is_array ( $package->grid_minor_color ) && (count ( $package->grid_minor_color ) == 3)) ? ($package->grid_minor_color) : ([ 
-			0x88,
-			0x88,
-			0x88
+	$grid_minor_color = (isset($package->grid_minor_color) && is_array($package->grid_minor_color) && (count($package->grid_minor_color) == 3)) ? ($package->grid_minor_color) : ([
+		0x88,
+		0x88,
+		0x88
 	]);
-	$sweet_color = (isset ( $package->sweet_color ) && is_array ( $package->sweet_color ) && (count ( $package->sweet_color ) == 3)) ? ($package->sweet_color) : ([ 
-			0xaa,
-			0xaa,
-			0x99
+	$sweet_color = (isset($package->sweet_color) && is_array($package->sweet_color) && (count($package->sweet_color) == 3)) ? ($package->sweet_color) : ([
+		0xaa,
+		0xaa,
+		0x99
 	]);
-	$label_color = (isset ( $package->label_color ) && is_array ( $package->label_color ) && (count ( $package->label_color ) == 3)) ? ($package->label_color) : ([ 
-			0x33,
-			0x33,
-			0x33
+	$label_color = (isset($package->label_color) && is_array($package->label_color) && (count($package->label_color) == 3)) ? ($package->label_color) : ([
+		0x33,
+		0x33,
+		0x33
 	]);
 
 	$img_width = $x;
@@ -801,27 +847,27 @@ function graphData($package, $x = 260, $y = 80) {
 	$graph_width = $img_width - $margins * 2;
 	$graph_height = $img_height - $margins * 2;
 
-	$img = imagecreatetruecolor ( $img_width, $img_height );
-	imageantialias ( $img, true );
+	$img = imagecreatetruecolor($img_width, $img_height);
+	imageantialias($img, true);
 	// $font=imageLoadFont(dirname(__FILE__)."/../fonts/andalemo.ttf");
 	$font = 4;
 
-	$background_color = imagecolorallocate ( $img, $background_color [0], $background_color [1], $background_color [2] );
-	$border_color = imagecolorallocate ( $img, $border_color [0], $border_color [1], $border_color [2] );
-	$line_color = imagecolorallocate ( $img, $line_color [0], $line_color [1], $line_color [2] );
-	$grid_major_color = imagecolorallocate ( $img, $grid_major_color [0], $grid_major_color [1], $grid_major_color [2] );
-	$grid_minor_color = imagecolorallocate ( $img, $grid_minor_color [0], $grid_minor_color [1], $grid_minor_color [2] );
-	$sweet_color = imagecolorallocate ( $img, $sweet_color [0], $sweet_color [1], $sweet_color [2] );
-	$label_color = imagecolorallocate ( $img, $label_color [0], $label_color [1], $label_color [2] );
+	$background_color = imagecolorallocate($img, $background_color[0], $background_color[1], $background_color[2]);
+	$border_color = imagecolorallocate($img, $border_color[0], $border_color[1], $border_color[2]);
+	$line_color = imagecolorallocate($img, $line_color[0], $line_color[1], $line_color[2]);
+	$grid_major_color = imagecolorallocate($img, $grid_major_color[0], $grid_major_color[1], $grid_major_color[2]);
+	$grid_minor_color = imagecolorallocate($img, $grid_minor_color[0], $grid_minor_color[1], $grid_minor_color[2]);
+	$sweet_color = imagecolorallocate($img, $sweet_color[0], $sweet_color[1], $sweet_color[2]);
+	$label_color = imagecolorallocate($img, $label_color[0], $label_color[1], $label_color[2]);
 
-	imagefilledrectangle ( $img, 1, 1, $img_width - 2, $img_height - 2, $border_color );
-	imagefilledrectangle ( $img, $margins, $margins, $img_width - 1 - $margins, $img_height - 1 - $margins, $background_color );
+	imagefilledrectangle($img, 1, 1, $img_width - 2, $img_height - 2, $border_color);
+	imagefilledrectangle($img, $margins, $margins, $img_width - 1 - $margins, $img_height - 1 - $margins, $background_color);
 
-	if (count ( $values ) < 2 || abs ( max ( $values ) - min ( $values ) ) < 0.0001) {
+	if (count($values) < 2 || abs(max($values) - min($values)) < 0.0001) {
 		// if (1) {
 		$txt = "Not enough data points";
-		$xy = calcStringCenter ( $img, $txt, $font );
-		imagestring ( $img, $font, $xy [0], $xy [1], $txt, $line_color );
+		$xy = calcStringCenter($img, $txt, $font);
+		imagestring($img, $font, $xy[0], $xy[1], $txt, $line_color);
 	} else {
 		if ($x_tgt !== null && $x_swt > 0) {
 			// echo "xt: $x_tgt, xs: $x_swt<br />\n";
@@ -831,52 +877,52 @@ function graphData($package, $x = 260, $y = 80) {
 			$y1 = $margins;
 			$y2 = $graph_height + $margins;
 
-			$corners = array (
-					$x1,
-					$y1,
-					$x2,
-					$y1,
-					$x2,
-					$graph_height + $margins,
-					$x1,
-					$graph_height + $margins
+			$corners = array(
+				$x1,
+				$y1,
+				$x2,
+				$y1,
+				$x2,
+				$graph_height + $margins,
+				$x1,
+				$graph_height + $margins
 			);
 
-			imagefilledpolygon ( $img, $corners, 4, $sweet_color );
+			imagefilledpolygon($img, $corners, 4, $sweet_color);
 		}
 
 		if ($x_minor > 0) {
 			$pcnt = $x_minor / ($x_max - $x_min);
-			for($i = 1; $i >= 0; $i -= $pcnt) {
+			for ($i = 1; $i >= 0; $i -= $pcnt) {
 				$x1 = $margins + ($i * $graph_width);
 				$x2 = $x1;
 				$y1 = $margins;
 				$y2 = $graph_height + $margins;
 
 				// if ($DEBUG)echo "gw: $graph_width, m: $margins, i: $i, x1: $x1<br />\n";
-				if (round ( $x1 ) >= 0) {
-					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_minor_color );
+				if (round($x1) >= 0) {
+					imageLine($img, round($x1), round($y1), round($x2), round($y2), $grid_minor_color);
 				}
 			}
 		}
 
 		if ($x_major > 0) {
 			$pcnt = $x_major / ($x_max - $x_min);
-			for($i = 1; $i >= 0; $i -= $pcnt) {
+			for ($i = 1; $i >= 0; $i -= $pcnt) {
 				$x1 = $margins + ($i * $graph_width);
 				$x2 = $x1;
 				$y1 = $margins;
 				$y2 = $graph_height + $margins;
 				$font = 2;
 
-				if (round ( $x1 ) >= 0) {
-					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
+				if (round($x1) >= 0) {
+					imageLine($img, round($x1), round($y1), round($x2), round($y2), $grid_major_color);
 				}
 
 				if ($x_major_scaler) {
 					$label = (($i * (($x_max - $x_min))) + $x_min) . $x_major_label;
 
-					imageCenteredString ( $img, $font, $x1, $x1, $y2 + 3, $label, $label_color );
+					imageCenteredString($img, $font, $x1, $x1, $y2 + 3, $label, $label_color);
 				}
 			}
 		}
@@ -884,98 +930,98 @@ function graphData($package, $x = 260, $y = 80) {
 		// Draw 10% lines horizontally
 		if ($y_minor) {
 			$pcnt = $y_minor / $y_max;
-			for($i = 0; $i <= 1; $i += $pcnt) {
+			for ($i = 0; $i <= 1; $i += $pcnt) {
 				$y1 = $margins + ($i * $graph_height);
 				$y2 = $y1;
 				$x1 = $margins;
 				$x2 = $graph_width + $margins;
 
-				if (round ( $y1 ) >= 0) {
-					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_minor_color );
+				if (round($y1) >= 0) {
+					imageLine($img, round($x1), round($y1), round($x2), round($y2), $grid_minor_color);
 				}
 			}
 		}
 		if ($y_major) {
 			$pcnt = $y_major / $y_max;
-			for($i = 0; $i <= 1; $i += $pcnt) {
+			for ($i = 0; $i <= 1; $i += $pcnt) {
 				$y1 = $margins + ($i * $graph_height);
 				$y2 = $y1;
 				$x1 = $margins;
 				$x2 = $graph_width + $margins;
 
-				if (round ( $y1 ) >= 0) {
-					imageLine ( $img, round ( $x1 ), round ( $y1 ), round ( $x2 ), round ( $y2 ), $grid_major_color );
+				if (round($y1) >= 0) {
+					imageLine($img, round($x1), round($y1), round($x2), round($y2), $grid_major_color);
 				}
 
 				if ($y_major_scaler) {
-					$val_r = round ( ($y_major_scaler * ($y_max - ($i * (($y_max - $y_min))) + $y_min)), 2 );
-					$val = number_format ( $val_r );
+					$val_r = round(($y_major_scaler * ($y_max - ($i * (($y_max - $y_min))) + $y_min)), 2);
+					$val = number_format($val_r);
 					$label = $val . $y_major_label;
 
 					if ($i < (1 - $pcnt)) {
-						imageRightString ( $img, $font, $x1, $x1, $y2 + 1, $label, $label_color );
+						imageRightString($img, $font, $x1, $x1, $y2 + 1, $label, $label_color);
 					}
 				}
 			}
 		}
 
-		$npoints = count ( $values );
+		$npoints = count($values);
 
 		// Make headroom so we are not dividing by zero below, and not having to check for it
 		$max_value = $y_max; // max ( $values );
 		$min_value = $y_min; // min ( $values );
 		$min_delta = 0.001;
-		if (abs ( $max_value - $min_value ) < $min_delta) {
+		if (abs($max_value - $min_value) < $min_delta) {
 			$min_value -= $min_delta / 2;
 			$max_value += $min_delta / 2;
 		}
 		$ratio_x = ($graph_width) / ($npoints - 1);
 		$ratio_y = ($graph_height) / ($max_value - $min_value);
 
-		$vals = array_values ( $values );
-		foreach ( $vals as $i => $value ) {
+		$vals = array_values($values);
+		foreach ($vals as $i => $value) {
 			if ($i > 0) {
 				$x1 = $margins + ($i - 1) * $ratio_x;
 				$x2 = $margins + ($i) * $ratio_x;
-				$y1 = $margins + $graph_height - intval ( ($vals [$i - 1] - $min_value) * $ratio_y );
-				$y2 = $margins + $graph_height - intval ( ($value - $min_value) * $ratio_y );
+				$y1 = $margins + $graph_height - intval(($vals[$i - 1] - $min_value) * $ratio_y);
+				$y2 = $margins + $graph_height - intval(($value - $min_value) * $ratio_y);
 
-				imageLine ( $img, $x1, $y1, $x2, $y2, $line_color );
+				imageLine($img, $x1, $y1, $x2, $y2, $line_color);
 			}
 		}
 	}
 
-	ob_start ();
-	imagepng ( $img );
-	$image_data = ob_get_contents ();
-	ob_end_clean ();
+	ob_start();
+	imagepng($img);
+	$image_data = ob_get_contents();
+	ob_end_clean();
 	return $image_data;
 }
 
 function GUIDv4($trim = true) {
 	// Windows
-	if (function_exists ( 'com_create_guid' ) === true) {
+	if (function_exists('com_create_guid') === true) {
 		if ($trim === true)
-			return trim ( com_create_guid (), '{}' );
+			return trim(com_create_guid(), '{}');
 		else
-			return com_create_guid ();
+			return com_create_guid();
 	}
 
 	// OSX/Linux
-	if (function_exists ( 'openssl_random_pseudo_bytes' ) === true) {
-		$data = openssl_random_pseudo_bytes ( 16 );
-		$data [6] = chr ( ord ( $data [6] ) & 0x0f | 0x40 ); // set version to 0100
-		$data [8] = chr ( ord ( $data [8] ) & 0x3f | 0x80 ); // set bits 6-7 to 10
-		return vsprintf ( '%s%s-%s-%s-%s-%s%s%s', str_split ( bin2hex ( $data ), 4 ) );
+	if (function_exists('openssl_random_pseudo_bytes') === true) {
+		$data = openssl_random_pseudo_bytes(16);
+		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 
 	// Fallback (PHP 4.2+)
-	mt_srand ( ( double ) microtime () * 10000 );
-	$charid = strtolower ( md5 ( uniqid ( rand (), true ) ) );
-	$hyphen = chr ( 45 ); // "-"
-	$lbrace = $trim ? "" : chr ( 123 ); // "{"
-	$rbrace = $trim ? "" : chr ( 125 ); // "}"
-	$guidv4 = $lbrace . substr ( $charid, 0, 8 ) . $hyphen . substr ( $charid, 8, 4 ) . $hyphen . substr ( $charid, 12, 4 ) . $hyphen . substr ( $charid, 16, 4 ) . $hyphen . substr ( $charid, 20, 12 ) . $rbrace;
+	mt_srand((float) microtime() * 10000);
+	$charid = strtolower(md5(uniqid(rand(), true)));
+	$hyphen = chr(45); // "-"
+	$lbrace = $trim ? "" : chr(123); // "{"
+	$rbrace = $trim ? "" : chr(125); // "}"
+	$guidv4 = $lbrace . substr($charid, 0, 8) . $hyphen . substr($charid, 8, 4) . $hyphen . substr($charid, 12, 4) . $hyphen . substr($charid, 16, 4) . $hyphen . substr($charid, 20, 12) . $rbrace;
 	return $guidv4;
 }
 
@@ -984,115 +1030,115 @@ function httpErrorString($code) {
 	if ($code !== NULL) {
 
 		switch ($code) {
-			case 100 :
+			case 100:
 				$text = 'Continue';
 				break;
-			case 101 :
+			case 101:
 				$text = 'Switching Protocols';
 				break;
-			case 200 :
+			case 200:
 				$text = 'OK';
 				break;
-			case 201 :
+			case 201:
 				$text = 'Created';
 				break;
-			case 202 :
+			case 202:
 				$text = 'Accepted';
 				break;
-			case 203 :
+			case 203:
 				$text = 'Non-Authoritative Information';
 				break;
-			case 204 :
+			case 204:
 				$text = 'No Content';
 				break;
-			case 205 :
+			case 205:
 				$text = 'Reset Content';
 				break;
-			case 206 :
+			case 206:
 				$text = 'Partial Content';
 				break;
-			case 300 :
+			case 300:
 				$text = 'Multiple Choices';
 				break;
-			case 301 :
+			case 301:
 				$text = 'Moved Permanently';
 				break;
-			case 302 :
+			case 302:
 				$text = 'Moved Temporarily';
 				break;
-			case 303 :
+			case 303:
 				$text = 'See Other';
 				break;
-			case 304 :
+			case 304:
 				$text = 'Not Modified';
 				break;
-			case 305 :
+			case 305:
 				$text = 'Use Proxy';
 				break;
-			case 400 :
+			case 400:
 				$text = 'Bad Request';
 				break;
-			case 401 :
+			case 401:
 				$text = 'Unauthorized';
 				break;
-			case 402 :
+			case 402:
 				$text = 'Payment Required';
 				break;
-			case 403 :
+			case 403:
 				$text = 'Forbidden';
 				break;
-			case 404 :
+			case 404:
 				$text = 'Not Found';
 				break;
-			case 405 :
+			case 405:
 				$text = 'Method Not Allowed';
 				break;
-			case 406 :
+			case 406:
 				$text = 'Not Acceptable';
 				break;
-			case 407 :
+			case 407:
 				$text = 'Proxy Authentication Required';
 				break;
-			case 408 :
+			case 408:
 				$text = 'Request Time-out';
 				break;
-			case 409 :
+			case 409:
 				$text = 'Conflict';
 				break;
-			case 410 :
+			case 410:
 				$text = 'Gone';
 				break;
-			case 411 :
+			case 411:
 				$text = 'Length Required';
 				break;
-			case 412 :
+			case 412:
 				$text = 'Precondition Failed';
 				break;
-			case 413 :
+			case 413:
 				$text = 'Request Entity Too Large';
 				break;
-			case 414 :
+			case 414:
 				$text = 'Request-URI Too Large';
 				break;
-			case 415 :
+			case 415:
 				$text = 'Unsupported Media Type';
 				break;
-			case 500 :
+			case 500:
 				$text = 'Internal Server Error';
 				break;
-			case 501 :
+			case 501:
 				$text = 'Not Implemented';
 				break;
-			case 502 :
+			case 502:
 				$text = 'Bad Gateway';
 				break;
-			case 503 :
+			case 503:
 				$text = 'Service Unavailable';
 				break;
-			case 504 :
+			case 504:
 				$text = 'Gateway Time-out';
 				break;
-			case 505 :
+			case 505:
 				$text = 'HTTP Version not supported';
 				break;
 		}
@@ -1105,53 +1151,53 @@ function jsonApi($url, $post = null, $timeout = null) {
 	if ($timeout == null) {
 		$timeout = 15;
 	}
-	$ch = curl_init ( $url );
-	curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, 0 ); // connecting timout is forever... unitl the curl excution timeout
-	curl_setopt ( $ch, CURLOPT_TIMEOUT, $timeout ); // curl execution timeout in seconds
-	curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+	$ch = curl_init($url);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); // connecting timout is forever... unitl the curl excution timeout
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); // curl execution timeout in seconds
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 	if ($post !== false) {
-		if (! is_array ( $post )) {
-			if (is_object ( $post )) {
-				$post = ( array ) $post;
+		if (!is_array($post)) {
+			if (is_object($post)) {
+				$post = (array) $post;
 			} else {
-				$post = array ();
+				$post = array();
 			}
 		}
-		curl_setopt ( $ch, CURLOPT_POSTFIELDS, $post );
-		logger ( LL_DBG, "jsonApi(): sending as POST request" );
-		logger ( LL_DBG, ob_print_r ( $post ) );
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+		logger(LL_DBG, "jsonApi(): sending as POST request");
+		logger(LL_DBG, ob_print_r($post));
 	} else {
-		logger ( LL_DBG, "jsonApi(): sending as GET request" );
+		logger(LL_DBG, "jsonApi(): sending as GET request");
 	}
 
-	$ret = new StdClass ();
+	$ret = new StdClass();
 
 	// execute!
-	$pt = new ProcessTimer ();
-	$data = curl_exec ( $ch );
-	$api_t = $pt->duration ();
+	$pt = new ProcessTimer();
+	$data = curl_exec($ch);
+	$api_t = $pt->duration();
 	$ret->duration = $api_t;
-	logger ( LL_INF, "jsonApi(): call duration: " . durationStamp ( $api_t ) );
+	logger(LL_INF, "jsonApi(): call duration: " . durationStamp($api_t));
 
-	$response = curl_getinfo ( $ch, CURLINFO_HTTP_CODE );
+	$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	$ll = LL_DBG;
 	if ($response < 200 || $response > 299) {
 		$ll = LL_WRN;
 	}
-	logger ( $ll, "jsonApi(): response (" . $response . ") - " . httpErrorString ( $response ) );
+	logger($ll, "jsonApi(): response (" . $response . ") - " . httpErrorString($response));
 	$ret->response = $response;
 
 	$ret->errno = false;
 	$ret->error = "";
 	// Check for errors and display the error message
-	if ($errno = curl_errno ( $ch )) {
-		$error_message = curl_strerror ( $errno );
-		logger ( LL_ERR, "jsonApi(): error (" . $errno . "): " . $error_message );
+	if ($errno = curl_errno($ch)) {
+		$error_message = curl_strerror($errno);
+		logger(LL_ERR, "jsonApi(): error (" . $errno . "): " . $error_message);
 		$ret->errno = $errno;
 		$ret->error = $error_message;
 	}
-	$ret->data = json_decode ( $data );
+	$ret->data = json_decode($data);
 
 	// echo "****************************************\n";
 	// echo "GOT DATA:\n";
@@ -1161,24 +1207,24 @@ function jsonApi($url, $post = null, $timeout = null) {
 	// echo "****************************************\n";
 
 	// close the connection, release resources used
-	curl_close ( $ch );
+	curl_close($ch);
 
 	return $ret;
 }
 
 function urlOrigin($s, $use_forwarded_host = false) {
-	$ssl = (! empty ( $s ['HTTPS'] ) && $s ['HTTPS'] == 'on');
-	$sp = strtolower ( $s ['SERVER_PROTOCOL'] );
-	$protocol = substr ( $sp, 0, strpos ( $sp, '/' ) ) . (($ssl) ? 's' : '');
-	$port = $s ['SERVER_PORT'];
-	$port = ((! $ssl && $port == '80') || ($ssl && $port == '443')) ? '' : ':' . $port;
-	$host = ($use_forwarded_host && isset ( $s ['HTTP_X_FORWARDED_HOST'] )) ? $s ['HTTP_X_FORWARDED_HOST'] : (isset ( $s ['HTTP_HOST'] ) ? $s ['HTTP_HOST'] : null);
-	$host = isset ( $host ) ? $host : $s ['SERVER_NAME'] . $port;
+	$ssl = (!empty($s['HTTPS']) && $s['HTTPS'] == 'on');
+	$sp = strtolower($s['SERVER_PROTOCOL']);
+	$protocol = substr($sp, 0, strpos($sp, '/')) . (($ssl) ? 's' : '');
+	$port = $s['SERVER_PORT'];
+	$port = ((!$ssl && $port == '80') || ($ssl && $port == '443')) ? '' : ':' . $port;
+	$host = ($use_forwarded_host && isset($s['HTTP_X_FORWARDED_HOST'])) ? $s['HTTP_X_FORWARDED_HOST'] : (isset($s['HTTP_HOST']) ? $s['HTTP_HOST'] : null);
+	$host = isset($host) ? $host : $s['SERVER_NAME'] . $port;
 	return $protocol . '://' . $host;
 }
 
 function fullUrl($use_forwarded_host = false) {
-	return urlOrigin ( $_SERVER, $use_forwarded_host ) . $_SERVER ['REQUEST_URI'];
+	return urlOrigin($_SERVER, $use_forwarded_host) . $_SERVER['REQUEST_URI'];
 }
 
 // $absolute_url = fullUrl ( );
@@ -1186,55 +1232,55 @@ function fullUrl($use_forwarded_host = false) {
 
 // Used to send only useful stuff t othe front end of the application.
 function sanitiseUser($user) {
-	$ret = new StdClass ();
-	logger ( LL_DBG, "Sanitise user" );
-	logger ( LL_DBG, ob_print_r ( $user ) );
+	$ret = new StdClass();
+	logger(LL_DBG, "Sanitise user");
+	logger(LL_DBG, ob_print_r($user));
 
-	$ret->public_key = @$user ["public_key"];
-	$ret->balance = @$user ["balance"];
+	$ret->public_key = @$user["public_key"];
+	$ret->balance = @$user["balance"];
 	$ret->xchng = 0;
 	$ret->dollar = $ret->balance * $ret->xchng;
 
-	logger ( LL_DBG, ob_print_r ( $ret ) );
+	logger(LL_DBG, ob_print_r($ret));
 	return $ret;
 }
 
 function str_replace_first($from, $to, $content) {
-	$from = '/' . preg_quote ( $from, '/' ) . '/';
-	return preg_replace ( $from, $to, $content, 1 );
+	$from = '/' . preg_quote($from, '/') . '/';
+	return preg_replace($from, $to, $content, 1);
 }
 
 function is_cli() {
-	if (defined ( 'STDIN' ) || (empty ( $_SERVER ['REMOTE_ADDR'] ) && ! isset ( $_SERVER ['HTTP_USER_AGENT'] ) && count ( $_SERVER ['argv'] ) > 0)) {
+	if (defined('STDIN') || (empty($_SERVER['REMOTE_ADDR']) && !isset($_SERVER['HTTP_USER_AGENT']) && count($_SERVER['argv']) > 0)) {
 		return true;
 	}
 	return false;
 }
 
-if (is_cli ()) {
+if (is_cli()) {
 	// Force local configuration if we are running off the command line
-	$_SERVER ["SERVER_NAME"] = "localhost";
+	$_SERVER["SERVER_NAME"] = "localhost";
 	$_SERVER['SERVER_PROTOCOL'] = "http";
 	$_SERVER['SERVER_PORT'] = 80;
 }
 
-$api_CORS_origin = urlOrigin ( $_SERVER );
+$api_CORS_origin = urlOrigin($_SERVER);
 $api_host = $api_CORS_origin . "/api/";
 $www_host = $api_CORS_origin . "/";
 
-$inc = array ();
-$inc [] = dirname ( __FILE__ ) . "/config.php";
-$inc [] = dirname ( __FILE__ ) . "/config_override.php";
-$inc [] = dirname ( __FILE__ ) . "/config_" . @$_SERVER ["SERVER_NAME"] . ".php";
-$inc = array_merge ( $inc, includeDirectory ( __DIR__ . "/_include" ) );
-foreach ( $inc as $file ) {
-	if (file_exists ( $file ) && ! is_dir ( $file )) {
+$inc = array();
+$inc[] = dirname(__FILE__) . "/config.php";
+$inc[] = dirname(__FILE__) . "/config_override.php";
+$inc[] = dirname(__FILE__) . "/config_" . @$_SERVER["SERVER_NAME"] . ".php";
+$inc = array_merge($inc, includeDirectory(__DIR__ . "/_include"));
+foreach ($inc as $file) {
+	if (file_exists($file) && !is_dir($file)) {
 		// echo "loading $file\n";
-		include_once ($file);
+		include_once($file);
 	}
 }
 
-if (@$_SERVER ["SERVER_NAME"] == "localhost") {
+if (@$_SERVER["SERVER_NAME"] == "localhost") {
 	global $config;
 	global $api_CORS_origin;
 	global $api_host;
@@ -1244,20 +1290,20 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	global $smtp_from_name;
 
 	// If we're on localdev/ update the config before we load it
-	$config = json_decode ( file_get_contents ( __DIR__ . "/../version.json" ) );
-	$config->app_date = newestFile ( __DIR__ . "/../www" ) [2];
-	$config->api_date = newestFile ( __DIR__ . "/../api" ) [2];
+	$config = json_decode(file_get_contents(__DIR__ . "/../version.json"));
+	$config->app_date = newestFile(__DIR__ . "/../www")[2];
+	$config->api_date = newestFile(__DIR__ . "/../api")[2];
 
 	// $api_host = "http://localhost:8085/api/";
 	// $www_host = "http://localhost:8080/";
-// 	$api_host = "http://localhost/api/";
-// 	$www_host = "http://localhost/";
-// 	if ($api_CORS_origin != "*") {
-// 		// $api_CORS_origin = "http://localhost:8080";
-// 		$api_CORS_origin = "http://localhost";
-// 	}
+	// 	$api_host = "http://localhost/api/";
+	// 	$www_host = "http://localhost/";
+	// 	if ($api_CORS_origin != "*") {
+	// 		// $api_CORS_origin = "http://localhost:8080";
+	// 		$api_CORS_origin = "http://localhost";
+	// 	}
 
-	@file_put_contents ( __DIR__ . "/config.json", json_encode ( $config ) );
+	@file_put_contents(__DIR__ . "/config.json", json_encode($config));
 
 	$config->title .= $local_monika;
 	$smtp_from_name .= $local_monika;
@@ -1266,11 +1312,9 @@ if (@$_SERVER ["SERVER_NAME"] == "localhost") {
 	$api_CORS_origin = "TBD";
 	$api_host = $api_CORS_origin . "/api/";
 	$www_host = $api_CORS_origin . "/";
-	$config = json_decode ( file_get_contents ( __DIR__ . "/config.json" ) );
+	$config = json_decode(file_get_contents(__DIR__ . "/config.json"));
 }
 
 // Start session handling so there is no excuse for it.
-@session_id ( getDataNamespace () );
-@session_start ();
-
-?>
+@session_id(getDataNamespace());
+@session_start();

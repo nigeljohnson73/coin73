@@ -3,8 +3,8 @@
 class AuditStoreHouseKeeper extends AuditStore {
 
 	protected function __construct() {
-		logger ( LL_DBG, "AuditStoreHouseKeeper::AuditStoreHouseKeeper()" );
-		parent::__construct ();
+		logger(LL_DBG, "AuditStoreHouseKeeper::AuditStoreHouseKeeper()");
+		parent::__construct();
 	}
 
 	// https://stackoverflow.com/questions/1820908/how-to-turn-off-the-eclipse-code-formatter-for-certain-sections-of-java-code
@@ -18,18 +18,17 @@ class AuditStoreHouseKeeper extends AuditStore {
 	//                                          |_|            |___/ 
 	// @formatter:on
 	public static function __reset() {
-		$store = self::getInstance ();
-		if (usingGae ()) {
+		$store = self::getInstance();
+		if (usingGae()) {
 			$gql = "SELECT * FROM " . $store->kind;
-			$store->obj_store->query ( $gql );
-			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-				logger ( LL_DBG, $store->kind . "Store::reset(): deleting " . count ( $arr_page ) . " records" );
-				$store->obj_store->delete ( $arr_page );
+			$store->obj_store->query($gql);
+			while ($arr_page = $store->obj_store->fetchPage(transactionsPerPage())) {
+				logger(LL_DBG, $store->kind . "Store::reset(): deleting " . count($arr_page) . " records");
+				$store->obj_store->delete($arr_page);
 			}
 		} else {
 			$sql = "DELETE FROM " . $store->kind;
-			MySqlDb::query ( $sql );
+			MySqlDb::query($sql);
 		}
 	}
 }
-?>

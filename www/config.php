@@ -126,23 +126,22 @@ $db_user = "cc_user";
 $db_pass = "cc_passwd";
 
 // Configure the logging variables
-define ( "LL_NONE", 0 );
-define ( "LL_SYSTEM", 0 );
-define ( "LL_SYS", 0 );
-define ( "LL_ERROR", 1 );
-define ( "LL_ERR", 1 );
-define ( "LL_WRN", 2 );
-define ( "LL_WARN", 2 );
-define ( "LL_WARNING", 2 );
-define ( "LL_INF", 3 );
-define ( "LL_INFO", 3 );
-define ( "LL_DBG", 4 );
-define ( "LL_DEBUG", 4 );
-define ( "LL_EDBG", 5 );
-define ( "LL_EDEBUG", 5 );
-define ( "LL_XDBG", 6 );
-define ( "LL_XDEBUG", 6 );
+define("LL_NONE", 0);
+define("LL_SYSTEM", 0);
+define("LL_SYS", 0);
+define("LL_ERROR", 1);
+define("LL_ERR", 1);
+define("LL_WRN", 2);
+define("LL_WARN", 2);
+define("LL_WARNING", 2);
+define("LL_INF", 3);
+define("LL_INFO", 3);
+define("LL_DBG", 4);
+define("LL_DEBUG", 4);
+define("LL_EDBG", 5);
+define("LL_EDEBUG", 5);
+define("LL_XDBG", 6);
+define("LL_XDEBUG", 6);
 
 // Fundamentally disable logging in the system - can be overriden in config_[hostname].php;
 $log_level = LL_SYS;
-?>

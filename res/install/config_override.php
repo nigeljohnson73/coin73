@@ -15,4 +15,3 @@ $smtp_from_name = "{SMTP_NAME}";
 $smtp_from_email = "{SMTP_EMAIL}";
 $smtp_username = $smtp_from_email;
 $smtp_password = "{SMTP_PASSWORD}";
-?>

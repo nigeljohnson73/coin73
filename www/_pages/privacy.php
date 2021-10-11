@@ -1,4 +1,4 @@
-<?php include_once(__DIR__."/_header.php")?>
+<?php include_once(__DIR__ . "/_header.php") ?>
 <div class="container-fluid text-start privacy" data-ng-controller="PrivacyCtrl">
 
 	<h1>Privacy Policy</h1>
@@ -254,4 +254,4 @@
 	<h2>Applicable date</h2>
 	<p>This privacy policy was last updated on 04 September 2021.</p>
 </div>
-<?php include_once(__DIR__."/_footer.php")?>
+<?php include_once(__DIR__ . "/_footer.php") ?>

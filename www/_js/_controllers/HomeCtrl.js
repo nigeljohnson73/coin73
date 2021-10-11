@@ -1,4 +1,4 @@
-app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function($scope, $timeout, $interval, $sce, apiSvc) {
+app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function ($scope, $timeout, $interval, $sce, apiSvc) {
 	$scope.session_ended = false;
 	$scope.auto_refresh_balance = false;
 	$scope.loading = true;
@@ -47,7 +47,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		//while (new Date().getTime() < start + 1000);
 	};
 
-	$scope.checkTransactionValidation = function() {
+	$scope.checkTransactionValidation = function () {
 		$scope.txn_submittable = $scope.recipient_valid && $scope.amount_valid;
 		//console.log("************************************************************");
 		//console.log("Recipient valid :", $scope.recipient_valid);
@@ -56,7 +56,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		//console.log("Form submittable:", $scope.txn_submittable);
 	};
 
-	$scope.recipientValidate = function() {
+	$scope.recipientValidate = function () {
 		$scope.recipient_valid = $scope.txn.recipient && ($scope.txn.recipient.length == 130) && ($scope.txn.recipient != $scope.user.public_key);
 		if ($scope.txn.recipient == $scope.user.public_key) {
 			$scope.recipient_reason = "You can't send money to yourself";
@@ -66,7 +66,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.checkTransactionValidation();
 	};
 
-	$scope.amountValidate = function() {
+	$scope.amountValidate = function () {
 		$scope.amount_valid = $scope.txn.amount && ($scope.txn.amount > 0) && ($scope.txn.amount <= $scope.user.balance);
 		if (!$scope.txn.amount || $scope.txn.amount <= 0) {
 			$scope.amount_reason = $scope.amount_enter;
@@ -78,7 +78,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 	};
 
 
-	$scope.prepareTransaction = function() {
+	$scope.prepareTransaction = function () {
 		$scope.requestTransactionCaptcha();
 		$scope.txn.recipient = "";
 		$scope.txn.amount = 0;
@@ -90,13 +90,13 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.preparing = true;
 	};
 
-	$scope.cancelTransaction = function() {
+	$scope.cancelTransaction = function () {
 		$scope.preparing = false;
 		$scope.transaction_visible = false;
 		$scope.retireCaptcha();
 	};
 
-	$scope.sendTransaction = function() {
+	$scope.sendTransaction = function () {
 		logger("HomeCtrl::sendTransaction() called", "dbg");
 		$scope.retireCaptcha();
 		if ($scope.session_ended) {
@@ -104,7 +104,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		}
 
 		$scope.sending = true;
-		apiSvc.callLocal("transaction/send", $scope.txn, function(data) {
+		apiSvc.callLocal("transaction/send", $scope.txn, function (data) {
 			logger("HomeCtrl::sendTransaction()", "dbg");
 			logger(data, "inf");
 			pause();
@@ -131,7 +131,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 
 
-	$scope.checkLoginValidation = function() {
+	$scope.checkLoginValidation = function () {
 		$scope.login_submittable = $scope.email_valid && $scope.password_valid && $scope.tx.accept_toc;
 		//console.log("************************************************************");
 		//console.log("Email valid     :", $scope.email_valid, $scope.tx.email);
@@ -139,20 +139,20 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		//console.log("TOC valid       :", $scope.tx.accept_toc, $scope.tx.accept_toc);
 		//console.log("Form login_submittable:", $scope.login_submittable);
 	};
-	$scope.emailAddressValidate = function() {
+	$scope.emailAddressValidate = function () {
 		$scope.email_valid = $scope.tx.email && ($scope.tx.email.length > 0);
 		$scope.checkLoginValidation();
 	};
-	$scope.passwordValidate = function() {
+	$scope.passwordValidate = function () {
 		var ok_password = new RegExp("{{VALID_PASSWORD_REGEX}}");
 		$scope.password_valid = $scope.tx.password && ok_password.test($scope.tx.password);
 		$scope.checkLoginValidation();
 	};
-	$scope.tocValidate = function() {
+	$scope.tocValidate = function () {
 		$scope.checkLoginValidation();
 	};
 
-	$scope.updateCaptchaProgress = function() {
+	$scope.updateCaptchaProgress = function () {
 		if ($scope.recaptcha_progress_interval) {
 			var now = new Date().getTime();
 			var dif = (now - $scope.recaptcha_started) / 1000;
@@ -170,7 +170,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		//console.log("RECAPTCHA progress:", $scope.recaptcha_progress);
 	};
 
-	$scope.retireCaptcha = function() {
+	$scope.retireCaptcha = function () {
 		$scope.progress = 0;
 		if ($scope.recaptcha_timeout_call) {
 			$timeout.cancel($scope.recaptcha_timeout_call);
@@ -184,7 +184,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.recaptcha_progress_interval = null;
 	};
 
-	$scope.requestTransactionCaptcha = function() {
+	$scope.requestTransactionCaptcha = function () {
 		logger("HomeCtrl::requestTransactionCaptcha() called", "dbg");
 		$scope.retireCaptcha();
 		if ($scope.session_ended) {
@@ -193,7 +193,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 		$scope.preparing = true;
 		$scope.reason = null;
-		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: txn_action }).then(function(token) {
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: txn_action }).then(function (token) {
 			$scope.recaptcha_progress = 100;
 			$scope.recaptcha_started = new Date().getTime();
 			$scope.recaptcha_progress_interval = $interval($scope.updateCaptchaProgress, 1000);
@@ -203,7 +203,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			$scope.loading = false;
 			$scope.preparing = false;
 			$scope.txn.token = token;
-			$scope.recaptcha_timeout_call = $timeout(function() {
+			$scope.recaptcha_timeout_call = $timeout(function () {
 				$scope.txn.token = null;
 				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
 			}, $scope.recaptcha_timeout * 1000);
@@ -211,7 +211,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	};
 
-	$scope.requestLoginCaptcha = function() {
+	$scope.requestLoginCaptcha = function () {
 		logger("HomeCtrl::requestLoginCaptcha() called", "dbg");
 		$scope.retireCaptcha();
 		if ($scope.session_ended) {
@@ -220,7 +220,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 		$scope.submitting = true;
 		$scope.reason = null;
-		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: login_action }).then(function(token) {
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: login_action }).then(function (token) {
 			$scope.recaptcha_progress = 100;
 			$scope.recaptcha_started = new Date().getTime();
 			$scope.recaptcha_progress_interval = $interval($scope.updateCaptchaProgress, 1000);
@@ -230,7 +230,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			$scope.loading = false;
 			$scope.submitting = false;
 			$scope.tx.token = token;
-			$scope.recaptcha_timeout_call = $timeout(function() {
+			$scope.recaptcha_timeout_call = $timeout(function () {
 				$scope.tx.token = null;
 				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
 			}, $scope.recaptcha_timeout * 1000);
@@ -238,7 +238,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	};
 
-	$scope.renderwalletQr = function() {
+	$scope.renderwalletQr = function () {
 		if ($scope.session_ended) {
 			return;
 		}
@@ -257,7 +257,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 
 	};
 
-	$scope.loadUser = function(force = false) {
+	$scope.loadUser = function (force = false) {
 		logger("HomeCtrl::loadUser(force='" + force + "', auto='" + $scope.auto_refresh_balance + "') called", "dbg");
 		if ($scope.session_ended) {
 			return;
@@ -276,7 +276,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 			}
 		}
 		$scope.getting = true;
-		apiSvc.queueLocal("user", {}, function(data) {
+		apiSvc.queueLocal("user", {}, function (data) {
 			logger("HomeCtrl::loadUser() - API returned", "dbg");
 			logger(data, "inf");
 			pause();
@@ -308,7 +308,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		});
 	};
 
-	$scope.login = function() {
+	$scope.login = function () {
 		logger("HomeCtrl::login() called", "dbg");
 		$scope.retireCaptcha();
 		if ($scope.session_ended) {
@@ -318,7 +318,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.submitting = true;
 		$scope.login_failure = false;
 		$scope.reason = "";
-		apiSvc.callLocal("user/login", $scope.tx, function(data) {
+		apiSvc.callLocal("user/login", $scope.tx, function (data) {
 			logger("HomeCtrl::login() API returned", "dbg");
 			logger(data, "inf");
 			pause();
@@ -349,7 +349,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		});
 	};
 
-	$scope.logout = function() {
+	$scope.logout = function () {
 		logger("HomeCtrl::logout() called", "dbg");
 		$scope.retireCaptcha();
 		if ($scope.session_ended) {
@@ -362,7 +362,7 @@ app.controller('HomeCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc",
 		$scope.reason = null;
 		$scope.login_failure = null;
 		$scope.tx.token = null;
-		apiSvc.callLocal("user/logout", {}, function(data) {
+		apiSvc.callLocal("user/logout", {}, function (data) {
 			logger("HomeCtrl::logout() API returned", "dbg");
 			logger(data, "inf");
 			pause();

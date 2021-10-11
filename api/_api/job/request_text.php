@@ -1,13 +1,13 @@
 <?php
-ob_start ();
+ob_start();
 $or = $response;
 $response = null;
-include_once (__DIR__ . "/request_json.php");
+include_once(__DIR__ . "/request_json.php");
 $response = $or;
-$json = ob_get_contents ();
-ob_end_clean ();
+$json = ob_get_contents();
+ob_end_clean();
 
-$obj = json_decode ( $json );
+$obj = json_decode($json);
 
 // echo "--------------------\n";
 // echo "JSON STRING: " . $json . "\n";
@@ -26,6 +26,4 @@ if ($obj->success) {
 	$resp .= $obj->reason;
 }
 
-$response->getBody ()->write ( $resp );
-
-?>
+$response->getBody()->write($resp);

@@ -6,14 +6,14 @@
  \__,_| .__/|_|____/ \_/ \___|
 	  |_|
  */
-app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeout, $interval) {
+app.service('apiSvc', ["$http", "$timeout", "$interval", function ($http, $timeout, $interval) {
 	apiSvc = this; // cuz "this" changes later
 	apiSvc._queue = []; // holds the API call queue
 
 	/***************************************************************************
 	 * Internal call to perform a check to see if an API call is waiting to go
 	 */
-	apiSvc._queueTick = function() {
+	apiSvc._queueTick = function () {
 		call = apiSvc._queue.shift();
 		if (call) {
 			//logger("apiSvc._queueTick(): Processing queue item", "dbg");
@@ -24,7 +24,7 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 			else if (call.method == "public") { exec = apiSvc.callPublic; }
 
 			if (exec) {
-				exec(call.api, call.data, function(data) {
+				exec(call.api, call.data, function (data) {
 					// here we have the response from the server, so process it as
 					// expected
 					call.notify(data);
@@ -44,7 +44,7 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 	/***************************************************************************
 	 * Internal call to perform a start the queue check if required
 	 */
-	apiSvc._queueCheck = function() {
+	apiSvc._queueCheck = function () {
 		// If we finished processing, then just check we don't need resstarting
 		// again
 		if (!apiSvc.queue_processing) {
@@ -58,10 +58,10 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 	 * Queue an API call to the next available slot. Use this is your call is
 	 * not urgent
 	 */
-	apiSvc.queue = function(api, data, notify, excludelog) {
+	apiSvc.queue = function (api, data, notify, excludelog) {
 		apiSvc.queueLocal(api, data, notify, excludelog);
 	};
-	apiSvc.queueLocal = function(api, data, notify, excludelog) {
+	apiSvc.queueLocal = function (api, data, notify, excludelog) {
 		apiSvc._queue.push({
 			method: "local",
 			api: api,
@@ -70,7 +70,7 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 			excludelog: excludelog
 		});
 	};
-	apiSvc.queuePublic = function(api, data, notify, excludelog) {
+	apiSvc.queuePublic = function (api, data, notify, excludelog) {
 		apiSvc._queue.push({
 			method: "public",
 			api: api,
@@ -86,16 +86,16 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 	 * returns an object. excludelog is used to hide paramters in the txdata in
 	 * the logging process
 	 */
-	apiSvc.call = function(api, data, notify, excludelog) {
+	apiSvc.call = function (api, data, notify, excludelog) {
 		apiSvc.callLocal(api, data, notify, excludelog);
 	};
-	apiSvc.callLocal = function(api, data, notify, excludelog) {
+	apiSvc.callLocal = function (api, data, notify, excludelog) {
 		apiSvc._callRaw('/app/' + api, data, notify, excludelog);
 	};
-	apiSvc.callPublic = function(api, data, notify, excludelog) {
+	apiSvc.callPublic = function (api, data, notify, excludelog) {
 		apiSvc._callRaw('{{API_HOST}}' + api, data, notify, excludelog);
 	};
-	apiSvc._callRaw = function(api, data, notify, excludelog) {
+	apiSvc._callRaw = function (api, data, notify, excludelog) {
 		// If data is a function, call it to get the data
 		data = (typeof data == "function") ? data() : data;
 
@@ -124,7 +124,7 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
-		}).then(function(data) {
+		}).then(function (data) {
 			logger("apiSvc.call('" + api + "'): success", "dbg");
 			// console.log(data);
 			ldata = {};
@@ -148,7 +148,7 @@ app.service('apiSvc', ["$http", "$timeout", "$interval", function($http, $timeou
 				logger("apiSvc.call('" + api + "'): calling notifier", "dbg");
 				notify(ldata);
 			}
-		}, function(data) {
+		}, function (data) {
 			logger("apiSvc.call('" + api + "'): fail", "dbg");
 			// console.log(data);
 			ldata = {};

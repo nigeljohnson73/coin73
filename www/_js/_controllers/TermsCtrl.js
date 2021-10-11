@@ -1,2 +1,2 @@
-app.controller('TermsCtrl', [ "$scope", function($scope) {
-} ]);
+app.controller('TermsCtrl', ["$scope", function ($scope) {
+}]);

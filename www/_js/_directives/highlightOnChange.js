@@ -1,9 +1,9 @@
-app.directive('highlightOnChange', function($timeout) {
+app.directive('highlightOnChange', function ($timeout) {
 	return {
-		link: function($scope, element, attrs) {
-			attrs.$observe('highlightOnChange', function(val) {
+		link: function ($scope, element, attrs) {
+			attrs.$observe('highlightOnChange', function (val) {
 				element.addClass('flash');
-				$timeout(function() {
+				$timeout(function () {
 					element.removeClass('flash');
 				}, 2000);
 			});

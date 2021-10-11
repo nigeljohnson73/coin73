@@ -1,5 +1,5 @@
 <?php
-include_once (__DIR__ . "/config_localhost.php");
+include_once(__DIR__ . "/config_localhost.php");
 
 // This file contains configuration that is only pertinent to the server
 // that it's named after. It will be uploaded to the live server but will
@@ -14,4 +14,3 @@ include_once (__DIR__ . "/config_localhost.php");
 // This is probaly the PI server in local model
 $log_level = LL_INF;
 $use_gae = false;
-?>

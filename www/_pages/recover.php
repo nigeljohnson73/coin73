@@ -1,11 +1,13 @@
-<?php include_once '_header.php';?>
+<?php include_once '_header.php'; ?>
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo getRecaptchaSiteKey(); ?>"></script>
-<script><?php
-$str = "var payload = '" . @$args ["payload"] . "';";
-$packer = new JavaScriptPacker ( $str );
-$str = $packer->pack ();
-echo trim ( $str );
-?></script>
+<script>
+	<?php
+	$str = "var payload = '" . @$args["payload"] . "';";
+	$packer = new JavaScriptPacker($str);
+	$str = $packer->pack();
+	echo trim($str);
+	?>
+</script>
 <div class="container-fluid text-center" data-ng-controller="RecoverCtrl">
 	<h1>Recover your account</h1>
 	<form data-ng-show="!payload" novalidate>
@@ -92,4 +94,4 @@ echo trim ( $str );
 	</div>
 </div>
 
-<?php include_once '_footer.php';?>
+<?php include_once '_footer.php'; ?>

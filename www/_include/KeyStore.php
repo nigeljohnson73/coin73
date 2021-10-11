@@ -1,59 +1,60 @@
 <?php
-include_once (__DIR__ . "/FileStore.php");
+include_once(__DIR__ . "/FileStore.php");
+
 use Elliptic\EC;
 
 class KeyStore extends FileStore {
 
 	protected function __construct() {
-		logger ( LL_DBG, "KeyStore::KeyStore()" );
+		logger(LL_DBG, "KeyStore::KeyStore()");
 
-		parent::__construct ( "KeyStore" );
+		parent::__construct("KeyStore");
 	}
 
 	protected static function genFilename($email) {
-		if (usingGae ()) {
-			return hash ( "sha1", strtolower ( getDataNamespace () . "_" . $email ) );
+		if (usingGae()) {
+			return hash("sha1", strtolower(getDataNamespace() . "_" . $email));
 		} else {
-			return hash ( "sha1", strtolower ( $email ) );
+			return hash("sha1", strtolower($email));
 		}
 	}
 
 	public static function getKeys($email) {
 		// $store = self::getInstance ();
-		logger ( LL_DBG, "KeyStore::getKeys('" . $email . "')" );
-		$filename = self::genFilename ( $email );
-		$json = parent::getContents ( $filename );
-		if (! $json || strlen ( $json ) == 0) {
-			logger ( LL_DBG, "KeyStore::getKeys('" . $email . "'): No keys exist, creating new set" );
-			$kp = self::genKeyPair ();
-			self::putKeys ( $email, $kp->public, $kp->private );
+		logger(LL_DBG, "KeyStore::getKeys('" . $email . "')");
+		$filename = self::genFilename($email);
+		$json = parent::getContents($filename);
+		if (!$json || strlen($json) == 0) {
+			logger(LL_DBG, "KeyStore::getKeys('" . $email . "'): No keys exist, creating new set");
+			$kp = self::genKeyPair();
+			self::putKeys($email, $kp->public, $kp->private);
 			return $kp;
 		}
-		return json_decode ( $json );
+		return json_decode($json);
 	}
 
 	public static function putKeys($email, $public, $private) {
 		// return KeyStore::getInstance ()->_putKeys ( $email, $public, $private );
-		logger ( LL_DBG, "KeyStore::putKeys('" . $email . "', ...)" );
-		$filename = self::genFilename ( $email );
-		$value = self::genKeyPair ( $public, $private );
-		$contents = json_encode ( $value );
-		return parent::putContents ( $filename, $contents );
+		logger(LL_DBG, "KeyStore::putKeys('" . $email . "', ...)");
+		$filename = self::genFilename($email);
+		$value = self::genKeyPair($public, $private);
+		$contents = json_encode($value);
+		return parent::putContents($filename, $contents);
 	}
 
 	public static function deleteKeys($email) {
-		logger ( LL_DBG, "KeyStore::deleteKeys('" . $email . "')" );
-		$filename = self::genFilename ( $email );
-		return parent::delete ( $filename );
+		logger(LL_DBG, "KeyStore::deleteKeys('" . $email . "')");
+		$filename = self::genFilename($email);
+		return parent::delete($filename);
 	}
 
 	public static function genKeyPair($pubKey = null, $privKey = null) {
-		$value = new StdClass ();
+		$value = new StdClass();
 		if ($pubKey === null || $privKey === null) {
-			$ec = new EC ( 'secp256k1' );
-			$key = $ec->genKeyPair ();
-			$value->public = $key->getPublic ( 'hex' );
-			$value->private = $key->getPrivate ( 'hex' );
+			$ec = new EC('secp256k1');
+			$key = $ec->genKeyPair();
+			$value->public = $key->getPublic('hex');
+			$value->private = $key->getPrivate('hex');
 		} else {
 			$value->public = $pubKey;
 			$value->private = $privKey;
@@ -63,9 +64,9 @@ class KeyStore extends FileStore {
 
 	// Returns the signature hash you cn validate with the public key
 	public static function sign($hash, $privKey) {
-		$ec = new EC ( 'secp256k1' );
-		$sk = $ec->keyFromPrivate ( $privKey, 'hex' );
-		return $sk->sign ( $hash );
+		$ec = new EC('secp256k1');
+		$sk = $ec->keyFromPrivate($privKey, 'hex');
+		return $sk->sign($hash);
 	}
 }
 
@@ -87,18 +88,18 @@ class KeyStore extends FileStore {
 // $logger->setLevel ( $ll );
 // }
 function __getOverlordKeys($namespace = null) {
-	if (usingGae ()) {
-		if (! class_exists ( "OverrideKeyStore" )) {
+	if (usingGae()) {
+		if (!class_exists("OverrideKeyStore")) {
 
 			class OverrideKeyStore extends KeyStore {
 
 				public function __construct($namespace) {
-					logger ( LL_DBG, "KeyStore::KeyStore()" );
+					logger(LL_DBG, "KeyStore::KeyStore()");
 					$this->storage = null;
 					$this->bucket = null;
-					$this->bucket_name = strtolower ( $namespace . "_KeyStore" );
-					$this->options = [ ];
-					$this->init ();
+					$this->bucket_name = strtolower($namespace . "_KeyStore");
+					$this->options = [];
+					$this->init();
 				}
 			}
 		}
@@ -106,23 +107,22 @@ function __getOverlordKeys($namespace = null) {
 		global $logger;
 		global $data_namespace;
 
-		$dns = getDataNamespace ();
+		$dns = getDataNamespace();
 		$data_namespace = $namespace ?? $dns;
-		$ll = $logger->getLevel ();
-		$logger->setLevel ( LL_DBG );
+		$ll = $logger->getLevel();
+		$logger->setLevel(LL_DBG);
 
-		$store = new OverrideKeyStore ( $data_namespace );
-		echo "Keys for '" . coinbaseName () . "'\n";
+		$store = new OverrideKeyStore($data_namespace);
+		echo "Keys for '" . coinbaseName() . "'\n";
 
-		$keys = $store->getKeys ( coinbaseName () );
-		print_r ( $keys );
+		$keys = $store->getKeys(coinbaseName());
+		print_r($keys);
 
-		$logger->setLevel ( $ll );
+		$logger->setLevel($ll);
 		$data_namespace = $dns;
 	} else {
-		$keys = KeyStore::getKeys ( coinbaseName () );
-		echo "Keys for '" . coinbaseName () . "'\n";
-		print_r ( $keys );
+		$keys = KeyStore::getKeys(coinbaseName());
+		echo "Keys for '" . coinbaseName() . "'\n";
+		print_r($keys);
 	}
 }
-?>

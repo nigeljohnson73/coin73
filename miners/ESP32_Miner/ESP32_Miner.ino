@@ -24,10 +24,10 @@ const String VERSION = "v0.1a";
 // https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json
 #include "sha/sha_parallel_engine.h"
 
-const char* wifi_ssid = "WIFISSID";  // You WiFi SSID on your router
-const char* wifi_pass = "PASSWORD";  // The password/phrase you access the router with
-const char* wallet_id = "WALLETID";  // The really long string found on the account
-const char* rig_id  = "ESP32-Miner"; // This must be unique on your account
+const char *wifi_ssid = "WIFISSID"; // You WiFi SSID on your router
+const char *wifi_pass = "PASSWORD"; // The password/phrase you access the router with
+const char *wallet_id = "WALLETID"; // The really long string found on the account
+const char *rig_id = "ESP32-Miner"; // This must be unique on your account
 
 /************************************************************************************************
  _______                          __            _______         __               
@@ -40,29 +40,29 @@ You shouldn't need to tinker below here
 // Define the API end points we will need as per the specs:
 //   http://mnrtor.local/wiki/api/job/request
 //   http://mnrtor.local/wiki/api/job/submit
-const char* get_api = "http://mnrtor.local/api/job/request/text";
-const char* put_api = "http://mnrtor.local/api/job/submit/text";
+const char *get_api = "http://mnrtor.local/api/job/request/text";
+const char *put_api = "http://mnrtor.local/api/job/submit/text";
 
 // The watchdog timer is used to reboot the board if it gets stuck after this many seconds of silence
 #define WDT_TIMEOUT 60
 
 // Used for debugging on the server
-const char* chip_id = "ESP32";
+const char *chip_id = "ESP32";
 
 // In some ESP32 implementations, it seems min() and max() functions are not defined.
 // Check and define them if they are missing
 #ifndef min
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
 #ifndef max
-#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
 // If you don't want to use the Serial interface comment this line out
 #define ENABLE_SERIAL
 
-// A bigger number here will have more Serial traffic LED flashing, but if you're wanting to see what's 
+// A bigger number here will have more Serial traffic LED flashing, but if you're wanting to see what's
 // in the Serial output on the monitor, that will be bad.
 #define BLINK_SIZE 10
 
@@ -70,28 +70,33 @@ const char* chip_id = "ESP32";
 // If you have an onboard LED and you're not using the Serial interface to make it blink, define it here
 #define LED_BUILTIN 2
 #define Serial DummySerial
-class MySerial {
-	public:
-		void begin(...) {
-			pinMode(LED_BUILTIN, OUTPUT);
-			}
-		void print(...) {
-			pinMode(LED_BUILTIN, HIGH);
-			pinMode(LED_BUILTIN, LOW);
-		}
-		void println(...) {
-			pinMode(LED_BUILTIN, HIGH);
-			pinMode(LED_BUILTIN, LOW);
-		}
-		void printf(...) {
-			pinMode(LED_BUILTIN, HIGH);
-			pinMode(LED_BUILTIN, LOW);
-		}
+class MySerial
+{
+public:
+	void begin(...)
+	{
+		pinMode(LED_BUILTIN, OUTPUT);
+	}
+	void print(...)
+	{
+		pinMode(LED_BUILTIN, HIGH);
+		pinMode(LED_BUILTIN, LOW);
+	}
+	void println(...)
+	{
+		pinMode(LED_BUILTIN, HIGH);
+		pinMode(LED_BUILTIN, LOW);
+	}
+	void printf(...)
+	{
+		pinMode(LED_BUILTIN, HIGH);
+		pinMode(LED_BUILTIN, LOW);
+	}
 };
 MySerial Serial;
 #endif
 
-// Here we will store some data that will be accessible across threads. Generally it is 
+// Here we will store some data that will be accessible across threads. Generally it is
 // one way, so we will not need a mutex to handle clashes
 
 // Only do anything if the WiFi is connected. Managed in the wifi management thread
@@ -110,21 +115,28 @@ TaskHandle_t miner1_handle;
 
 // This function will pull out the tokens within a string. It is designed to be readable,
 // not fast or efficient. This is ok, because we have lots of power to spare on an ESP32.
-String getStringPart(const String& data, const char separator, const int index) {
+String getStringPart(const String &data, const char separator, const int index)
+{
 	String chunk = ""; // the return chunk should we find it
 	int chunk_n = 0;   // indicates the number of the chunk we are dealing with
 	bool done = false; // we're done cuz we've found the end of the chunk we need
 
 	// Walk through the data, one character at a time
-	for(int i = 0; (i < (data.length() - 1)) && !done; i++) {
+	for (int i = 0; (i < (data.length() - 1)) && !done; i++)
+	{
 		const char ch = data.charAt(i);
-		if(ch == separator) {
+		if (ch == separator)
+		{
 			// If we've hit a separator, then we are in a new chunk of the data
 			chunk_n++;
-		} else if(chunk_n == index) {
+		}
+		else if (chunk_n == index)
+		{
 			// If we're in the chunk we are wanting, add it to the return chunk
 			chunk.concat(ch);
-		} else if(chunk_n > index) {
+		}
+		else if (chunk_n > index)
+		{
 			// We have gone past the bit we need, so we're done
 			done = true;
 		}
@@ -142,11 +154,13 @@ String getStringPart(const String& data, const char separator, const int index) 
                                                        |_____|                                 
 */
 // Because of the static counter, we need to have separate functions to handle the WDT checkin.
-void wifiWdtCheckin() {
+void wifiWdtCheckin()
+{
 	static unsigned long last_wdt = 0;
 	const long wdt_interval = 5000;
 	unsigned long current_millis = millis();
-	if (current_millis - last_wdt >= wdt_interval) {
+	if (current_millis - last_wdt >= wdt_interval)
+	{
 		last_wdt = current_millis;
 		esp_task_wdt_reset();
 	}
@@ -157,32 +171,36 @@ void wifiWdtCheckin() {
 }
 
 // Handle all of the wifi management processes including signalling to mining threads
-void wifiManager(void *pvParameters) {
+void wifiManager(void *pvParameters)
+{
 	// Initialise it as connected so the first time I check we force a disconnection loop
 	//int wifi_state_prev = WL_CONNECTED;
 
 	// A little Serial visual styling while connecting to wifi
-	unsigned long previous_millis = 0; // Last time I printed a connecting dot
+	unsigned long previous_millis = 0;	// Last time I printed a connecting dot
 	const unsigned long interval = 500; // How often to print a connecting dot
 
 	// Configure this task as one to be managed by the WatchDogTimer
 	esp_task_wdt_add(NULL);
 
 	// Loop forever (hopefully)
-	for (;;) {
+	for (;;)
+	{
 		// Set the current state
 		int wifi_state_now = WiFi.status();
 
 		// If we are doing any OTA stuff. Handle that tick here.
 		ArduinoOTA.handle();
-		
-		if (ota_state)  {
+
+		if (ota_state)
+		{
 			// Not sure how long it will have been, so just have a little pause pause
 			wifiWdtCheckin();
 		}
-		
+
 		// check if WiFi status has changed.
-		if ((wifi_state_now == WL_CONNECTED) && (wifi_state != WL_CONNECTED)) {
+		if ((wifi_state_now == WL_CONNECTED) && (wifi_state != WL_CONNECTED))
+		{
 			// We have just connected to the WiFi
 			wifiWdtCheckin();
 
@@ -196,7 +214,9 @@ void wifiManager(void *pvParameters) {
 			// Be nice to the scheduler
 			yield();
 			delay(50);
-		} else if ((wifi_state_now != WL_CONNECTED) && (wifi_state == WL_CONNECTED)) {
+		}
+		else if ((wifi_state_now != WL_CONNECTED) && (wifi_state == WL_CONNECTED))
+		{
 			// We have just disconnected to the WiFi
 			wifiWdtCheckin();
 
@@ -210,19 +230,24 @@ void wifiManager(void *pvParameters) {
 			Serial.println(F("Scanning for WiFi networks"));
 			int n = WiFi.scanNetworks(false, true);
 			Serial.println(F("Scan done"));
-			
-			if (n == 0) {
+
+			if (n == 0)
+			{
 				Serial.println(F("No networks found. Resetting ESP32."));
 				esp_restart();
-			} else {
+			}
+			else
+			{
 				Serial.print(n);
 				Serial.println(F(" networks found"));
-				for (int i = 0; i < n; ++i) {
+				for (int i = 0; i < n; ++i)
+				{
 					// Print wifi_ssid and RSSI for each network found
 					Serial.print(i + 1);
 					Serial.print(F(": "));
 					String ssid = WiFi.SSID(i);
-					if(ssid == "") {
+					if (ssid == "")
+					{
 						ssid = "<HIDDEN>";
 					}
 					Serial.print(ssid);
@@ -235,22 +260,27 @@ void wifiManager(void *pvParameters) {
 			}
 			// reset the watchdog timer
 			esp_task_wdt_reset();
-	
+
 			Serial.println(F("\nPlease, check if your WiFi network is on the list and check if it's strong enough (greater than -90)."));
 			Serial.println("ESP32 will reset itself after " + String(WDT_TIMEOUT) + " seconds if can't connect to the network");
 
 			// Start the reconnection process. It's handled by the onboard chip, so will come back immediately.
 			Serial.print("Connecting to: " + String(wifi_ssid));
 			WiFi.reconnect();
-		} else if ((wifi_state_now == WL_CONNECTED) && (wifi_state == WL_CONNECTED)) {
+		}
+		else if ((wifi_state_now == WL_CONNECTED) && (wifi_state == WL_CONNECTED))
+		{
 			// This is the steady state. Just keep checking the watchdog timer
 			wifiWdtCheckin();
-		} else {
+		}
+		else
+		{
 			// We are probably reconnecting, so print some dots to show progress.
 			// Don't reset watchdog timer so the board will reset after the timeout occurs
 			unsigned long current_millis = millis();
 			wifi_ready_millis = current_millis + 100000;
-			if (current_millis - previous_millis >= interval) {
+			if (current_millis - previous_millis >= interval)
+			{
 				previous_millis = current_millis;
 				Serial.print(F("."));
 			}
@@ -269,12 +299,14 @@ void wifiManager(void *pvParameters) {
 */
 // Because of the static counter, we need to have separate functions to handle the WDT checkin.
 // In the miner one though, make sure we flash some lights
-void minerWdtCheckin() {
+void minerWdtCheckin()
+{
 	static unsigned long last_wdt = 0;
 	const long wdt_interval = 5000;
 
 	unsigned long current_millis = millis();
-	if (current_millis - last_wdt >= wdt_interval) {
+	if (current_millis - last_wdt >= wdt_interval)
+	{
 		last_wdt = current_millis;
 		esp_task_wdt_reset();
 	}
@@ -285,39 +317,46 @@ void minerWdtCheckin() {
 	// This next bit is in no way needed, it just makes the LED blink a little more so the device
 	// Looks busier than it is. It uses the Serial device because the EPS32 I have doesnt have
 	// a specfic LED I can control, but it does have a TX/RX LED for the serial port.
-	if((wifi_state == WL_CONNECTED) && (millis() > wifi_ready_millis)) {
+	if ((wifi_state == WL_CONNECTED) && (millis() > wifi_ready_millis))
+	{
 		// If we are connected and in steady state
 		// Randomise the delay between 20 and 100ms
 		delay(20 + random(0, 80));
 
 		// Make the lights flash a little bit
-		int n = random(0, BLINK_SIZE) - (BLINK_SIZE/2);
-		if(n > 0) {
+		int n = random(0, BLINK_SIZE) - (BLINK_SIZE / 2);
+		if (n > 0)
+		{
 			String output = "";
-			for(int i = 0; i < n; i++) {
+			for (int i = 0; i < n; i++)
+			{
 				output += " ";
 			}
 			Serial.print(output);
 		}
-	} else {
+	}
+	else
+	{
 		// If we are nont connected and in steady state
 		// fixed, short delay to aid looping
 		delay(20);
 	}
-
 }
 
 // If we need to pause for any reason, handle that here with Yeilding and checking the WatchDog
-void minerWait(const unsigned long ms) {
+void minerWait(const unsigned long ms)
+{
 	//Serial.println(String("minerWait(") + ms + ")");
 	const unsigned long started = millis();
-	while(millis() - started < ms) {
+	while (millis() - started < ms)
+	{
 		minerWdtCheckin();
 	}
 }
 
 // The main loop for mining
-void processMining(void *pvParameters) {
+void processMining(void *pvParameters)
+{
 	// If there is an error on the API, don't flood it with more requests, pause a bit
 	const unsigned long error_wait = 5000;
 
@@ -334,7 +373,8 @@ void processMining(void *pvParameters) {
 	esp_task_wdt_add(NULL);
 
 	// Loop forever (hopefully)
-	for(;;) {
+	for (;;)
+	{
 		// Set up some job related goodness
 		unsigned int nonce = 0;
 		String job_id = "";
@@ -343,19 +383,23 @@ void processMining(void *pvParameters) {
 		int sub_time = 0;
 
 		// Only do anything if we are connected and the WIFI is ready
-		if((wifi_state == WL_CONNECTED) && (millis() > wifi_ready_millis)) {
-			if (http.begin(client, get_api)) {
+		if ((wifi_state == WL_CONNECTED) && (millis() > wifi_ready_millis))
+		{
+			if (http.begin(client, get_api))
+			{
 				// HTTP client is ready to go, add the POST header and data
 				http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-				String data = String("wallet_id=") + wallet_id +"&rig_id=" + rig_id;
+				String data = String("wallet_id=") + wallet_id + "&rig_id=" + rig_id;
 				int resp = http.POST(data);
 
-				if (resp == HTTP_CODE_OK) {
+				if (resp == HTTP_CODE_OK)
+				{
 					// Response was good, so get the payload for processing
 					payload = http.getString();
 
 					// If the first 'chunk' is a 'Y' for yes
-					if(getStringPart(payload, ' ', 0) == "Y") {
+					if (getStringPart(payload, ' ', 0) == "Y")
+					{
 						// We got a job!!!
 						received_jobs = received_jobs + 1;
 						Serial.print("\nReceived job: " + payload);
@@ -368,16 +412,22 @@ void processMining(void *pvParameters) {
 
 						// The submission time is seconds into the future, so add now
 						sub_time = millis() + (sub_time * 1000);
-					} else if(getStringPart(payload, ' ', 0) == "N") {
+					}
+					else if (getStringPart(payload, ' ', 0) == "N")
+					{
 						// An error occurred so wait for a bit.
 						Serial.print(String("\nRequest error: '") + (payload.c_str() + 2) + "'");
 						minerWait(error_wait);
-					} else {
+					}
+					else
+					{
 						// We really should not be here!!!!
 						Serial.print(String("\nUnknown payload: '") + payload + "'");
 						minerWait(error_wait);
 					}
-				} else {
+				}
+				else
+				{
 					// Being here means the underlying HTTP subsystem reported a failure like a 404 etc, or timed out
 					Serial.print(String("\n[HTTP] failed (") + resp + ") " + http.errorToString(resp));
 					minerWait(error_wait);
@@ -389,7 +439,8 @@ void processMining(void *pvParameters) {
 			minerWdtCheckin();
 
 			// If we processed job details from the request, then lets parse it.
-			if(job_id.length()) {
+			if (job_id.length())
+			{
 				// The Hash we will generate will be 20 bytes long in RAW form
 				uint8_t buff[20];
 
@@ -403,34 +454,39 @@ void processMining(void *pvParameters) {
 				unsigned long started = millis();
 
 				// Loop to the full 32 bits space, or until we fine a nonce
-				for(unsigned int i = 1; i < 0xFFFFFFFF && nonce == 0; i++) {
+				for (unsigned int i = 1; i < 0xFFFFFFFF && nonce == 0; i++)
+				{
 					// Add the counter to the supplied job and get the SHA1 hash of that
 					lhash = hash + i;
 					esp_sha(esp_sha_type::SHA1, (const unsigned char *)lhash.c_str(), lhash.length(), buff);
 
-					// Since we are looking for numbers of zeros in a hex string, zero in decimal for a character is represented 
+					// Since we are looking for numbers of zeros in a hex string, zero in decimal for a character is represented
 					// by 0x00 in hexidecimal, so we have to check half a byte for the hex zero... for every zero we want.
 					match = true;
-					for (int c = 0; c < diff; c++) {
-						// This is REALLLY difficult to explain, and I know I said things should be written for clairty, but 
+					for (int c = 0; c < diff; c++)
+					{
+						// This is REALLLY difficult to explain, and I know I said things should be written for clairty, but
 						// I just wanted a good hashrate. This basically checks the high and low 4 bits and compares them to zero.
-						match &= (buff[(int)floor(c/2)] & (0xf << ((!(c%2))*4))) == 0;
+						match &= (buff[(int)floor(c / 2)] & (0xf << ((!(c % 2)) * 4))) == 0;
 					}
 
 					// If we got to the end of the checking and we are still matching, then set the nonce
-					if(match) {
+					if (match)
+					{
 						nonce = i;
 					}
 				}
 
 				// Calculate the hashrate
-				double duration = (millis() - started)/1000.0;
-				double hashrate = ((nonce > 0) && (duration > 0)) ? ((nonce + 1)/duration) : 0;
+				double duration = (millis() - started) / 1000.0;
+				double hashrate = ((nonce > 0) && (duration > 0)) ? ((nonce + 1) / duration) : 0;
 
 				lhash = "";
-				for (auto i:buff) {
+				for (auto i : buff)
+				{
 					String hex = String(i, HEX);
-					if (hex.length() < 2) {
+					if (hex.length() < 2)
+					{
 						hex = "0" + hex;
 					}
 					lhash += hex;
@@ -438,23 +494,27 @@ void processMining(void *pvParameters) {
 				Serial.print(String("\nNonce: ") + nonce + ", duration: " + duration + ", hashrate: " + hashrate + ", hash: " + lhash);
 
 				// Wait until we are allowed to submit the result
-				while(millis() < sub_time) {
+				while (millis() < sub_time)
+				{
 					minerWdtCheckin();
 				}
 
 				// The submission process is similar to the request. Create the HTTP request
-				if (http.begin(client, String(put_api) + "/" + job_id + "/" + nonce)) {
+				if (http.begin(client, String(put_api) + "/" + job_id + "/" + nonce))
+				{
 					// Add the post data
 					http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-					String data = String("chip_id=") + chip_id +"&hashrate=" + hashrate;
+					String data = String("chip_id=") + chip_id + "&hashrate=" + hashrate;
 					int resp = http.POST(data);
 
-					if (resp == HTTP_CODE_OK) {
+					if (resp == HTTP_CODE_OK)
+					{
 						// If we got the OK message, Job done
 						payload = http.getString();
 
 						// If the first 'chunk' is a 'Y' for yes, it was accepted
-						if(getStringPart(payload, ' ', 0) == "Y") {
+						if (getStringPart(payload, ' ', 0) == "Y")
+						{
 							// Increment the counter and output some more stats
 							accepted_jobs = accepted_jobs + 1;
 							Serial.print(F("\nACCEPTED, "));
@@ -462,28 +522,34 @@ void processMining(void *pvParameters) {
 							Serial.print(F("/"));
 							Serial.print(received_jobs);
 							Serial.print(F(", "));
-							Serial.print((((double)accepted_jobs)/((double)received_jobs)) * 100.0);
+							Serial.print((((double)accepted_jobs) / ((double)received_jobs)) * 100.0);
 							Serial.print(F("%"));
-						} else if(getStringPart(payload, ' ', 0) == "N") {
+						}
+						else if (getStringPart(payload, ' ', 0) == "N")
+						{
 							// An error occurred, so output why and wait a bit
 							Serial.print(String("\nREJECTED: '") + (payload.c_str() + 2) + "'");
 							minerWait(error_wait);
-						} else {
+						}
+						else
+						{
 							// We really shouldn't be here, but wait
 							Serial.print(String("\nUnknown response: '") + payload + "'");
 							minerWait(error_wait);
 						}
-					} else {
+					}
+					else
+					{
 						// Underlying HTTP failure, so putput it and wait a bit
 						Serial.print(String("\n[HTTP] failed (") + resp + ") " + http.errorToString(resp));
 						minerWait(error_wait);
 					}
 				} // http.begin();
-				
+
 				// Clear up that HTTP connection
 				http.end();
 			} // job_id.length()
-		} // wifi connected
+		}	  // wifi connected
 
 		// Just before the loop, check in with teh watchdog if we need to
 		minerWdtCheckin();
@@ -497,9 +563,10 @@ void processMining(void *pvParameters) {
 |______||_____|__| |_____|    |_______||_____||____|_____|   __|
                                                          |__|   
  */
-void setup() {
+void setup()
+{
 	// The ESP has a fast Serial interface, lets use it
-	Serial.begin(500000);  // Start serial connection
+	Serial.begin(500000); // Start serial connection
 	Serial.println(String("\n\n") + rig_id + ": MinerTOR ESP32 Miner " + VERSION);
 
 	// Enable Wifi in client (Station) mode
@@ -514,37 +581,54 @@ void setup() {
 	ota_state = false;
 
 	// Define how the OTA stuff should work. This is default stuff so don't delve too deeply.
-	ArduinoOTA.onStart([]() {
-		String type;
-		if (ArduinoOTA.getCommand() == U_FLASH) {
-			type = "sketch";
-		} else { // U_SPIFFS
-			type = "filesystem";
-		}
-		Serial.println("Start updating " + type);
-		ota_state = true;
-	}).onEnd([]() { 
-		Serial.println(F("\nEnd")); 
-	}).onProgress([](unsigned int progress, unsigned int total) {
-		Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-		esp_task_wdt_reset();
-		ota_state = true;
-	}).onError([](ota_error_t error) {
-		Serial.printf("Error[%u]: ", error);
-		if (error == OTA_AUTH_ERROR) {
-			Serial.println(F("Auth Failed"));
-		} else if (error == OTA_BEGIN_ERROR) {
-			Serial.println(F("Begin Failed"));
-		} else if (error == OTA_CONNECT_ERROR) {
-			Serial.println(F("Connect Failed"));
-		} else if (error == OTA_RECEIVE_ERROR) {
-			Serial.println(F("Receive Failed"));
-		} else if (error == OTA_END_ERROR) {
-			Serial.println(F("End Failed"));
-		}
-		ota_state = false;
-		esp_restart();
-	});
+	ArduinoOTA.onStart([]()
+					   {
+						   String type;
+						   if (ArduinoOTA.getCommand() == U_FLASH)
+						   {
+							   type = "sketch";
+						   }
+						   else
+						   { // U_SPIFFS
+							   type = "filesystem";
+						   }
+						   Serial.println("Start updating " + type);
+						   ota_state = true;
+					   })
+		.onEnd([]()
+			   { Serial.println(F("\nEnd")); })
+		.onProgress([](unsigned int progress, unsigned int total)
+					{
+						Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+						esp_task_wdt_reset();
+						ota_state = true;
+					})
+		.onError([](ota_error_t error)
+				 {
+					 Serial.printf("Error[%u]: ", error);
+					 if (error == OTA_AUTH_ERROR)
+					 {
+						 Serial.println(F("Auth Failed"));
+					 }
+					 else if (error == OTA_BEGIN_ERROR)
+					 {
+						 Serial.println(F("Begin Failed"));
+					 }
+					 else if (error == OTA_CONNECT_ERROR)
+					 {
+						 Serial.println(F("Connect Failed"));
+					 }
+					 else if (error == OTA_RECEIVE_ERROR)
+					 {
+						 Serial.println(F("Receive Failed"));
+					 }
+					 else if (error == OTA_END_ERROR)
+					 {
+						 Serial.println(F("End Failed"));
+					 }
+					 ota_state = false;
+					 esp_restart();
+				 });
 
 	// Set the OTA hostname so it's easier to see on the Arduino IDE port dropdown
 	ArduinoOTA.setHostname(rig_id);
@@ -562,7 +646,7 @@ void setup() {
 	delay(250);
 }
 
-void loop() {
+void loop()
+{
 	// becasue we have built the threads as core pinned tasks, there is nothing to do in here.
-
 }

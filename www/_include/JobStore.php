@@ -1,40 +1,40 @@
 <?php
-include_once (__DIR__ . "/DataStore.php");
+include_once(__DIR__ . "/DataStore.php");
 
 class JobStore extends DataStore {
 
 	protected function __construct() {
-		logger ( LL_DBG, "JobStore::JobStore()" );
+		logger(LL_DBG, "JobStore::JobStore()");
 
-		parent::__construct ( "Job" );
+		parent::__construct("Job");
 
-		$this->addField ( "job_id", "String", true, true ); // indexed and key
-		$this->addField ( "wallet_id", "String", true ); // indexed
-		$this->addField ( "rig_id", "String" );
-		$this->addField ( "hash", "String" );
-		$this->addField ( "created", "Float", true ); // msTime()*1000, indexed so we can clean it up later
-		$this->addField ( "difficulty", "Integer" ); // number of zeros
-		$this->addField ( "shares", "Integer" ); // how many miners are now active to split this share with
+		$this->addField("job_id", "String", true, true); // indexed and key
+		$this->addField("wallet_id", "String", true); // indexed
+		$this->addField("rig_id", "String");
+		$this->addField("hash", "String");
+		$this->addField("created", "Float", true); // msTime()*1000, indexed so we can clean it up later
+		$this->addField("difficulty", "Integer"); // number of zeros
+		$this->addField("shares", "Integer"); // how many miners are now active to split this share with
 
-		$this->init ();
+		$this->init();
 	}
 
 	public static function insert($arr) {
 		$oarr = $arr; // Save it in case the insert fails!!
 
-		$arr [self::getKeyField ()] = GUIDv4 ();
-		$arr ["created"] = msTime ();
-		$arr = parent::insert ( $arr );
+		$arr[self::getKeyField()] = GUIDv4();
+		$arr["created"] = msTime();
+		$arr = parent::insert($arr);
 
 		if ($arr == false) {
-			logger ( LL_ERR, "JobStore::insert() - failed - regenerating key" );
+			logger(LL_ERR, "JobStore::insert() - failed - regenerating key");
 			// Assume the key was broken and retry
 			$arr = $oarr;
-			$arr [self::getKeyField ()] = GUIDv4 ();
-			$arr ["created"] = msTime ();
-			$arr = parent::insert ( $arr );
+			$arr[self::getKeyField()] = GUIDv4();
+			$arr["created"] = msTime();
+			$arr = parent::insert($arr);
 			if ($arr == false) {
-				logger ( LL_ERR, "JobStore::insert() - failed again - You got bigger problems" );
+				logger(LL_ERR, "JobStore::insert() - failed again - You got bigger problems");
 			}
 			// if it's still bust... well we all screwed
 		}
@@ -44,28 +44,27 @@ class JobStore extends DataStore {
 
 	public static function getItemsByWalletId($key) {
 		return self::_getAllItemsByKeyField("wallet_id", $key);
-// 		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE wallet_id = @key";
-// 		$arr = self::getInstance ()->obj_store->fetchAll ( $gql, [ 
-// 				'key' => $key
-// 		] );
-// 		// echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "')\n";
-// 		// echo " '$gql'\n";
-// 		if ($arr) {
-// 			$ret = array ();
-// 			if (is_array ( $arr )) {
-// 				// Assume an array of GDS objects;
-// 				foreach ( $arr as $item ) {
-// 					logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (arr) 'job_id' => '" . ($item->getData () ["job_id"]) . "'" );
-// 					$ret [] = $item->getData ();
-// 				}
-// 			} else {
-// 				logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (obj) 'job_id' => '" . ($arr->getData () ["job_id"]) . "'" );
-// 				// Assume a single GDS object;
-// 				$ret [] = $arr->getData ();
-// 			}
-// 			$arr = $ret;
-// 		}
-// 		return $arr;
+		// 		$gql = "SELECT * FROM " . self::getInstance ()->kind . " WHERE wallet_id = @key";
+		// 		$arr = self::getInstance ()->obj_store->fetchAll ( $gql, [ 
+		// 				'key' => $key
+		// 		] );
+		// 		// echo "JobStore::getItemsByWalletId('wallet_id'=>'" . $key . "')\n";
+		// 		// echo " '$gql'\n";
+		// 		if ($arr) {
+		// 			$ret = array ();
+		// 			if (is_array ( $arr )) {
+		// 				// Assume an array of GDS objects;
+		// 				foreach ( $arr as $item ) {
+		// 					logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (arr) 'job_id' => '" . ($item->getData () ["job_id"]) . "'" );
+		// 					$ret [] = $item->getData ();
+		// 				}
+		// 			} else {
+		// 				logger ( LL_DBG, "JobStore::getItemsByWalletId('wallet_id'=>'...') - Got (obj) 'job_id' => '" . ($arr->getData () ["job_id"]) . "'" );
+		// 				// Assume a single GDS object;
+		// 				$ret [] = $arr->getData ();
+		// 			}
+		// 			$arr = $ret;
+		// 		}
+		// 		return $arr;
 	}
 }
-?>

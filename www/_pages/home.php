@@ -1,4 +1,4 @@
-<?php include_once(__DIR__."/_header.php")?>
+<?php include_once(__DIR__ . "/_header.php") ?>
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo getRecaptchaSiteKey(); ?>"></script>
 <div class="container-fluid text-center" data-ng-controller="HomeCtrl">
 
@@ -24,8 +24,7 @@
 				<div class="shadow alert alert-secondary data-screen" role="alert">
 					<div class="row row-cols-3">
 						<div class="col-2 text-start">
-							<span class="form-check form-switch" data-ng-show="!getting"> <input title="Auto refresh balance every minute" class="form-check-input" type="checkbox" data-ng-model="auto_refresh_balance" id="auto-upload-switch"> <i title="Refresh balance now" data-ng-show="!getting && !auto_refresh_balance"
-								data-ng-click="loadUser(true)" class="bi bi-arrow-repeat"></i>
+							<span class="form-check form-switch" data-ng-show="!getting"> <input title="Auto refresh balance every minute" class="form-check-input" type="checkbox" data-ng-model="auto_refresh_balance" id="auto-upload-switch"> <i title="Refresh balance now" data-ng-show="!getting && !auto_refresh_balance" data-ng-click="loadUser(true)" class="bi bi-arrow-repeat"></i>
 							</span>
 						</div>
 						<div class="col-8">
@@ -51,8 +50,7 @@
 
 				<!-- 			<div class="row"> -->
 				<div class="progress" data-ng-show="recaptcha_progress">
-					<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100"
-						data-ng-style="{'width': recaptcha_progress + '%'}"></div>
+					<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100" data-ng-style="{'width': recaptcha_progress + '%'}"></div>
 				</div>
 				<!-- 			</div> -->
 				<div data-ng-show="transaction_visible">
@@ -168,8 +166,7 @@
 			<div data-ng-show="!user">
 				<!-- RECAPTCHA progress -->
 				<div class="progress" data-ng-show="recaptcha_progress">
-					<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100"
-						data-ng-style="{'width': recaptcha_progress + '%'}"></div>
+					<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100" data-ng-style="{'width': recaptcha_progress + '%'}"></div>
 				</div>
 				<div class="shadow alert alert-secondary data-screen" role="alert">
 					<h1>Welcome</h1>
@@ -222,4 +219,4 @@
 </div>
 <!-- container -->
 
-<?php include_once(__DIR__."/_footer.php")?>
+<?php include_once(__DIR__ . "/_footer.php") ?>

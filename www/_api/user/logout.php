@@ -3,24 +3,23 @@
 //
 // session_id(getDataNamespace());
 // session_start ();
-$ret = startJsonResponse ();
+$ret = startJsonResponse();
 
-logger ( LL_DBG, "ARGS:" );
-logger ( LL_DBG, ob_print_r ( $args ) );
-logger ( LL_DBG, "_POST[]:" );
-logger ( LL_DBG, ob_print_r ( $_POST ) );
-logger ( LL_DBG, "_SESSION[]:" );
-logger ( LL_DBG, ob_print_r ( $_SESSION ) );
+logger(LL_DBG, "ARGS:");
+logger(LL_DBG, ob_print_r($args));
+logger(LL_DBG, "_POST[]:");
+logger(LL_DBG, ob_print_r($_POST));
+logger(LL_DBG, "_SESSION[]:");
+logger(LL_DBG, ob_print_r($_SESSION));
 
 $success = true;
 $message = "";
 
-session_destroy ();
+session_destroy();
 
-if (! $success) {
+if (!$success) {
 	global $api_failure_delay;
-	sleep ( $api_failure_delay );
+	sleep($api_failure_delay);
 }
 
-endJsonResponse ( $response, $ret, $success, $message );
-?>
+endJsonResponse($response, $ret, $success, $message);

@@ -1,12 +1,12 @@
-app.controller('FooterCtrl', [ "$scope", "$rootScope", "$location", "$window", "netSvc", function($scope, $rootScope, $location, $window, netSvc) {
+app.controller('FooterCtrl', ["$scope", "$rootScope", "$location", "$window", "netSvc", function ($scope, $rootScope, $location, $window, netSvc) {
 	if (!$rootScope.loadedGaTracker) {
 		$rootScope.loadedGaTracker = true;
 
-		$rootScope.$on('$viewContentLoaded', function(event) {
+		$rootScope.$on('$viewContentLoaded', function (event) {
 			$window.ga('send', 'pageview', {
-				page : $location.url()
+				page: $location.url()
 			});
-			galog("FooterCtrl::handleGoogleAnalytics('"+$location.url()+"')");
+			galog("FooterCtrl::handleGoogleAnalytics('" + $location.url() + "')");
 		});
 	}
 
@@ -14,11 +14,11 @@ app.controller('FooterCtrl', [ "$scope", "$rootScope", "$location", "$window", "
 	$scope.nowDate = Date.now();
 
 	$scope.online = false;
-	netSvc.addStateListener(function(tf, defer) {
+	netSvc.addStateListener(function (tf, defer) {
 		//applog("Footer::netSvc.handleNetworkChange('" + tf + "')");
 		$scope.online = tf;
-		if(!defer) {
+		if (!defer) {
 			$scope.$apply();
 		}
 	});
-} ]);
+}]);

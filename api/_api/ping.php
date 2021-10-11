@@ -1,4 +1,3 @@
 <?php
-$ret = startJsonResponse ();
-endJsonResponse ( $response, $ret, true, "Called Ping API" );
-?>
+$ret = startJsonResponse();
+endJsonResponse($response, $ret, true, "Called Ping API");

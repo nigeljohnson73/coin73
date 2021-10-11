@@ -16,39 +16,40 @@
 // @formatter:on
 $VERSION = "0.1a";
 
-if (function_exists ( "curl_init" )) {
+if (function_exists("curl_init")) {
 
 	// Calls a $url and returns a wrapped object. Pass in $post arguments as key/value array pairs
-	function jsonApi($url, $post) {
+	function jsonApi($url, $post)
+	{
 		global $use_tor, $tor_proxy;
 		$retries = 5;
 		$ret = false;
-		for($try = 0; $try < $retries && $ret == false; $try ++) {
-			$ch = curl_init ( $url );
-			curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, 0 );
-			curl_setopt ( $ch, CURLOPT_TIMEOUT, 15 );
-			curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt ( $ch, CURLOPT_POSTFIELDS, $post );
+		for ($try = 0; $try < $retries && $ret == false; $try++) {
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 			if ($use_tor) {
-				curl_setopt ( $ch, CURLOPT_PROXY, $tor_proxy );
-				curl_setopt ( $ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME );
+				curl_setopt($ch, CURLOPT_PROXY, $tor_proxy);
+				curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
 			}
-			$data = curl_exec ( $ch );
-			$response = curl_getinfo ( $ch, CURLINFO_HTTP_CODE );
+			$data = curl_exec($ch);
+			$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			if ($response < 200 || $response > 299) {
 				echo "jsonApi(): API failed: response code $response\n";
 				// echo "jsonApi(): Data:\n" . $data . "\n";
-				sleep ( 1 );
+				sleep(1);
 			} else {
-				$ret = json_decode ( $data );
-				if (getType ( $ret ) != "object") {
+				$ret = json_decode($data);
+				if (getType($ret) != "object") {
 					echo "jsonApi(): API failed: invalid JSON:\n";
-					print_r ( $ret );
+					print_r($ret);
 					echo "\n";
 					$ret = false;
 				}
 			}
-			curl_close ( $ch );
+			curl_close($ch);
 		}
 
 		return $ret;
@@ -56,12 +57,13 @@ if (function_exists ( "curl_init" )) {
 	}
 } else {
 	echo "Unimplimented API calling procedure. Install php-curl and you'll get one for free\n";
-	exit ();
+	exit();
 }
 
-function help() {
+function help()
+{
 	global $argv;
-	echo "\nUsage:- " . basename ( $argv [0] ) . " [-c 'chip-id'] [-d] [-h] [-p 'tor-proxy'] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]\n\n";
+	echo "\nUsage:- " . basename($argv[0]) . " [-c 'chip-id'] [-d] [-h] [-p 'tor-proxy'] [-q] [-r 'rig-id'] -w 'wallet-id' [-y]\n\n";
 	echo "    -c 'id'  : Set the chip id for this miner (defaults to 'PHP Script')\n";
 	echo "    -d       : Use the development server (mnrtor.local)\n";
 	echo "    -h       : This help message\n";
@@ -70,7 +72,7 @@ function help() {
 	echo "    -w 'id'  : Set 130 character wallet ID for miner rewards\n";
 	echo "    -y       : Yes!! I got everything correct, just get on with it\n";
 	echo "\n";
-	exit ();
+	exit();
 }
 
 // $api_host = "http://minertor.appspot.com/api/";
@@ -82,15 +84,15 @@ $wallet_id = "";
 $pause = true;
 $use_tor = true;
 
-$opts = getopt ( 'c:dhp:r:w:y' );
-foreach ( $opts as $k => $v ) {
+$opts = getopt('c:dhp:r:w:y');
+foreach ($opts as $k => $v) {
 	if ($k == "c") {
 		$chip_id = $v;
 	} else if ($k == "d") {
 		$api_host = "http://mnrtor.local";
 		$use_tor = false;
 	} else if ($k == "h") {
-		help ();
+		help();
 	} else if ($k == "p") {
 		$tor_proxy = $v;
 	} else if ($k == "r") {
@@ -102,20 +104,20 @@ foreach ( $opts as $k => $v ) {
 	}
 }
 
-if (strlen ( $rig_id ) == 0) {
+if (strlen($rig_id) == 0) {
 	echo "No Rig ID supplied\n";
-	help ();
+	help();
 }
 
-if (strlen ( $wallet_id ) == 0) {
+if (strlen($wallet_id) == 0) {
 	echo "No Wallet ID supplied\n";
-	help ();
+	help();
 }
 
-if (strlen ( $wallet_id ) != 130) {
+if (strlen($wallet_id) != 130) {
 	echo "Wallet ID doesn't look correct. It should look like this (but obviously, don't use this one):\n\n";
 	echo "    '04d329153bacfc18f8400b53904729fecbe44637e0b7902254f1a55d1f47b109b1e6d045d45b826234c04e35902eb5423f4b6d6104fde6a05ef3621a86a19f8171'\n";
-	help ();
+	help();
 }
 
 if ($pause) {
@@ -132,12 +134,13 @@ if ($pause) {
 	echo "#\n";
 	echo "#####################################################################################################################################################\n";
 	echo "Press return to continue\n";
-	fgetc ( STDIN );
+	fgetc(STDIN);
 }
 
 // Output messages with timestamp
-function output($txt = "") {
-	$d = date ( "Y/m/d H:i:s", time () );
+function output($txt = "")
+{
+	$d = date("Y/m/d H:i:s", time());
 	echo $d . " | ";
 	echo $txt;
 	echo "\n";
@@ -147,30 +150,30 @@ $request_api = "/api/job/request/json";
 $submit_api = "/api/job/submit/json";
 
 // Set up the data for the request job API
-$request_payload = array ();
-$request_payload ["wallet_id"] = $wallet_id;
-$request_payload ["rig_id"] = $rig_id;
+$request_payload = array();
+$request_payload["wallet_id"] = $wallet_id;
+$request_payload["rig_id"] = $rig_id;
 
 // Prepare the data for the submit job API (hashrate will be calulated and overwritten)
-$submit_payload = array ();
-$submit_payload ["hashrate"] = 0;
-$submit_payload ["chiptype"] = $chip_id;
+$submit_payload = array();
+$submit_payload["hashrate"] = 0;
+$submit_payload["chiptype"] = $chip_id;
 
 // Keep track of how many jobs we received and how many were successful
 $job_c = 0;
 $shares = 0;
 
 // Loop forever (hopefully)
-while ( true ) {
+while (true) {
 	// Request a job
-	$data = jsonApi ( $api_host . $request_api, $request_payload );
-	if (! ($data && $data->success)) {
+	$data = jsonApi($api_host . $request_api, $request_payload);
+	if (!($data && $data->success)) {
 		// Got an error. Pause in case the server is struggling
-		output ( "0x00 | Request failed: " . ($data && isset ( $data->reason ) ? ($data->reason) : ("API call failed")) );
-		sleep ( 5 );
+		output("0x00 | Request failed: " . ($data && isset($data->reason) ? ($data->reason) : ("API call failed")));
+		sleep(5);
 	} else {
 		// Log the start time so we can maximise profit :)
-		$started = microtime ( true );
+		$started = microtime(true);
 
 		// Increment total job received count
 		$job_c += 1;
@@ -183,26 +186,26 @@ while ( true ) {
 
 		// Start the counter at zero
 		$cnonce = 0;
-		$nonce = - 1;
+		$nonce = -1;
 
 		// Calulate the beginning we need for a 'successful' job from the difficulty
-		$begins = str_pad ( "", $data->difficulty, "0" );
+		$begins = str_pad("", $data->difficulty, "0");
 
 		// Output the job details in the Text API format
-		output ( "0x01 | Received job: Y " . $job_id . " " . $data->hash . " " . str_pad ( $data->difficulty, 2, "0", STR_PAD_LEFT ) . " " . str_pad ( $data->target_seconds, 2, "0", STR_PAD_LEFT ) );
+		output("0x01 | Received job: Y " . $job_id . " " . $data->hash . " " . str_pad($data->difficulty, 2, "0", STR_PAD_LEFT) . " " . str_pad($data->target_seconds, 2, "0", STR_PAD_LEFT));
 
 		// Repeat the looping until we find a valid signature, or we run out of time (being twice the target)
-		while ( ($nonce < 0) && (microtime ( true ) < ($started + (2 * $data->target_seconds))) ) {
+		while (($nonce < 0) && (microtime(true) < ($started + (2 * $data->target_seconds)))) {
 			// Calculate the signature hash
-			$signed = hash ( "sha1", $data->hash . $cnonce );
+			$signed = hash("sha1", $data->hash . $cnonce);
 
 			// Check if the signature starts with the expected number of zeros
-			if (strpos ( $signed, $begins ) === 0) {
+			if (strpos($signed, $begins) === 0) {
 				// Set the nonce so we can end this loop
 				$nonce = $cnonce;
 				// calcuate the hashrate
-				$duration = microtime ( true ) - $started;
-				$submit_payload ["hashrate"] = ($cnonce + 1) / $duration;
+				$duration = microtime(true) - $started;
+				$submit_payload["hashrate"] = ($cnonce + 1) / $duration;
 			}
 
 			// Increment the counter so we can try again
@@ -211,24 +214,24 @@ while ( true ) {
 
 		// If we calcuated a value, tell everyone
 		if ($nonce >= 0) {
-			output ( "0x02 | Nonce: " . $nonce . " | duration: " . number_format ( $duration, 4 ) . " | hashrate: " . number_format ( $submit_payload ["hashrate"], 2 ) . " | hash: " . $signed );
+			output("0x02 | Nonce: " . $nonce . " | duration: " . number_format($duration, 4) . " | hashrate: " . number_format($submit_payload["hashrate"], 2) . " | hash: " . $signed);
 		} else {
-			output ( "0x02 | Error: Failed to calculate hash in time" );
+			output("0x02 | Error: Failed to calculate hash in time");
 		}
 
 		// Wait for the submission window
-		while ( microtime ( true ) < ($started + $data->target_seconds) ) {
-			usleep ( 100 );
+		while (microtime(true) < ($started + $data->target_seconds)) {
+			usleep(100);
 		}
 
 		// Submit the job, even if we failed - it's ok to admit failure.
-		$data = jsonApi ( $api_host . $submit_api . "/" . $job_id . "/" . (($nonce < 0) ? (0) : ($nonce)), $submit_payload );
+		$data = jsonApi($api_host . $submit_api . "/" . $job_id . "/" . (($nonce < 0) ? (0) : ($nonce)), $submit_payload);
 		if ($data && $data->success) {
 			$shares += 1;
-			output ( "0x03 | ACCEPTED | " . number_format ( $shares ) . "/" . number_format ( $job_c ) . " | " . number_format ( ($shares / $job_c) * 100, 2 ) . "%" );
+			output("0x03 | ACCEPTED | " . number_format($shares) . "/" . number_format($job_c) . " | " . number_format(($shares / $job_c) * 100, 2) . "%");
 		} else {
-			output ( "0x04 | REJECTED | " . (isset ( $data->reason ) ? ($data->reason) : ("An API error occurred")) );
-			sleep ( 1 );
+			output("0x04 | REJECTED | " . (isset($data->reason) ? ($data->reason) : ("An API error occurred")));
+			sleep(1);
 		}
 	}
 }

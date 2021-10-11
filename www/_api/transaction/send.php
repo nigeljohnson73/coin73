@@ -3,47 +3,47 @@
 //
 // session_id ( getDataNamespace () );
 // session_start ();
-$ret = startJsonResponse ();
+$ret = startJsonResponse();
 
-logger ( LL_DBG, "ARGS:" );
-logger ( LL_DBG, ob_print_r ( $args ) );
-logger ( LL_DBG, "_POST[]:" );
-logger ( LL_DBG, ob_print_r ( $_POST ) );
-logger ( LL_DBG, "_SESSION[]:" );
-logger ( LL_DBG, ob_print_r ( $_SESSION ) );
+logger(LL_DBG, "ARGS:");
+logger(LL_DBG, ob_print_r($args));
+logger(LL_DBG, "_POST[]:");
+logger(LL_DBG, ob_print_r($_POST));
+logger(LL_DBG, "_SESSION[]:");
+logger(LL_DBG, ob_print_r($_SESSION));
 
 $success = false;
 $message = "";
 
-if (isset ( $_SESSION ["AUTHTOK"] ) && isset ( $_POST ["token"] ) && isset ( $_POST ["action"] ) && isset ( $_POST ["recipient"] ) && isset ( $_POST ["amount"] )) {
-	if (strlen ( $_POST ["recipient"] ) != 130) {
+if (isset($_SESSION["AUTHTOK"]) && isset($_POST["token"]) && isset($_POST["action"]) && isset($_POST["recipient"]) && isset($_POST["amount"])) {
+	if (strlen($_POST["recipient"]) != 130) {
 		$message = "Transaction failed";
 		$ret->reason = "Recipient address is invalid";
-	} else if (doubleval ( $_POST ["amount"] ) <= 0) {
+	} else if (doubleval($_POST["amount"]) <= 0) {
 		$message = "Transaction failed";
 		$ret->reason = "Amount is invalid";
 	} else {
 
-		if (InfoStore::transactionsEnabled ()) {
+		if (InfoStore::transactionsEnabled()) {
 			// use the reCAPTCHA PHP client library for validation
-			$recaptcha = new ReCaptcha\ReCaptcha ( getRecaptchaSecretKey () );
-			$resp = $recaptcha->setExpectedAction ( $_POST ["action"] )->setScoreThreshold ( 0.5 )->verify ( $_POST ["token"], $_SERVER ['REMOTE_ADDR'] );
+			$recaptcha = new ReCaptcha\ReCaptcha(getRecaptchaSecretKey());
+			$resp = $recaptcha->setExpectedAction($_POST["action"])->setScoreThreshold(0.5)->verify($_POST["token"], $_SERVER['REMOTE_ADDR']);
 
 			// verify the response
-			if ($resp->isSuccess ()) {
-				$sender = UserStore::getItemByGuid ( $_SESSION ["AUTHTOK"] );
+			if ($resp->isSuccess()) {
+				$sender = UserStore::getItemByGuid($_SESSION["AUTHTOK"]);
 				if ($sender) {
-					$k = KeyStore::getKeys ( $sender ["email"] );
-					print_r ( $k );
+					$k = KeyStore::getKeys($sender["email"]);
+					print_r($k);
 					if ($k && $k->private) {
 						// if ($_POST ["amount"] <= $sender ["balance"]) {
-						$t = new Transaction ( $sender ["public_key"], $_POST ["recipient"], $_POST ["amount"], $_POST ["message"] ?? "");
-						if ($t->sign ( $k->private )) {
-							if (TransactionStore::addTransaction ( $t )) {
+						$t = new Transaction($sender["public_key"], $_POST["recipient"], $_POST["amount"], $_POST["message"] ?? "");
+						if ($t->sign($k->private)) {
+							if (TransactionStore::addTransaction($t)) {
 								// $ret->reason = "It worked";
 								$ret->success = true;
 							} else {
-								$ret->reason = TransactionStore::getReason ();
+								$ret->reason = TransactionStore::getReason();
 							}
 						} else {
 							$ret->reason = "Unable to sign transaction";
@@ -58,7 +58,7 @@ if (isset ( $_SESSION ["AUTHTOK"] ) && isset ( $_POST ["token"] ) && isset ( $_P
 				}
 			} else {
 				echo "Google says no:\n";
-				print_r ( $resp->getErrorCodes () );
+				print_r($resp->getErrorCodes());
 				$ret->reason = "The request was invalid - Google did not like the cut of your jib";
 			}
 		} else {
@@ -70,10 +70,9 @@ if (isset ( $_SESSION ["AUTHTOK"] ) && isset ( $_POST ["token"] ) && isset ( $_P
 	$ret->reason = "The transaction request data was invalid - seek an administrator";
 }
 
-if (! $success) {
+if (!$success) {
 	global $api_failure_delay;
-	sleep ( $api_failure_delay );
+	sleep($api_failure_delay);
 }
 
-endJsonResponse ( $response, $ret, $success, $message );
-?>
+endJsonResponse($response, $ret, $success, $message);

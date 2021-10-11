@@ -1,39 +1,42 @@
 body {
 	/* font: 400 15px 'Montserrat', sans-serif; */
 	/* font: 400 15px 'Urbanist', sans-serif; */
-	font: 400 18px 'Lato', sans-serif;
+	font       : 400 18px 'Lato', sans-serif;
 	line-height: 1.6em;
-	color: #666;
+	color      : #666;
 }
 
 strong {
 	/* font: 700 15px 'Urbanist', sans-serif; */
-	font: 900 18px 'Lato', sans-serif;
+	font       : 900 18px 'Lato', sans-serif;
 	line-height: 1.6em;
-	color: #666;
+	color      : #666;
 }
 
-pre, code {
+pre,
+code {
 	/* font: 400 15px 'Roboto', sans-serif; */
 	font: 400 15px 'Space Mono', monospace;
 }
 
-pre, code {
+pre,
+code {
 	background-color: #ddd;
-	border-radius: 3px;
-	padding-left: 7px;
-	padding-right: 7px;
+	border-radius   : 3px;
+	padding-left    : 7px;
+	padding-right   : 7px;
 }
 
 pre {
-	padding: 10px;
+	padding      : 10px;
 	border-radius: 5px;
 }
 
 pre code {
-	padding: 0px;
+	padding      : 0px;
 	border-radius: 0px;
 }
+
 /*
 body {
 	font: 400 15px Lato, sans-serif;
@@ -73,7 +76,7 @@ li p {
 }
 */
 h1 {
-	font-size: 28px;
+	font-size     : 28px;
 	text-transform: uppercase;
 }
 
@@ -93,7 +96,10 @@ a {
 	color: #3b0084;
 }
 
-a:link, a:visited, a:link:active, a:visited:active {
+a:link,
+a:visited,
+a:link:active,
+a:visited:active {
 	color: #3b0084;
 }
 
@@ -107,7 +113,7 @@ a:hover {
 
 footer.app-footer {
 	background-color: #3b0084 !important;
-	color: #fff !important;
+	color           : #fff !important;
 }
 
 /*
@@ -126,13 +132,13 @@ footer.app-footer {
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+	-webkit-appearance: none;
+	margin            : 0;
 }
 
 /* Why must I di this :( */
 .transaction-screen .row {
-	margin-top:15px;
+	margin-top: 15px;
 }
 
 .transaction-screen .row:first-of-type {
@@ -140,17 +146,18 @@ input::-webkit-inner-spin-button {
 }
 
 .data-screen {
-	margin-bottom:40px;
+	margin-bottom: 40px;
 }
+
 /*************
  * image protection
  */
 cover {
 	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	top     : 0;
+	bottom  : 0;
+	left    : 0;
+	right   : 0;
 }
 
 .covered {
@@ -167,23 +174,23 @@ strong.indicator {
 
 .cookie-alert-holder {
 	position: relative;
-	z-index: 1000;
+	z-index : 1000;
 }
 
 .cookie-alert {
-	padding: 20px;
-	margin: 2px;
+	padding      : 20px;
+	margin       : 2px;
 	border-radius: 10px;
-	background: #000;
-	color: #ff0;
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	background   : #000;
+	color        : #ff0;
+	position     : fixed;
+	bottom       : 0;
+	left         : 0;
+	right        : 0;
 }
 
 .cookie-alert p {
-	margin-top: 5px;
+	margin-top   : 5px;
 	margin-bottom: 5px;
 }
 
@@ -191,7 +198,8 @@ strong.indicator {
 	color: #fff !important;
 }
 
-.cookie-alert a:hover, .cookie-alert a:active {
+.cookie-alert a:hover,
+.cookie-alert a:active {
 	color: #ccc !important;
 }
 
@@ -200,8 +208,8 @@ strong.indicator {
 }
 
 .headliner img {
-	margin: 0 auto;
-	margin-top: 10px;
+	margin       : 0 auto;
+	margin-top   : 10px;
 	margin-bottom: 20px;
 }
 
@@ -218,8 +226,8 @@ nav {
 }
 
 .navbar-nav li {
-	margin: 0px;
-	border-left: solid 1px #ddd;
+	margin       : 0px;
+	border-left  : solid 1px #ddd;
 	border-bottom: solid 1px #eee;
 }
 
@@ -237,7 +245,7 @@ nav {
 }
  */
 .wiki p.updated {
-	color: #ccc;
+	color        : #ccc;
 	margin-bottom: 0px;
 }
 
@@ -246,8 +254,8 @@ span.icon-popover {
 }
 
 p.user-details {
-	font: 400 15px 'Space Mono', monospace;
-	margin: 0px;
+	font      : 400 15px 'Space Mono', monospace;
+	margin    : 0px;
 	margin-top: 10px;
 }
 
@@ -257,9 +265,9 @@ p.user-details {
 
 #qr-walletid-holder {
 	background-color: #fff;
-	padding: 20px;
-	padding-bottom: 13px;
-	display: inline-block;
-	border-radius: 10px;
-	margin-top: 10px;
+	padding         : 20px;
+	padding-bottom  : 13px;
+	display         : inline-block;
+	border-radius   : 10px;
+	margin-top      : 10px;
 }

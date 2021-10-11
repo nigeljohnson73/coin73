@@ -1,2 +1,2 @@
-app.controller('MerchCtrl', [ "$scope", function($scope) {
-} ]);
+app.controller('MerchCtrl', ["$scope", function ($scope) {
+}]);

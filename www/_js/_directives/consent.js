@@ -1,10 +1,10 @@
-app.directive('consent', [ "$cookies", function($cookies) {
+app.directive('consent', ["$cookies", function ($cookies) {
 	return {
-		scope : {},
-		templateUrl : '/templates/cookieAlert.html',
-		controller : function($scope) {
+		scope: {},
+		templateUrl: '/templates/cookieAlert.html',
+		controller: function ($scope) {
 			var _consent = $cookies.get('consent');
-			$scope.consent = function(consent) {
+			$scope.consent = function (consent) {
 				if (consent === undefined) {
 					return _consent;
 				} else if (consent) {
@@ -14,4 +14,4 @@ app.directive('consent', [ "$cookies", function($cookies) {
 			};
 		}
 	};
-} ]);
+}]);

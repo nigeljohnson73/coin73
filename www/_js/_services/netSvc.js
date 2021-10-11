@@ -6,7 +6,7 @@
 |_| |_|\___|\__|____/ \_/ \___|
 
 */
-app.service('netSvc', [function() {
+app.service('netSvc', [function () {
 	netSvc = this;
 	netSvc.state = false;
 	netSvc.stateListener = [];
@@ -15,7 +15,7 @@ app.service('netSvc', [function() {
 	/***
 	* Allows a client to be informed when the system detects a network change
 	*/
-	netSvc.addStateListener = function(cb) {
+	netSvc.addStateListener = function (cb) {
 		logger("netSvc.addStateListener()", "dbg");
 		netSvc.stateListener.push(cb);
 		if (netSvc.hadListener) {
@@ -27,7 +27,7 @@ app.service('netSvc', [function() {
 	/***
 	* The callback used by the system internals that will notify all the clients
 	*/
-	netSvc._updateOnlineStatus = function(event) {
+	netSvc._updateOnlineStatus = function (event) {
 		netSvc.state = navigator.onLine;
 
 		logger("netSvc.updateOnlineStatus(" + netSvc.state + ")");

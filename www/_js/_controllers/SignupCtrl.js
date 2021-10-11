@@ -1,4 +1,4 @@
-app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function($scope, $timeout, $interval, $sce, apiSvc) {
+app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function ($scope, $timeout, $interval, $sce, apiSvc) {
 
 	$scope.submitting = false;
 	$scope.account_created = false;
@@ -29,7 +29,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 		//while (new Date().getTime() < start + 1000);
 	}
 
-	$scope.updateCaptchaProgress = function() {
+	$scope.updateCaptchaProgress = function () {
 		if ($scope.recaptcha_progress_interval) {
 			var now = new Date().getTime();
 			var dif = (now - $scope.recaptcha_started) / 1000;
@@ -47,7 +47,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 		//console.log("RECAPTCHA progress:", $scope.recaptcha_progress);
 	};
 
-	$scope.retireCaptcha = function() {
+	$scope.retireCaptcha = function () {
 		$scope.progress = 0;
 		if ($scope.recaptcha_timeout_call) {
 			$timeout.cancel($scope.recaptcha_timeout_call);
@@ -61,7 +61,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 		$scope.recaptcha_progress_interval = null;
 	};
 
-	$scope.requestSignupCaptcha = function() {
+	$scope.requestSignupCaptcha = function () {
 		logger("HomeCtrl::requestSignupCaptcha() called", "dbg");
 		$scope.retireCaptcha();
 		$scope.loading = true;
@@ -79,7 +79,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 		$scope.password_verify = "";
 		$scope.submittable = false;
 
-		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function(token) {
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function (token) {
 			$scope.recaptcha_progress = 100;
 			$scope.recaptcha_started = new Date().getTime();
 			$scope.recaptcha_progress_interval = $interval($scope.updateCaptchaProgress, 1000);
@@ -89,7 +89,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 			$scope.loading = false;
 			$scope.submitting = false;
 			$scope.tx.token = token;
-			$scope.recaptcha_timeout_call = $timeout(function() {
+			$scope.recaptcha_timeout_call = $timeout(function () {
 				$scope.tx.token = null;
 				$scope.reason = $sce.trustAsHtml($scope.recaptcha_timeout_reason);
 			}, $scope.recaptcha_timeout * 1000);
@@ -98,12 +98,12 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 	};
 	$scope.load_user_api_call = $timeout($scope.requestSignupCaptcha, 100);
 
-	$scope.requestAccount = function() {
+	$scope.requestAccount = function () {
 		logger("SignupCtrl::requestAccount()", "inf");
 		$scope.retireCaptcha();
 		if ($scope.submittable) {
 			$scope.submitting = true;
-			apiSvc.callLocal("user/create", $scope.tx, function(data) {
+			apiSvc.callLocal("user/create", $scope.tx, function (data) {
 				logger(data);
 				$scope.account_created = data.success;
 				if (data.success) {
@@ -124,7 +124,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 		};
 	};
 
-	$scope.checkValidation = function() {
+	$scope.checkValidation = function () {
 		$scope.submittable = $scope.email_valid && $scope.password_valid && $scope.password_verify_valid && $scope.tx.accept_toc;
 		//		console.log("************************************************************");
 		//		console.log("Email valid:", $scope.tx.email, $scope.email_valid);
@@ -133,20 +133,20 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 		//		console.log("TOC valid:", $scope.accept_toc, $scope.accept_toc);
 		//		console.log("Form submittable:", $scope.submittable);
 	};
-	$scope.emailAddressValidate = function() {
+	$scope.emailAddressValidate = function () {
 		$scope.email_valid = $scope.tx.email && ($scope.tx.email.length > 0);
 		$scope.checkValidation();
 	};
-	$scope.passwordValidate = function() {
+	$scope.passwordValidate = function () {
 		var ok_password = new RegExp("{{VALID_PASSWORD_REGEX}}");
 		$scope.password_valid = $scope.tx.password && ok_password.test($scope.tx.password);
 		$scope.checkValidation();
 	};
-	$scope.passwordVerifyValidate = function() {
+	$scope.passwordVerifyValidate = function () {
 		$scope.password_verify_valid = $scope.password_valid && ($scope.password_verify == $scope.tx.password);
 		$scope.checkValidation();
 	};
-	$scope.tocValidate = function() {
+	$scope.tocValidate = function () {
 		$scope.checkValidation();
 	};
 }]);

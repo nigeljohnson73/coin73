@@ -1,4 +1,4 @@
-app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function($scope, $sce, $timeout, apiSvc) {
+app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function ($scope, $sce, $timeout, apiSvc) {
 	$scope.submitting = false;
 	$scope.reason = ""; // For failure reporting
 
@@ -27,15 +27,15 @@ app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function(
 	$scope.tx.accept_toc = false;
 	$scope.tx.token = "";
 	$scope.tx.action = recaptcha_action;
-	grecaptcha.ready(function() {
-		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function(token) {
+	grecaptcha.ready(function () {
+		grecaptcha.execute('{{RECAPTCHA_SITE_KEY}}', { action: recaptcha_action }).then(function (token) {
 			//logger("Got a RECAPTCHA token");
 			//logger(token);
 			$scope.tx.token = token;
 		});
 	});
 
-	$scope.checkValidation = function() {
+	$scope.checkValidation = function () {
 		$scope.request_submittable = $scope.email_valid && $scope.accept_toc;
 		$scope.submittable = $scope.password_valid && $scope.password_verify_valid && $scope.tx.accept_toc;
 		//		console.log("************************************************************");
@@ -47,29 +47,29 @@ app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function(
 		//		console.log("Request submittable:", $scope.request_submittable);
 		//		console.log("Recover submittable:", $scope.submittable);
 	};
-	$scope.emailAddressValidate = function() {
+	$scope.emailAddressValidate = function () {
 		$scope.email_valid = $scope.tx.email && ($scope.tx.email.length > 0);
 		//		$scope.checkValidation();
 	};
-	$scope.passwordValidate = function() {
+	$scope.passwordValidate = function () {
 		var ok_password = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");;
 		$scope.password_valid = $scope.tx.password && ok_password.test($scope.tx.password);
 		$scope.checkValidation();
 	};
-	$scope.passwordVerifyValidate = function() {
+	$scope.passwordVerifyValidate = function () {
 		$scope.password_verify_valid = $scope.password_valid && ($scope.password_verify == $scope.tx.password);
 		$scope.checkValidation();
 	};
-	$scope.tocValidate = function() {
+	$scope.tocValidate = function () {
 		$scope.checkValidation();
 	};
 
-	$scope.requestRecoverAccount = function() {
+	$scope.requestRecoverAccount = function () {
 		logger("RecoverCtrl::requestRecoverAccount()");
 		$scope.submitting = true;
-		delete($scope.tx.password);
+		delete ($scope.tx.password);
 		if ($scope.request_submittable) {
-			apiSvc.callLocal("user/recover/request", $scope.tx, function(data) {
+			apiSvc.callLocal("user/recover/request", $scope.tx, function (data) {
 				logger(data);
 				$scope.recovery_request_success = data.success;
 				$scope.recovery_request_failure = !data.success;
@@ -88,14 +88,14 @@ app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function(
 		};
 
 		// Trigger the tooltips once the DOM haas reloaded back into the main loop
-		$timeout(function() {
-			$(function() {
+		$timeout(function () {
+			$(function () {
 				$('[data-toggle="tooltip"]').tooltip();
 			});
 		}, 100);
 	};
 
-	var prepareRecover = function() {
+	var prepareRecover = function () {
 		if (!$scope.payload) {
 			return;
 		}
@@ -103,7 +103,7 @@ app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function(
 		$scope.submitting = true;
 		var tx = {};
 		tx.payload = payload;
-		apiSvc.queueLocal("user/recover/prepare", tx, function(data) {
+		apiSvc.queueLocal("user/recover/prepare", tx, function (data) {
 			logger("RecoverCtrl::prepare(): response", "dbg");
 			logger(data, "inf");
 			if (data.success) {
@@ -122,20 +122,20 @@ app.controller('RecoverCtrl', ["$scope", "$sce", "$timeout", "apiSvc", function(
 			$scope.submitting = false;
 
 			// Trigger the tooltips once the DOM has reloaded back into the main loop
-			$timeout(function() {
-				$(function() {
+			$timeout(function () {
+				$(function () {
 					$('[data-toggle="tooltip"]').tooltip();
 				});
 			}, 100);
 		});
 	};
 
-	$scope.recover = function(challenge) {
+	$scope.recover = function (challenge) {
 		logger("RecoverCtrl::recover('" + challenge + "')", "inf");
-		delete($scope.tx.email);
+		delete ($scope.tx.email);
 		$scope.submitting = true;
 		$scope.tx.challenge = challenge;
-		apiSvc.callLocal("user/recover", $scope.tx, function(data) {
+		apiSvc.callLocal("user/recover", $scope.tx, function (data) {
 			logger("RecoverCtrl::recover('" + challenge + "') - response", "dbg");
 			logger(data);
 			$scope.recovery_success = data.success;

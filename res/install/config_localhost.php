@@ -29,4 +29,3 @@ $local_monika = " (Dev)";
 // $coinbase_privKey = "";
 
 $use_gae = false;
-?>

@@ -3,8 +3,8 @@
 class UserStoreHouseKeeper extends UserStore {
 
 	protected function __construct() {
-		logger ( LL_DBG, "UserStoreHouseKeeper::UserStoreHouseKeeper()" );
-		parent::__construct ();
+		logger(LL_DBG, "UserStoreHouseKeeper::UserStoreHouseKeeper()");
+		parent::__construct();
 	}
 
 	// https://stackoverflow.com/questions/1820908/how-to-turn-off-the-eclipse-code-formatter-for-certain-sections-of-java-code
@@ -18,78 +18,78 @@ class UserStoreHouseKeeper extends UserStore {
 	//                                          |_|            |___/ 
 	// @formatter:on
 	public static function tidyUp() {
-		$store = self::getInstance ();
-		logger ( LL_DBG, "UserStore::tidyUp(): started" );
+		$store = self::getInstance();
+		logger(LL_DBG, "UserStore::tidyUp(): started");
 
-		if (usingGae ()) {
+		if (usingGae()) {
 			// Wipe any recovery requests
-			$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
+			$older = timestampAdd(timestampNow(), -tokenTimeoutHours() * 60 * 60);
 			$gql = "SELECT * FROM " . $store->kind . " WHERE recovery_requested > 0 AND recovery_requested < @key";
-			logger ( LL_DBG, "UserStore::tidyUp(): removing recovery tokens" );
+			logger(LL_DBG, "UserStore::tidyUp(): removing recovery tokens");
 			// logger ( LL_DBG, "UserStore::tidyUp(): '" . $gql . "'" );
 			// logger ( LL_DBG, "UserStore::tidyUp(): @key: '" . $older . "'" );
-			logger ( LL_DBG, "UserStore::tidyUp(): '" . str_replace ( "@key", $older, $gql ) . "'" );
-			$store->obj_store->query ( $gql, [ 
-					'key' => $older
-			] );
-			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-				logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " recovery records" );
-				foreach ( $arr_page as $a ) {
+			logger(LL_DBG, "UserStore::tidyUp(): '" . str_replace("@key", $older, $gql) . "'");
+			$store->obj_store->query($gql, [
+				'key' => $older
+			]);
+			while ($arr_page = $store->obj_store->fetchPage(transactionsPerPage())) {
+				logger(LL_DBG, "UserStore::tidyUp(): pulled " . count($arr_page) . " recovery records");
+				foreach ($arr_page as $a) {
 					$a->recovery_requested = "";
 					$a->recovery_nonce = "";
 					$a->recovery_data = "";
 				}
-				$store->obj_store->upsert ( $arr_page );
+				$store->obj_store->upsert($arr_page);
 			}
 
 			// Wipe any validation requests
-			$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
+			$older = timestampAdd(timestampNow(), -tokenTimeoutHours() * 60 * 60);
 			$gql = "SELECT * FROM " . $store->kind . " WHERE validation_requested > 0 AND validation_requested < @key";
-			logger ( LL_DBG, "UserStore::tidyUp(): removing validation tokens" );
+			logger(LL_DBG, "UserStore::tidyUp(): removing validation tokens");
 			// logger ( LL_DBG, "UserStore::tidyUp(): '" . $gql . "'" );
 			// logger ( LL_DBG, "UserStore::tidyUp(): @key: '" . $older . "'" );
-			logger ( LL_DBG, "UserStore::tidyUp(): '" . str_replace ( "@key", $older, $gql ) . "'" );
-			$store->obj_store->query ( $gql, [ 
-					'key' => $older
-			] );
-			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-				logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " validation records" );
-				foreach ( $arr_page as $a ) {
+			logger(LL_DBG, "UserStore::tidyUp(): '" . str_replace("@key", $older, $gql) . "'");
+			$store->obj_store->query($gql, [
+				'key' => $older
+			]);
+			while ($arr_page = $store->obj_store->fetchPage(transactionsPerPage())) {
+				logger(LL_DBG, "UserStore::tidyUp(): pulled " . count($arr_page) . " validation records");
+				foreach ($arr_page as $a) {
 					$a->validation_nonce = "";
 				}
-				$store->obj_store->upsert ( $arr_page );
+				$store->obj_store->upsert($arr_page);
 			}
 
 			// Lock any accounts that have not revalidated in the grace period
-			$older = timestampAdd ( timestampNow (), - actionGraceDays () * 24 * 60 * 60 );
+			$older = timestampAdd(timestampNow(), -actionGraceDays() * 24 * 60 * 60);
 			$gql = "SELECT * FROM " . $store->kind . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < @key";
-			logger ( LL_DBG, "UserStore::tidyUp(): locking non-compliant validation requests" );
+			logger(LL_DBG, "UserStore::tidyUp(): locking non-compliant validation requests");
 			// logger ( LL_DBG, "UserStore::tidyUp(): '" . $gql . "'" );
 			// logger ( LL_DBG, "UserStore::tidyUp(): @key: '" . $older . "'" );
-			logger ( LL_DBG, "UserStore::tidyUp(): '" . str_replace ( "@key", $older, $gql ) . "'" );
-			$store->obj_store->query ( $gql, [ 
-					'key' => $older
-			] );
-			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-				logger ( LL_DBG, "UserStore::tidyUp(): pulled " . count ( $arr_page ) . " validation lock records" );
-				foreach ( $arr_page as $a ) {
-					$a->locked = timestampNow ();
+			logger(LL_DBG, "UserStore::tidyUp(): '" . str_replace("@key", $older, $gql) . "'");
+			$store->obj_store->query($gql, [
+				'key' => $older
+			]);
+			while ($arr_page = $store->obj_store->fetchPage(transactionsPerPage())) {
+				logger(LL_DBG, "UserStore::tidyUp(): pulled " . count($arr_page) . " validation lock records");
+				foreach ($arr_page as $a) {
+					$a->locked = timestampNow();
 				}
-				$store->obj_store->upsert ( $arr_page );
+				$store->obj_store->upsert($arr_page);
 			}
 		} else {
-			$older = timestampAdd ( timestampNow (), - tokenTimeoutHours () * 60 * 60 );
+			$older = timestampAdd(timestampNow(), -tokenTimeoutHours() * 60 * 60);
 			$sql = "UPDATE " . $store->kind . " SET recovery_requested = '', recovery_nonce = '', recovery_data = '' WHERE recovery_requested > 0 AND recovery_requested < " . $older;
-			MySqlDb::query ( $sql );
+			MySqlDb::query($sql);
 
 			$sql = "UPDATE " . $store->kind . " SET validation_nonce = '' WHERE validation_requested > 0 AND validation_requested < " . $older;
-			MySqlDb::query ( $sql );
+			MySqlDb::query($sql);
 
-			$older = timestampAdd ( timestampNow (), - actionGraceDays () * 24 * 60 * 60 );
-			$gql = "UPDATE " . $store->kind . " SET locked = " . timetampNow () . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < " . $older;
-			MySqlDb::query ( $sql );
+			$older = timestampAdd(timestampNow(), -actionGraceDays() * 24 * 60 * 60);
+			$gql = "UPDATE " . $store->kind . " SET locked = " . timetampNow() . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < " . $older;
+			MySqlDb::query($sql);
 		}
-		logger ( LL_DBG, "UserStore::tidyUp(): complete" );
+		logger(LL_DBG, "UserStore::tidyUp(): complete");
 	}
 
 	public static function requestRevalidations() {
@@ -131,21 +131,20 @@ class UserStoreHouseKeeper extends UserStore {
 	}
 
 	public static function __reset() {
-		$store = self::getInstance ();
-		if (usingGae ()) {
+		$store = self::getInstance();
+		if (usingGae()) {
 			$gql = "SELECT * FROM " . $store->kind;
-			$store->obj_store->query ( $gql );
-			while ( $arr_page = $store->obj_store->fetchPage ( transactionsPerPage () ) ) {
-				logger ( LL_DBG, $store->kind . "Store::reset(): updating " . count ( $arr_page ) . " balance records" );
-				foreach ( $arr_page as $user ) {
+			$store->obj_store->query($gql);
+			while ($arr_page = $store->obj_store->fetchPage(transactionsPerPage())) {
+				logger(LL_DBG, $store->kind . "Store::reset(): updating " . count($arr_page) . " balance records");
+				foreach ($arr_page as $user) {
 					$user->balance = 0;
 				}
-				$store->obj_store->upsert ( $arr_page );
+				$store->obj_store->upsert($arr_page);
 			}
 		} else {
 			$sql = "UPDATE " . $store->kind . " SET balance = 0";
-			MySqlDb::query ( $sql );
+			MySqlDb::query($sql);
 		}
 	}
 }
-?>

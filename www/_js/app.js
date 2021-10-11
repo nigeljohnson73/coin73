@@ -1,4 +1,4 @@
-isJson = function(item) {
+isJson = function (item) {
 	item = typeof item !== "string" ? JSON.stringify(item) : item;
 
 	try {
@@ -14,7 +14,7 @@ isJson = function(item) {
 	return false;
 };
 
-decode_base64 = function(s) {
+decode_base64 = function (s) {
 	var e = {}, i, k, v = [], r = '', w = String.fromCharCode;
 	var n = [[65, 91], [97, 123], [48, 58], [43, 44], [47, 48]];
 
@@ -41,7 +41,7 @@ decode_base64 = function(s) {
 	return r;
 };
 
-logger = function(l, err) {
+logger = function (l, err) {
 	if (typeof l == "object")
 		return logObj(l, err);
 
@@ -64,7 +64,7 @@ logger = function(l, err) {
 	}
 };
 
-logObj = function(msg, err) {
+logObj = function (msg, err) {
 	if (!err)
 		err = "inf";
 
@@ -85,7 +85,7 @@ logObj = function(msg, err) {
 function number_format(number, decimals, dec_point, thousands_sep) {
 	// Strip all characters but numerical ones.
 	number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
-	var n = !isFinite(+number) ? 0 : +number, prec = !isFinite(+decimals) ? 0 : Math.abs(decimals), sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, dec = (typeof dec_point === 'undefined') ? '.' : dec_point, s = '', toFixedFix = function(n, prec) {
+	var n = !isFinite(+number) ? 0 : +number, prec = !isFinite(+decimals) ? 0 : Math.abs(decimals), sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, dec = (typeof dec_point === 'undefined') ? '.' : dec_point, s = '', toFixedFix = function (n, prec) {
 		var k = Math.pow(10, prec);
 		return '' + Math.round(n * k) / k;
 	};
@@ -111,7 +111,7 @@ function toast(text) {
 
 	// After 3 seconds, remove the show class from DIV
 	if (toastTimeout === null) {
-		toastTimeout = setTimeout(function() {
+		toastTimeout = setTimeout(function () {
 			if (toastTimeout) {
 				$("#snackbar").removeClass("show");
 				toastTimeout = null;
@@ -120,15 +120,15 @@ function toast(text) {
 	}
 };
 var app = angular.module("myApp", ["ngCookies"]);
-$(document).ready(function() {
+$(document).ready(function () {
 	// Switch main page into view
-	setTimeout(function() {
+	setTimeout(function () {
 		$("#page-loading").hide();
 		$("#page-loaded").removeClass("d-none").show();
 	}, 500);
 
 	var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-	var popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
+	var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
 		return new bootstrap.Popover(popoverTriggerEl);
 	});
 	//toast("Application has loaded sucessfully!!");

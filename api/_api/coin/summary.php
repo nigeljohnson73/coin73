@@ -3,19 +3,19 @@
 //
 // session_id ( getDataNamespace () );
 // session_start ();
-$ret = startJsonResponse ();
+$ret = startJsonResponse();
 
-logger ( LL_DBG, "ARGS:" );
-logger ( LL_DBG, ob_print_r ( $args ) );
-logger ( LL_DBG, "_POST[]:" );
-logger ( LL_DBG, ob_print_r ( $_POST ) );
-logger ( LL_DBG, "_SESSION[]:" );
-logger ( LL_DBG, ob_print_r ( $_SESSION ) );
+logger(LL_DBG, "ARGS:");
+logger(LL_DBG, ob_print_r($args));
+logger(LL_DBG, "_POST[]:");
+logger(LL_DBG, ob_print_r($_POST));
+logger(LL_DBG, "_SESSION[]:");
+logger(LL_DBG, ob_print_r($_SESSION));
 
 $success = true;
 $message = "";
 
-$data = ( object ) InfoStore::getAll ();
+$data = (object) InfoStore::getAll();
 
 // protected function _getApi() {
 // $tx = array ();
@@ -38,22 +38,21 @@ $data = ( object ) InfoStore::getAll ();
 // return InfoStore::getInstance ()->_getApi ();
 // }
 
-$ret->data = new StdClass ();
-$key = circulationInfoKey ();
-$lkey = str_replace ( "info_", "", $key );
-$ret->data->$lkey = ( double ) ($data->$key);
+$ret->data = new StdClass();
+$key = circulationInfoKey();
+$lkey = str_replace("info_", "", $key);
+$ret->data->$lkey = (float) ($data->$key);
 
-$key = minedSharesInfoKey ();
-$lkey = str_replace ( "info_", "", $key );
-$ret->data->$lkey = ( int ) ($data->$key);
+$key = minedSharesInfoKey();
+$lkey = str_replace("info_", "", $key);
+$ret->data->$lkey = (int) ($data->$key);
 
-$key = blockCountInfoKey ();
-$lkey = str_replace ( "info_", "", $key );
-$ret->data->$lkey = ( int ) ($data->$key);
+$key = blockCountInfoKey();
+$lkey = str_replace("info_", "", $key);
+$ret->data->$lkey = (int) ($data->$key);
 
-$key = lastBlockHashInfoKey ();
-$lkey = str_replace ( "info_", "", $key );
+$key = lastBlockHashInfoKey();
+$lkey = str_replace("info_", "", $key);
 $ret->data->$lkey = $data->$key;
 
-endJsonResponse ( $response, $ret, $success, $message );
-?>
+endJsonResponse($response, $ret, $success, $message);

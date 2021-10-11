@@ -3,12 +3,12 @@
 class Block {
 
 	public function __construct($message = "") {
-		$this->created = microtime ( true );
+		$this->created = microtime(true);
 		$this->message = $message;
-		$this->last_hash = InfoStore::getLastBlockHash ();
-		$this->transactions = [ ];
+		$this->last_hash = InfoStore::getLastBlockHash();
+		$this->transactions = [];
 		$this->hash = null;
-		$this->nonce = - 1;
+		$this->nonce = -1;
 		$this->signature = null;
 		$this->payload = null;
 	}
@@ -16,54 +16,54 @@ class Block {
 	public function addTransaction($t) {
 		// We have to assume that the servicability of the transaction has been baselined already because of where we would be in the process
 		// Therefore we can just perform a simple test of validity
-		if (! $t->isValid ( false )) {
-			logger ( LL_ERR, "Block::addTransaction(): Cannot add an invalid transaction" );
+		if (!$t->isValid(false)) {
+			logger(LL_ERR, "Block::addTransaction(): Cannot add an invalid transaction");
 			return false;
 		}
-		$txn = new stdClass ();
-		$txn->payload = $t->getPayload ();
+		$txn = new stdClass();
+		$txn->payload = $t->getPayload();
 		$txn->signature = $t->signature;
-		$this->transactions [] = $txn;
+		$this->transactions[] = $txn;
 		return true;
 	}
 
 	public function addTransactions($arr) {
 		$ret = true;
-		foreach ( $arr as $t ) {
-			$ret &= $this->addTransaction ( $t );
+		foreach ($arr as $t) {
+			$ret &= $this->addTransaction($t);
 		}
 		return $ret;
 	}
 
 	protected function getHashablePayload() {
-		if (! $this->payload) {
-			$ret = new StdClass ();
+		if (!$this->payload) {
+			$ret = new StdClass();
 			$ret->hash = $this->hash;
 			$ret->last_hash = $this->last_hash;
 			$ret->created = $this->created;
 			$ret->message = $this->message;
 			$ret->transactions = $this->transactions;
-			$this->payload = json_encode ( $ret );
+			$this->payload = json_encode($ret);
 		}
 		return $this->payload;
 	}
 
 	protected function calculateHash() {
-		if ($this->hash && strlen ( $this->hash )) {
+		if ($this->hash && strlen($this->hash)) {
 			return $this->hash;
 		}
-		return $this->hash = hash ( "sha1", $this->getHashablePayload () );
+		return $this->hash = hash("sha1", $this->getHashablePayload());
 	}
 
 	public function sign() {
-		$this->calculateHash ();
-		$begins = str_pad ( "", minerDifficulty (), "0" );
+		$this->calculateHash();
+		$begins = str_pad("", minerDifficulty(), "0");
 
 		$cnonce = 0;
-		while ( $this->nonce < 0 ) {
-			$signed = hash ( "sha1", $this->hash . $cnonce );
+		while ($this->nonce < 0) {
+			$signed = hash("sha1", $this->hash . $cnonce);
 			// Check if the signature starts with the expected number of zeros
-			if (strpos ( $signed, $begins ) === 0) { // If it has, we found one
+			if (strpos($signed, $begins) === 0) { // If it has, we found one
 				$this->nonce = $cnonce;
 				$this->signature = $signed;
 			}
@@ -74,31 +74,31 @@ class Block {
 
 	public function isValid($full = true) {
 		if ($this->created == null || $this->nonce < 0 || $this->signature == null) {
-			logger ( LL_ERR, "Block::isValid(): Block is not properly formed" );
+			logger(LL_ERR, "Block::isValid(): Block is not properly formed");
 			return false;
 		}
 
-		if (strlen ( $this->signature ) == 0) {
-			logger ( LL_ERR, "Block::isValid(): Block is not signed" );
+		if (strlen($this->signature) == 0) {
+			logger(LL_ERR, "Block::isValid(): Block is not signed");
 			return false;
 		}
 
-		$this->calculateHash ();
-		if (hash ( "sha1", $this->hash . $this->nonce ) != $this->signature) {
-			logger ( LL_ERR, "Block::isValid(): Block has been tampered with" );
+		$this->calculateHash();
+		if (hash("sha1", $this->hash . $this->nonce) != $this->signature) {
+			logger(LL_ERR, "Block::isValid(): Block has been tampered with");
 			return false;
 		}
 
-		$begins = str_pad ( "", minerDifficulty (), "0" );
-		if (strpos ( $this->signature, $begins ) !== 0) { // If it has, we found one
-			logger ( LL_ERR, "Block::isValid(): Block has invalid signature" );
+		$begins = str_pad("", minerDifficulty(), "0");
+		if (strpos($this->signature, $begins) !== 0) { // If it has, we found one
+			logger(LL_ERR, "Block::isValid(): Block has invalid signature");
 			return false;
 		}
 
-		foreach ( $this->transactions as $k => $txn ) {
-			$t = (new Transaction ())->fromPayload ( $txn->payload, $txn->signature );
-			if (! $t->isValid ( $full, false )) {
-				logger ( LL_ERR, "Transaction #" . ($k + 1) . " valid: " . (($t->isValid ()) ? ("true") : ("false")) );
+		foreach ($this->transactions as $k => $txn) {
+			$t = (new Transaction())->fromPayload($txn->payload, $txn->signature);
+			if (!$t->isValid($full, false)) {
+				logger(LL_ERR, "Transaction #" . ($k + 1) . " valid: " . (($t->isValid()) ? ("true") : ("false")));
 				return false;
 			}
 		}
@@ -106,21 +106,21 @@ class Block {
 	}
 
 	public function toPayload() {
-		$ret = new StdClass ();
+		$ret = new StdClass();
 		$ret->hash = $this->hash;
-		$ret->payload = $this->getHashablePayload ();
+		$ret->payload = $this->getHashablePayload();
 		$ret->nonce = $this->nonce;
 		$ret->signature = $this->signature;
-		return json_encode ( $ret );
+		return json_encode($ret);
 	}
 
 	public function fromPayload($payload) {
-		$payload = json_decode ( $payload );
+		$payload = json_decode($payload);
 		$this->hash = $payload->hash;
 		$this->nonce = $payload->nonce;
 		$this->signature = $payload->signature;
 
-		$payload = json_decode ( $payload->payload );
+		$payload = json_decode($payload->payload);
 
 		$this->last_hash = $payload->last_hash;
 		$this->message = $payload->message;
@@ -187,5 +187,3 @@ class Block {
 
 // 	$logger->setLevel ( $ll );
 // }
-
-?>
