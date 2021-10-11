@@ -548,7 +548,7 @@ echo "When asked, the code you need is: '$XVPN_ACT'"
 echo ""
 expressvpn activate
 bash -c "expressvpn connect $XVPN_LOC > /dev/null" &
-#bash -c "sleep 30 && expressvpn autoconnect true" &
+bash -c "sleep 30 && expressvpn autoconnect true" &
 echo ""
 echo "This session will now probably hang while the VPN connects."
 echo "Give it a minute or so, then reboot to complete the config."
