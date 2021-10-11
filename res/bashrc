@@ -31,7 +31,7 @@ echo "       ,@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@, "
 echo ""
 echo "----------------------------------------------------------------------"
 echo ""
-echo "Access the MinerTOR server on your network:"
+echo "  Access the MinerTOR server on your network:"
 echo ""
 
 for name in $_NAME;
@@ -44,7 +44,7 @@ do
 done
 
 echo ""
-echo "Access MinerTOR on the darkweb:"
+echo "  Access MinerTOR on the darkweb:"
     echo "    $_DWEB"
 echo ""
 echo "----------------------------------------------------------------------"
