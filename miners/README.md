@@ -1,4 +1,4 @@
-# Coin73 Miners
+# MinerTOR Miners
 
 __Please note:__ The TOR network aka the darkweb is a funny ole' place, in that you can't get to it without a specialist browser or proxy. I am working on building some things into the PHP/Python stuff, but it's not as easy as I had originally anticipated. Getting things onto a small board like an ESP is also practically impossible. But I will continute to look at things - there has to be a way to solve this. In the mean time, a Raspberry PI can be set up with the `tor` package, and then you can use these the PHP and python stuff by using that. I'll document that someplace else when we are all up and running.
 
@@ -29,14 +29,14 @@ You should default the `rig-id` and `chip-id` so the user doesn't need to supply
 
 Here is the process you should repeat:
 
- * [Request a job](https://coin73.appspot.com/wiki/api/job/request) via the API;
+ * [Request a job](/wiki/api/job/request) via the API;
  * This will give you a `hash`, a `difficulty` and a `target_seconds` value;
- * Iterate through [adding a counter](https://coin73.appspot.com/wiki/mining/work) on to the end of the `hash` string, starting at zero;
+ * Iterate through [adding a counter](/wiki/mining/work) on to the end of the `hash` string, starting at zero;
  * Calculate the SHA1 hash of the new string (with the counter added);
  * If the SHA1 starts with `difficulty` zeros, that counter value is the `nonce` you will submit;
  * Calculate the `hashrate` as the `nonce` plus 1, divided by the seconds it took to get there;
  * Wait for the remainder of the `target_seconds` window;
- * [Submit the job](https://coin73.appspot.com/wiki/api/job/submit) via the API.
+ * ~~[Submit the job](/wiki/api/job/submit) via the API.~~
 
 # PHP miner
 

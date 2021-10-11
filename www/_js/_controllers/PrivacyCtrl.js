@@ -1,5 +1,5 @@
 app.controller('PrivacyCtrl', [ "$scope", function($scope) {
-	$scope.website = "http://https://minertor.appspot.com/"; // TODO: brand this
+	$scope.website = "https://minertor.appspot.com/"; // TODO: brand this
 	$scope.terms_uri = "/terms";
 	$scope.terms_label = $scope.website + $scope.terms_uri;
 	$scope.company_name = "{{APP_NAME}}"; // TODO: brand this 

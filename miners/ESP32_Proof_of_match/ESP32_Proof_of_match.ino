@@ -8,8 +8,8 @@
  |______ ______| |            |  |  | __|__ |  \_| |______ |    \_                 Version 0.1a
 
  (c) Nigel Johnson 2020
- https://github.com/nigeljohnson73/coin73
- https://coin73.appspot.com/
+ https://github.com/nigeljohnson73/minertor
+ https://minertor.appspot.com/
 */
 /***********************************************************************************************
  * The purpose of this file is to demontrate how the complicated match bit works in the ESP32 

@@ -34,5 +34,5 @@ $app->run ();
 // $str .= "app\n";
 // $str .= ob_print_r ( $app_routes );
 
-// @file_put_contents ( sys_get_temp_dir () . "/coin73.www.txt", $str );
+// @file_put_contents ( sys_get_temp_dir () . "/minertor.www.txt", $str );
 ?>

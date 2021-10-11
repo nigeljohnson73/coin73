@@ -10,7 +10,7 @@ Right, on with the show.
 
 ## Overview
 
-COIN73 is a ground up implementation of a secure centralised block chain, supporting a crypto currency and some useful stuff in the chain (to be developed later - maybe NFT, maybe research data, don't know yet). I was originally inspired in part by [Duino-Coin](https://github.com/revoxhere/duino-coin), and I have also tried to build on some of the more mainstream ideas from Bitcoin and other 'regular' Blockchains. In summary this is the direction I am hoping to take:
+MinerTOR is a ground up implementation of a secure centralised block chain, supporting a crypto currency and some useful stuff in the chain (to be developed later - maybe NFT, maybe research data, don't know yet). I was originally inspired in part by [Duino-Coin](https://github.com/revoxhere/duino-coin), and I have also tried to build on some of the more mainstream ideas from Bitcoin and other 'regular' Blockchains. In summary this is the direction I am hoping to take:
 
  * Secure by design web portal for account management;
  * Periodic proof of life checks to ensure users still exist;
@@ -74,8 +74,8 @@ You shouldn't need to do this on the PI cuz it's setup in the crontab. This is f
 
 ## Project URLs:
 
- * [COIN73 github code](https://github.com/nigeljohnson73/minertor)
- * [COIN73 on the web](https://minertor.appspot.com)
+ * [MinerTOR github code](https://github.com/nigeljohnson73/minertor)
+ * [MinerTOR on the web](https://minertor.appspot.com)
  * [localhost web-app](http://localhost:8080)
  * [localhost web-api](http://localhost:8085/api/) (not really useful)
  * [Data store on GAE](https://console.cloud.google.com/datastore/entities/query/kind?project=minertor)

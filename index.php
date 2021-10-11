@@ -59,5 +59,5 @@ $app->run ();
 // $str .= "api\n";
 // $str .= ob_print_r ( $api_routes );
 
-// @file_put_contents ( sys_get_temp_dir () . "/coin73.core.txt", $str );
+// @file_put_contents ( sys_get_temp_dir () . "/minertor.core.txt", $str );
 ?>

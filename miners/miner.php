@@ -11,7 +11,7 @@
 
                                                        Version 0.1a
  (c) Nigel Johnson 2020
- https://github.com/nigeljohnson73/coin73
+ https://github.com/nigeljohnson73/minertor
 */
 // @formatter:on
 $VERSION = "0.1a";
@@ -73,7 +73,7 @@ function help() {
 	exit ();
 }
 
-// $api_host = "http://coin73.appspot.com/api/";
+// $api_host = "http://minertor.appspot.com/api/";
 $api_host = "http://ckwtzols3ukgmnam5w2bixq3iyw6d5oedp7a5cli6totg6ektlyknsqd.onion";
 $rig_id = "PHP-Miner";
 $chip_id = "PHP Script";

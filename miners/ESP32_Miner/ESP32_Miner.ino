@@ -8,8 +8,8 @@
  |______ ______| |            |  |  | __|__ |  \_| |______ |    \_                 Version 0.1a
 
  (c) Nigel Johnson 2020
- https://github.com/nigeljohnson73/coin73
- https://coin73.appspot.com/
+ https://github.com/nigeljohnson73/minertor
+ https://minertor.appspot.com/
 */
 const String VERSION = "v0.1a";
 
@@ -500,7 +500,7 @@ void processMining(void *pvParameters) {
 void setup() {
 	// The ESP has a fast Serial interface, lets use it
 	Serial.begin(500000);  // Start serial connection
-	Serial.println(String("\n\n") + rig_id + ": Coin73 ESP32 Miner " + VERSION);
+	Serial.println(String("\n\n") + rig_id + ": MinerTOR ESP32 Miner " + VERSION);
 
 	// Enable Wifi in client (Station) mode
 	WiFi.mode(WIFI_STA);
