@@ -2,5 +2,88 @@
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
-    "diffEditor.codeLens": true
+    "diffEditor.codeLens": true,
+    "todohighlight.exclude": [
+        "**/node_modules/**",
+        "**/bower_components/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.vscode/**",
+        "**/.vscode-test/**",
+        "**/.github/**",
+        "**/_output/**",
+        "**/*.min.*",
+        "**/*.map",
+        "**/.next/**",
+        "**/api/_include/**",
+        "**/api/functions.php",
+        "**/api/config*",
+        "**/cron/_include/**",
+        "**/cron/functions.php",
+        "**/cron/config*",
+        "**/vendor/**"
+    ],
+    "intelephense.files.exclude": [
+        "**/.git/**",
+        "**/.svn/**",
+        "**/.hg/**",
+        "**/CVS/**",
+        "**/.DS_Store/**",
+        "**/node_modules/**",
+        "**/bower_components/**",
+        "**/vendor/**/{Tests,tests}/**",
+        "**/.history/**",
+        "**/api/_include/**",
+        "**/api/functions.php",
+        "**/api/config*",
+        "**/cron/_include/**",
+        "**/cron/functions.php",
+        "**/cron/config*",
+        "**/vendor/**"
+    ],
+    "search.exclude": {
+        "**/api/_include/**": true,
+        "**/api/functions.php": true,
+        "**/api/config*": true,
+        "**/cron/_include/**": true,
+        "**/cron/functions.php": true,
+        "**/cron/config*": true,
+        "**/vendor/**": true
+    },
+    "files.watcherExclude": {
+        "**/api/_include/**": true,
+        "**/api/functions.php": true,
+        "**/api/config*": true,
+        "**/cron/_include/**": true,
+        "**/cron/functions.php": true,
+        "**/cron/config*": true,
+        "**/vendor/**": true
+    },
+    "intelephense.rename.exclude": [
+        "**/api/_include/**",
+        "**/api/functions.php",
+        "**/api/config*",
+        "**/cron/_include/**",
+        "**/cron/functions.php",
+        "**/cron/config*",
+        "**/vendor/**"
+    ],
+    "files.exclude": {
+        "**/api/_include/**": true,
+        "**/api/functions.php": true,
+        "**/api/config*": true,
+        "**/cron/_include/**": true,
+        "**/cron/functions.php": true,
+        "**/cron/config*": true,
+        "**/vendor/**": true
+    },
+    "intelephense.references.exclude": [
+        "**/api/_include/**",
+        "**/api/functions.php",
+        "**/api/config*",
+        "**/cron/_include/**",
+        "**/cron/functions.php",
+        "**/cron/config*",
+        "**/vendor/**"
+    ]
 }
