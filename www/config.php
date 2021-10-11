@@ -85,6 +85,8 @@ $smtp_from_email = "";
 $smtp_username = "";
 $smtp_password = "";
 
+$root_fs = "/var";
+
 // Key fields for info - just to stop typos consuming hours of debugging
 $info_key_circulation = "info_circulation";
 $info_key_mined_shares = "info_mined_shares";

@@ -18,7 +18,7 @@ class FileStore {
 			$this->bucket = null;
 			$this->bucket_name = strtolower ( getDataNamespace () . "_" . $name );
 		} else {
-			$this->bucket_name = "/var/" . getProjectId () . "/" . strtolower ( $name );
+			$this->bucket_name = filestoreBase() . "/" . strtolower ( $name );
 		}
 		$this->init ();
 	}
@@ -163,10 +163,10 @@ class FileStore {
 		} else {
 			$filename = $store->bucket_name . "/" . $filename;
 			if (file_exists ( $filename )) {
-				logger(LL_XDBG, "FileStore::delete(): Unlinking '".$filename."'");
-				unlink ($filename);
+				logger ( LL_XDBG, "FileStore::delete(): Unlinking '" . $filename . "'" );
+				unlink ( $filename );
 			} else {
-				logger(LL_ERR, "FileStore::delete(): File does not exist '".$filename."'");
+				logger ( LL_ERR, "FileStore::delete(): File does not exist '" . $filename . "'" );
 			}
 			return ! file_exists ( $filename );
 		}

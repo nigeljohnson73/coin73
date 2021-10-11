@@ -307,6 +307,15 @@ function switchKeyCron() {
 	return $switch_key_cron;
 }
 
+function rootFs() {
+	global $root_fs;
+	return $root_fs;
+}
+
+function filestoreBase() {
+	return rootFs () . "/" . getProjectId ();
+}
+
 function ob_print_r($what) {
 	ob_start ();
 	print_r ( $what );
