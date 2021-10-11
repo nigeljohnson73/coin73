@@ -86,7 +86,7 @@ class UserStoreHouseKeeper extends UserStore {
 			MySqlDb::query($sql);
 
 			$older = timestampAdd(timestampNow(), -actionGraceDays() * 24 * 60 * 60);
-			$gql = "UPDATE " . $store->kind . " SET locked = " . timetampNow() . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < " . $older;
+			$gql = "UPDATE " . $store->kind . " SET locked = " . timestampNow() . " WHERE locked = 0 AND validation_reminded > 0 AND validation_reminded < " . $older;
 			MySqlDb::query($sql);
 		}
 		logger(LL_DBG, "UserStore::tidyUp(): complete");

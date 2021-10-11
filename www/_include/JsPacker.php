@@ -76,7 +76,7 @@ class JavaScriptPacker {
 	private $_fastDecode = true;
 	private $_specialChars = false;
 
-	private $LITERAL_ENCODING = array (
+	private $LITERAL_ENCODING = array(
 		'None' => 0,
 		'Numeric' => 10,
 		'Normal' => 62,
@@ -105,9 +105,9 @@ class JavaScriptPacker {
 
 	// apply all parsing routines
 	private function _pack($script) {
-		for ($i = 0; isset ($this->_parsers[$i]); $i++) {
-			$script = call_user_func(array (
-				& $this,
+		for ($i = 0; isset($this->_parsers[$i]); $i++) {
+			$script = call_user_func(array(
+				&$this,
 				$this->_parsers[$i]
 			), $script);
 		}
@@ -115,7 +115,7 @@ class JavaScriptPacker {
 	}
 
 	// keep a list of parsing functions, they'll be executed all at once
-	private $_parsers = array ();
+	private $_parsers = array();
 	private function _addParser($parser) {
 		$this->_parsers[] = $parser;
 	}
@@ -126,19 +126,19 @@ class JavaScriptPacker {
 		// make safe
 		$parser->escapeChar = '\\';
 		// protect strings
-		$parser->add('/\'[^\'\\n\\r]*\'/', self :: IGNORE);
-		$parser->add('/"[^"\\n\\r]*"/', self :: IGNORE);
+		$parser->add('/\'[^\'\\n\\r]*\'/', self::IGNORE);
+		$parser->add('/"[^"\\n\\r]*"/', self::IGNORE);
 		// remove comments
 		$parser->add('/\\/\\/[^\\n\\r]*[\\n\\r]/', ' ');
 		$parser->add('/\\/\\*[^*]*\\*+([^\\/][^*]*\\*+)*\\//', ' ');
 		// protect regular expressions
 		$parser->add('/\\s+(\\/[^\\/\\n\\r\\*][^\\/\\n\\r]*\\/g?i?)/', '$2'); // IGNORE
-		$parser->add('/[^\\w\\x24\\/\'"*)\\?:]\\/[^\\/\\n\\r\\*][^\\/\\n\\r]*\\/g?i?/', self :: IGNORE);
+		$parser->add('/[^\\w\\x24\\/\'"*)\\?:]\\/[^\\/\\n\\r\\*][^\\/\\n\\r]*\\/g?i?/', self::IGNORE);
 		// remove: ;;; doSomething();
 		if ($this->_specialChars)
 			$parser->add('/;;;[^\\n\\r]+[\\n\\r]/');
 		// remove redundant semi-colons
-		$parser->add('/\\(;;\\)/', self :: IGNORE); // protect for (;;) loops
+		$parser->add('/\\(;;\\)/', self::IGNORE); // protect for (;;) loops
 		$parser->add('/;+\\s*([};])/', '$2');
 		// apply the above
 		$script = $parser->exec($script);
@@ -154,7 +154,7 @@ class JavaScriptPacker {
 	private function _encodeSpecialChars($script) {
 		$parser = new ParseMaster();
 		// replace: $name -> n, $$name -> na
-		$parser->add('/((\\x24+)([a-zA-Z$_]+))(\\d*)/', array (
+		$parser->add('/((\\x24+)([a-zA-Z$_]+))(\\d*)/', array(
 			'fn' => '_replace_name'
 		));
 		// replace: _name -> _0, double-underscore (__name) is ignored
@@ -164,7 +164,7 @@ class JavaScriptPacker {
 		// quick ref
 		$encoded = $keywords['encoded'];
 
-		$parser->add($regexp, array (
+		$parser->add($regexp, array(
 			'fn' => '_replace_encoded',
 			'data' => $encoded
 		));
@@ -185,11 +185,11 @@ class JavaScriptPacker {
 		$encoded = $keywords['encoded'];
 
 		// encode
-		$parser->add($regexp, array (
+		$parser->add($regexp, array(
 			'fn' => '_replace_encoded',
 			'data' => $encoded
 		));
-		if (empty ($script))
+		if (empty($script))
 			return $script;
 		else {
 			//$res = $parser->exec($script);
@@ -202,31 +202,31 @@ class JavaScriptPacker {
 	private function _analyze($script, $regexp, $encode) {
 		// analyse
 		// retreive all words in the script
-		$all = array ();
+		$all = array();
 		preg_match_all($regexp, $script, $all);
-		$_sorted = array (); // list of words sorted by frequency
-		$_encoded = array (); // dictionary of word->encoding
-		$_protected = array (); // instances of "protected" words
+		$_sorted = array(); // list of words sorted by frequency
+		$_encoded = array(); // dictionary of word->encoding
+		$_protected = array(); // instances of "protected" words
 		$all = $all[0]; // simulate the javascript comportement of global match
-		if (!empty ($all)) {
-			$unsorted = array (); // same list, not sorted
-			$protected = array (); // "protected" words (dictionary of word->"word")
-			$value = array (); // dictionary of charCode->encoding (eg. 256->ff)
-			$this->_count = array (); // word->count
+		if (!empty($all)) {
+			$unsorted = array(); // same list, not sorted
+			$protected = array(); // "protected" words (dictionary of word->"word")
+			$value = array(); // dictionary of charCode->encoding (eg. 256->ff)
+			$this->_count = array(); // word->count
 			$i = count($all);
 			$j = 0; //$word = null;
 			// count the occurrences - used for sorting later
 			do {
-				-- $i;
+				--$i;
 				$word = '$' . $all[$i];
-				if (!isset ($this->_count[$word])) {
+				if (!isset($this->_count[$word])) {
 					$this->_count[$word] = 0;
 					$unsorted[$j] = $word;
 					// make a dictionary of all of the protected words in this script
 					//  these are words that might be mistaken for encoding
 					//if (is_string($encode) && method_exists($this, $encode))
-					$values[$j] = call_user_func(array (
-						& $this,
+					$values[$j] = call_user_func(array(
+						&$this,
 						$encode
 					), $j);
 					$protected['$' . $values[$j]] = $j++;
@@ -242,9 +242,8 @@ class JavaScriptPacker {
 			// this avoids problems when decoding
 			$i = count($unsorted);
 			do {
-				$word = $unsorted[-- $i];
-				if (isset ($protected[$word]) /*!= null*/
-					) {
+				$word = $unsorted[--$i];
+				if (isset($protected[$word]) /*!= null*/) {
 					$_sorted[$protected[$word]] = substr($word, 1);
 					$_protected[$protected[$word]] = true;
 					$this->_count[$word] = 0;
@@ -261,27 +260,27 @@ class JavaScriptPacker {
 			// the ECMAscript standard does not guarantee this behaviour,
 			// and thus not all browsers (e.g. Mozilla versions dating back to at
 			// least 2003) respect this.
-			usort($unsorted, array (
-				& $this,
+			usort($unsorted, array(
+				&$this,
 				'_sortWords'
 			));
 			$j = 0;
 			// because there are "protected" words in the list
 			//  we must add the sorted words around them
 			do {
-				if (!isset ($_sorted[$i]))
+				if (!isset($_sorted[$i]))
 					$_sorted[$i] = substr($unsorted[$j++], 1);
 				$_encoded[$_sorted[$i]] = $values[$i];
-			} while (++ $i < count($unsorted));
+			} while (++$i < count($unsorted));
 		}
-		return array (
+		return array(
 			'sorted' => $_sorted,
 			'encoded' => $_encoded,
 			'protected' => $_protected
 		);
 	}
 
-	private $_count = array ();
+	private $_count = array();
 	private function _sortWords($match1, $match2) {
 		return $this->_count[$match2] - $this->_count[$match1];
 	}
@@ -334,8 +333,8 @@ class JavaScriptPacker {
 		if ($this->_fastDecode) {
 			// insert the decoder
 			$this->buffer = $decode;
-			$unpack = preg_replace_callback('/\\{/', array (
-				& $this,
+			$unpack = preg_replace_callback('/\\{/', array(
+				&$this,
 				'_insertFastDecode'
 			), $unpack, 1);
 		}
@@ -347,8 +346,8 @@ class JavaScriptPacker {
 		if ($ascii > 36 || $this->_encoding > 62 || $this->_fastDecode) {
 			// insert the encode function
 			$this->buffer = $encode;
-			$unpack = preg_replace_callback('/\\{/', array (
-				& $this,
+			$unpack = preg_replace_callback('/\\{/', array(
+				&$this,
 				'_insertFastEncode'
 			), $unpack, 1);
 		} else {
@@ -360,7 +359,7 @@ class JavaScriptPacker {
 		$unpack = $unpackPacker->pack();
 
 		// arguments
-		$params = array (
+		$params = array(
 			$packed,
 			$ascii,
 			$count,
@@ -386,9 +385,8 @@ class JavaScriptPacker {
 
 	// mmm.. ..which one do i need ??
 	private function _getEncoder($ascii) {
-		return $ascii > 10 ? $ascii > 36 ? $ascii > 62 ? '_encode95' : '_encode62' : '_encode36' : '_encode10';
+		return ($ascii > 10) ? (($ascii > 36) ? (($ascii > 62) ? ('_encode95') : ('_encode62')) : ('_encode36')) : ('_encode10');
 	}
-
 	// zero encoding
 	// characters: 0123456789
 	private function _encode10($charCode) {
@@ -411,7 +409,7 @@ class JavaScriptPacker {
 		$charCode = $charCode % $this->_encoding;
 
 		if ($charCode > 35)
-			return $res . chr($charCode +29);
+			return $res . chr($charCode + 29);
 		else
 			return $res . base_convert($charCode, 10, 36);
 	}
@@ -441,8 +439,8 @@ class JavaScriptPacker {
 
 	// protect high-ascii characters already in the script
 	private function _escape95($script) {
-		return preg_replace_callback('/[\\xa1-\\xff]/', array (
-			& $this,
+		return preg_replace_callback('/[\\xa1-\\xff]/', array(
+			&$this,
 			'_escape95Bis'
 		), $script);
 	}
@@ -550,7 +548,6 @@ class JavaScriptPacker {
 	    return ($charCode < _encoding ? \'\' : arguments.callee($charCode / _encoding)) +
 	        String.fromCharCode($charCode % _encoding + 161);
 	}';
-
 }
 
 class ParseMaster {
@@ -587,9 +584,9 @@ class ParseMaster {
 				} else { // a complicated lookup (e.g. "Hello $2 $1")
 					// build a function to do the lookup
 					$quote = preg_match($this->QUOTE, $this->_internalEscape($replacement)) ? '"' : "'";
-					$replacement = array (
+					$replacement = array(
 						'fn' => '_backReferences',
-						'data' => array (
+						'data' => array(
 							'replacement' => $replacement,
 							'length' => $length,
 							'quote' => $quote
@@ -599,7 +596,7 @@ class ParseMaster {
 			}
 		}
 		// pass the modified arguments
-		if (!empty ($expression))
+		if (!empty($expression))
 			$this->_add($expression, $replacement, $length);
 		else
 			$this->_add('/^$/', $replacement, $length);
@@ -607,19 +604,19 @@ class ParseMaster {
 
 	public function exec($string) {
 		// execute the global replacement
-		$this->_escaped = array ();
+		$this->_escaped = array();
 
 		// simulate the _patterns.toSTring of Dean
 		$regexp = '/';
 		foreach ($this->_patterns as $reg) {
-			$regexp .= '(' . substr($reg[self :: EXPRESSION], 1, -1) . ')|';
+			$regexp .= '(' . substr($reg[self::EXPRESSION], 1, -1) . ')|';
 		}
 		$regexp = substr($regexp, 0, -1) . '/';
 		$regexp .= ($this->ignoreCase) ? 'i' : '';
 
 		$string = $this->_escape($string, $this->escapeChar);
-		$string = preg_replace_callback($regexp, array (
-			& $this,
+		$string = preg_replace_callback($regexp, array(
+			&$this,
 			'_replacement'
 		), $string);
 		$string = $this->_unescape($string, $this->escapeChar);
@@ -629,12 +626,12 @@ class ParseMaster {
 
 	public function reset() {
 		// clear the patterns collection so that this object may be re-used
-		$this->_patterns = array ();
+		$this->_patterns = array();
 	}
 
 	// private
-	private $_escaped = array (); // escaped characters
-	private $_patterns = array (); // patterns stored by index
+	private $_escaped = array(); // escaped characters
+	private $_patterns = array(); // patterns stored by index
 
 	// create and add a new pattern to the patterns collection
 	private function _add() {
@@ -644,38 +641,35 @@ class ParseMaster {
 
 	// this is the global replace function (it's quite complicated)
 	private function _replacement($arguments) {
-		if (empty ($arguments))
+		if (empty($arguments))
 			return '';
 
 		$i = 1;
 		$j = 0;
 		// loop through the patterns
-		while (isset ($this->_patterns[$j])) {
+		while (isset($this->_patterns[$j])) {
 			$pattern = $this->_patterns[$j++];
 			// do we have a result?
-			if (isset ($arguments[$i]) && ($arguments[$i] != '')) {
-				$replacement = $pattern[self :: REPLACEMENT];
+			if (isset($arguments[$i]) && ($arguments[$i] != '')) {
+				$replacement = $pattern[self::REPLACEMENT];
 
-				if (is_array($replacement) && isset ($replacement['fn'])) {
+				if (is_array($replacement) && isset($replacement['fn'])) {
 
-					if (isset ($replacement['data']))
+					if (isset($replacement['data']))
 						$this->buffer = $replacement['data'];
-					return call_user_func(array (
-						& $this,
+					return call_user_func(array(
+						&$this,
 						$replacement['fn']
 					), $arguments, $i);
-
-				}
-				elseif (is_int($replacement)) {
+				} elseif (is_int($replacement)) {
 					return $arguments[$replacement + $i];
-
 				}
 				$delete = ($this->escapeChar == '' || strpos($arguments[$i], $this->escapeChar) === false) ? '' : "\x01" . $arguments[$i] . "\x01";
 				return $delete . $replacement;
 
 				// skip over references to sub-expressions
 			} else {
-				$i += $pattern[self :: LENGTH];
+				$i += $pattern[self::LENGTH];
 			}
 		}
 	}
@@ -691,9 +685,9 @@ class ParseMaster {
 	}
 
 	private function _replace_name($match, $offset) {
-		$length = strlen($match[$offset +2]);
-		$start = $length -max($length -strlen($match[$offset +3]), 0);
-		return substr($match[$offset +1], $start, $length) . $match[$offset +4];
+		$length = strlen($match[$offset + 2]);
+		$start = $length - max($length - strlen($match[$offset + 3]), 0);
+		return substr($match[$offset + 1], $start, $length) . $match[$offset + 4];
 	}
 
 	private function _replace_encoded($match, $offset) {
@@ -708,11 +702,10 @@ class ParseMaster {
 	private function _escape($string, $escapeChar) {
 		if ($escapeChar) {
 			$this->buffer = $escapeChar;
-			return preg_replace_callback('/\\' . $escapeChar . '(.)' . '/', array (
-				& $this,
+			return preg_replace_callback('/\\' . $escapeChar . '(.)' . '/', array(
+				&$this,
 				'_escapeBis'
 			), $string);
-
 		} else {
 			return $string;
 		}
@@ -726,21 +719,20 @@ class ParseMaster {
 	private function _unescape($string, $escapeChar) {
 		if ($escapeChar) {
 			$regexp = '/' . '\\' . $escapeChar . '/';
-			$this->buffer = array (
+			$this->buffer = array(
 				'escapeChar' => $escapeChar,
 				'i' => 0
 			);
-			return preg_replace_callback($regexp, array (
-				& $this,
+			return preg_replace_callback($regexp, array(
+				&$this,
 				'_unescapeBis'
 			), $string);
-
 		} else {
 			return $string;
 		}
 	}
 	private function _unescapeBis() {
-		if (isset ($this->_escaped[$this->buffer['i']]) && $this->_escaped[$this->buffer['i']] != '') {
+		if (isset($this->_escaped[$this->buffer['i']]) && $this->_escaped[$this->buffer['i']] != '') {
 			$temp = $this->_escaped[$this->buffer['i']];
 		} else {
 			$temp = '';
@@ -753,4 +745,3 @@ class ParseMaster {
 		return preg_replace($this->ESCAPE, '', $string);
 	}
 }
-?>
