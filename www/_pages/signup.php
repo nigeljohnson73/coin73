@@ -82,13 +82,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- 	<div data-ng-show="account_not_created"> -->
-		<!-- 		<div class="alert alert-danger" role="alert"> -->
-		<!-- 			<p>The account creation process failed.</p> -->
-		<!-- 			<span data-ng-show="reason" data-ng-bind-html="reason"></span> -->
-		<!-- 		</div> -->
-		<!-- 	</div> -->
 	<?php endif ?>
 </div>
 

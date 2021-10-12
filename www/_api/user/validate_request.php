@@ -24,7 +24,7 @@ if (isset($_POST["token"]) && isset($_POST["action"]) && isset($_POST["email"]) 
 		$user = UserStore::authenticate(@$_POST["email"], @$_POST["password"]);
 		if (is_array($user)) {
 			$ret->challenge = UserStore::revalidateUser($user["email"]);
-			$success = strlen($ret->challenge);
+			$success = strlen($ret->challenge) > 0;
 			if ($success) {
 				if ($user["validation_data"]) {
 					$ret->warning = "There is an outstanding validation request. If you did not receive the email, please check your spam folder, and only follow the link in the latest email. If you did not request a previous validation, you may want to <a href='/recover'>recover your account.";

@@ -1,5 +1,6 @@
 app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc", function ($scope, $timeout, $interval, $sce, apiSvc) {
 
+	$scope.loading = true;
 	$scope.submitting = false;
 	$scope.account_created = false;
 	$scope.email_valid = false;
@@ -62,7 +63,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 	};
 
 	$scope.requestSignupCaptcha = function () {
-		logger("HomeCtrl::requestSignupCaptcha() called", "dbg");
+		logger("SignupCtrl::requestSignupCaptcha() called", "dbg");
 		$scope.retireCaptcha();
 		$scope.loading = true;
 		//console.trace();
@@ -84,7 +85,7 @@ app.controller('SignupCtrl', ["$scope", "$timeout", "$interval", "$sce", "apiSvc
 			$scope.recaptcha_started = new Date().getTime();
 			$scope.recaptcha_progress_interval = $interval($scope.updateCaptchaProgress, 1000);
 
-			logger("HomeCtrl::requestSignupCaptcha() - recieved a RECAPTCHA token", "dbg");
+			logger("SignupCtrl::requestSignupCaptcha() - recieved a RECAPTCHA token", "dbg");
 			pause();
 			$scope.loading = false;
 			$scope.submitting = false;

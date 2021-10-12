@@ -165,8 +165,6 @@ class UserStore extends DataStore {
 					$data = $data->getData();
 				}
 
-				// echo "B: Storing data array from " . ob_print_r ( $data ) . "\n";
-				// echo "B: Storing data array orig " . ob_print_r ( $sdata ) . "\n";
 				if ($data) {
 					if (usingGae()) {
 						$sdata->balance = $data["balance"] + $delta;
