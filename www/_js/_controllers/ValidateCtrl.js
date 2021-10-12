@@ -97,7 +97,7 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "$interval", "apiS
 			logger("ValidateCtrl::requestCaptcha() - recieved a RECAPTCHA token", "dbg");
 			pause();
 			$scope.loading = false;
-			$scope.submitting = false;
+			// $scope.submitting = false;
 			$scope.tx.token = token;
 			$scope.recaptcha_timeout_call = $timeout(function () {
 				$scope.tx.token = null;
@@ -169,6 +169,7 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "$interval", "apiS
 	// page javascript, then passed in here.
 	var prepareValidate = function () {
 		if (!$scope.payload) {
+			$scope.submitting = false;
 			return;
 		}
 		logger("ValidateCtrl::prepare()", "inf");

@@ -41,11 +41,11 @@
 					<div class="row">
 						<div class="col-md-6">
 							<label for="email" class="form-label">Email address</label> <input type="email" class="form-control" id="email" data-ng-model="tx.email" data-ng-class="email_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="emailAddressValidate($event)" required>
-							<div class="valid-feedback">Looks good!</div>
+							<!-- <div class="valid-feedback">Looks good!</div> -->
 						</div>
 						<div class="col-md-6">
 							<label for="password" class="form-label">Password</label> <input type="password" class="form-control" id="password" data-ng-model="tx.password" data-ng-class="password_valid ? 'is-valid' : 'is-invalid'" data-ng-keyup="passwordValidate($event)" required>
-							<div class="valid-feedback">Looks good!</div>
+							<!-- <div class="valid-feedback">Looks good!</div> -->
 							<!-- <div class="invalid-feedback">8 characters, 1 uppercase, 1 lowercase, 1 digit and one of !@#$%^&amp;*</div> -->
 						</div>
 					</div>
@@ -72,7 +72,7 @@
 		<div data-ng-show="payload && !reason">
 			<div data-ng-show="!submitted">
 				<p>Nearly there, Please select the challenge word you were presented with.</p>
-				<div class="progress" data-ng-show="recaptcha_progress">
+				<div class="progress" data-ng-show="recaptcha_progress && !submitting">
 					<div class="progress-bar progress-bar-striped progress-bar-animated" data-ng-class="recaptcha_progress<25 ? 'bg-danger' : recaptcha_progress<50 ? 'bg-warning' : 'bg-success'" role="progressbar" aria-valuenow="{{recaptcha_progress | number:0}}" aria-valuemin="0" aria-valuemax="100" data-ng-style="{'width': recaptcha_progress + '%'}"></div>
 				</div>
 				<div class="shadow alert alert-secondary data-screen" role="alert" data-ng-show="!submitting">
