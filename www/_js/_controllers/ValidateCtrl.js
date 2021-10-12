@@ -9,7 +9,6 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "$interval", "apiS
 	// Requesting variables
 	$scope.email_valid = false;
 	$scope.password_valid = false;
-	//$scope.password_verify_valid = false;
 	$scope.accept_toc = false;
 	$scope.submittable = false;
 	$scope.account_validated = false;
@@ -182,8 +181,6 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "$interval", "apiS
 			logger(data, "inf");
 			if (data.success) {
 				// Yay for us
-				delete ($scope.tx.email);
-				delete ($scope.tx.password);
 				$scope.choices = data.choices;
 				$scope.tx.guid = data.guid;
 			} else {
@@ -217,9 +214,6 @@ app.controller('ValidateCtrl', ["$scope", "$sce", "$timeout", "$interval", "apiS
 			logger("ValidateCtrl::validate('" + challenge + "') - response", "dbg");
 			logger(data);
 			$scope.account_validated = data.success;
-			if (data.success) {
-				$scope.challenge = data.challenge;
-			}
 			$scope.reason = $sce.trustAsHtml(data.reason);
 			$scope.warning = $sce.trustAsHtml(data.warning);
 			$scope.submitted = true;

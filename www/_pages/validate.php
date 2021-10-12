@@ -68,6 +68,7 @@
 				<h1 class="display-5">{{challenge}}</h1>
 			</div>
 		</div>
+
 		<!-- A payload variable is set up when a user got here from a link in an email -->
 		<div data-ng-show="payload && !reason">
 			<div data-ng-show="!submitted">
