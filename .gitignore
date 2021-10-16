@@ -4,5 +4,6 @@ appengine-generated/
 /.buildpath
 /service-account.json
 /test.php
+/test.py
 /.pydevproject
 /bundle.json
