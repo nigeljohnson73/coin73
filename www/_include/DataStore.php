@@ -30,7 +30,7 @@ class DataStore {
 		$this->field_types = array();
 		$this->field_indexes = array();
 		$this->type_map = array();
-		$this->type_map["STRING"] = "VARCHAR(512)";
+		$this->type_map["STRING"] = "VARCHAR(4096)";
 		$this->type_map["INTEGER"] = "BIGINT";
 		// $this->type_map["DATETIME"] = "INTEGER";
 		$this->type_map["FLOAT"] = "REAL";
